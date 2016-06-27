@@ -1,0 +1,87 @@
+<!--
+A comment describing this element.
+
+Example:
+
+    <my-elem></my-elem>
+
+Example:
+
+    <my-elem>
+      <h2>Hello my-elem</h2>
+    </my-elem>
+
+@demo demo/index.html
+-->
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<dom-module id="sn-filter">
+  <template>
+     <paper-dropdown-menu label="Filial" id="filial">
+          <paper-listbox class="dropdown-content">
+
+           <paper-item>Total Empresa</paper-item>
+           <paper-item>RGD</paper-item>
+           <paper-item>PNG</paper-item>
+           <paper-item>STR</paper-item>
+           <paper-item>SEP</paper-item>
+           <paper-item>RJ1</paper-item>
+           <paper-item>VIT</paper-item>
+           <paper-item>SDR</paper-item>
+           <paper-item>TMD</paper-item>
+           <paper-item>MAC</paper-item>
+           <paper-item>MTZ</paper-item>
+           
+          </paper-listbox>
+        </paper-dropdown-menu>
+        
+        <paper-dropdown-menu label="Mês Inicial" id="mesInicio">
+          <paper-listbox class="dropdown-content">
+           <paper-item>Todos</paper-item>
+           <paper-item>Janeiro</paper-item>
+           <paper-item>Fevereiro</paper-item>
+           <paper-item>Março</paper-item>
+           <paper-item>Abril</paper-item>
+           <paper-item>Maio</paper-item>
+           <paper-item>Junho</paper-item>
+           <paper-item>Julho</paper-item>
+           <paper-item>Agosto</paper-item>
+           <paper-item>Setembro</paper-item>
+           <paper-item>Outubro</paper-item>
+           <paper-item>Novembro</paper-item>
+           <paper-item>Dezembro</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Mês Final" id="mesFim">
+          <paper-listbox class="dropdown-content">
+           <paper-item>Todos</paper-item>
+           <paper-item>Janeiro</paper-item>
+           <paper-item>Fevereiro</paper-item>
+           <paper-item>Março</paper-item>
+           <paper-item>Abril</paper-item>
+           <paper-item>Maio</paper-item>
+           <paper-item>Junho</paper-item>
+           <paper-item>Julho</paper-item>
+           <paper-item>Agosto</paper-item>
+           <paper-item>Setembro</paper-item>
+           <paper-item>Outubro</paper-item>
+           <paper-item>Novembro</paper-item>
+           <paper-item>Dezembro</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+       
+  </template>
+  <style>
+    paper-dropdown-menu {
+      width: 123px;
+    }
+  </style>
+  <script>
+    Polymer({
+      is: 'sn-filter'
+    });
+  </script>
+</dom-module>

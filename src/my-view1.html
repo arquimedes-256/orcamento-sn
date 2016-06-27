@@ -1,0 +1,118 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable-card.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+
+<dom-module id="my-view1">
+
+  <template>
+
+    <style>
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      .card {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        margin: 24px;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #757575;
+      }
+      .circle {
+        display: inline-block;
+        height: 64px;
+        width: 64px;
+        border-radius: 50%;
+        background: #ddd;
+        line-height: 64px;
+        font-size: 30px;
+        color: #555;
+        text-align: center;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 16px 0;
+        color: #212121;
+      }
+      paper-material {
+        background:#FFF;
+      }
+      paper-datatable /deep/ td {
+        height: 0px !important;
+      }
+    </style>
+
+  <paper-material>
+   <paper-datatable data="{{data}}">
+          <paper-datatable-column 
+              header="Conta Gerencial" 
+              property="grupoMaster" type="String" 
+              style="width:99%;"></paper-datatable-column>
+          <paper-datatable-column 
+            header="Orçado" 
+            property="orc" 
+            type="Number" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column 
+            header="Realizado" 
+            property="real" 
+            type="Number" 
+            align="right" 
+            format-value="[[toFixedOne]]" 
+            tooltip=""></paper-datatable-column>
+
+          </paper-datatable>
+</paper-material>
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'my-view1',
+      ready:function() {
+        this.data  =  [
+            {id:1,grupoMaster:"RECEITA BRUTA"            ,orc:10,real:20},
+            {id:2,grupoMaster:"RECEITA LÍQUIDA"          ,orc:10,real:20},
+            {id:3,grupoMaster:"PESSOAL OPERACIONAL"      ,orc:10,real:20},
+            {id:4,grupoMaster:"CUSTOS DE AFRET."         ,orc:10,real:20},
+            {id:5,grupoMaster:"CUSTO DE COMBUSTÍVEL"     ,orc:10,real:20},
+            {id:6,grupoMaster:"DESP TÉCN E MANUTENÇÃO"   ,orc:10,real:20},
+            {id:7,grupoMaster:"SEGUROS E P&I"            ,orc:10,real:20},
+            {id:8,grupoMaster:"PROVISÕES PARA DOCAGEM"   ,orc:10,real:20},
+            {id:9,grupoMaster:"DESP. OPERACIONAIS"       ,orc:10,real:20},
+            {id:10,grupoMaster:"DESP. ADMINISTRATIVAS"    ,orc:10,real:20},
+            {id:11,grupoMaster:"COMERCIAIS/COMISSÕES"     ,orc:10,real:20},
+            {id:12,grupoMaster:"DESP. EXTRAORDINÁRIAS"    ,orc:10,real:20},
+            {id:13,grupoMaster:"EBITDA GERENCIAL"         ,orc:10,real:20},
+            {id:14,grupoMaster:"JURÍDICO CORPORATIVO"     ,orc:10,real:20},
+            {id:15,grupoMaster:"DESP. CORPORATIVA"        ,orc:10,real:20},
+            {id:16,grupoMaster:"EBITDA"                   ,orc:10,real:20}
+        ]
+      },
+      toFixedOne : function(value){
+        return value.toFixed(1);
+      },
+      toPercentage : function(value){
+        return Math.round(value * 10000)/100 + '%';
+      }
+
+    });
+
+  </script>
+
+</dom-module>
+
