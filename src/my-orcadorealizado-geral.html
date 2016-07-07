@@ -1,0 +1,224 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable-card.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+
+<dom-module id="my-orcadorealizado-geral">
+
+	<template>
+
+		<style>
+			:host {
+				display: block;
+				padding: 10px;
+			}
+			.card {
+				box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+				padding: 16px;
+				margin: 24px;
+				border-radius: 5px;
+				background-color: #fff;
+				color: #757575;
+			}
+			.circle {
+				display: inline-block;
+				height: 64px;
+				width: 64px;
+				border-radius: 50%;
+				background: #ddd;
+				line-height: 64px;
+				font-size: 30px;
+				color: #555;
+				text-align: center;
+			}
+			h1 {
+				font-size: 22px;
+				margin: 16px 0;
+				color: #212121;
+			}
+			paper-material {
+				background:#FFF;
+			}
+			paper-datatable /deep/ td {
+				height: 0px !important;
+			}
+		</style>
+
+	<paper-material>
+	 <paper-datatable data="{{data}}" id="dataTable">
+					<paper-datatable-column 
+							header="Conta Gerencial" 
+							property="grupoMaster" type="String" 
+							style="width:99%;"></paper-datatable-column>
+					<paper-datatable-column 
+						header="Orçado" 
+						property="orc" 
+						align="right" 
+						tooltip=""></paper-datatable-column>
+					<paper-datatable-column 
+						header="Realizado" 
+						property="real" 
+						align="right" 
+						tooltip=""></paper-datatable-column>
+
+					</paper-datatable>
+</paper-material>
+	</template>
+
+	<script>
+
+		Polymer({
+
+			is: 'my-orcadorealizado-geral',
+			ready:function() {
+				this.data  =  [
+						{id:1,grupoMaster:"RECEITA BRUTA"            	,orc:0,real:0},
+						{id:2,grupoMaster:"RECEITA LÍQUIDA"          	,orc:0,real:0},
+						{id:3,grupoMaster:"PESSOAL OPERACIONAL"      	,orc:0,real:0},
+						{id:4,grupoMaster:"CUSTOS DE AFRET."         	,orc:0,real:0},
+						{id:5,grupoMaster:"CUSTO DE COMBUSTÍVEL"     	,orc:0,real:0},
+						{id:6,grupoMaster:"DESP TÉCN E MANUTENÇÃO"   	,orc:0,real:0},
+						{id:7,grupoMaster:"SEGUROS E P&I"            	,orc:0,real:0},
+						{id:8,grupoMaster:"PROVISÕES PARA DOCAGEM"   	,orc:0,real:0},
+						{id:9,grupoMaster:"DESP. OPERACIONAIS"       	,orc:0,real:0},
+						{id:10,grupoMaster:"DESP. ADMINISTRATIVAS"    	,orc:0,real:0},
+						{id:11,grupoMaster:"COMERCIAIS/COMISSÕES"     	,orc:0,real:0},
+						{id:12,grupoMaster:"DESP. EXTRAORDINÁRIAS"    	,orc:0,real:0},
+						{id:13,grupoMaster:"EBITDA GERENCIAL"         	,orc:0,real:0},
+						{id:14,grupoMaster:"JURÍDICO CORPORATIVO"     	,orc:0,real:0},
+						{id:15,grupoMaster:"DESP. CORPORATIVA"        	,orc:0,real:0},
+						{id:16,grupoMaster:"EBITDA"                   	,orc:0,real:0}
+				]
+			},
+			toFixedOne : function(v){
+				var v = Math.round(v)
+				var v2 = v < 0 ? "("+v.formatMoney(0).replace("-","")+")" : v.formatMoney(0)
+				return v2;
+			},
+			setData:function(rows) {
+				var D = this.data;
+				var M = {};
+				var F = this.toFixedOne.bind(this);
+
+				_.each(rows,function(r){
+					var K = labelGrupoMaster(r.nomeGrupoMaster);
+					
+					if(r.filial.match(/\+/) || r.nomeGrupoMaster == "EBITDA") return;
+
+					if(!M[K]) M[K] = {orc:0,real:0} 
+
+					M[K].orc 	+= r.vlrOrcado;
+					M[K].real 	+= r.vlrRealizado;
+				})
+				_.each(D,function(d){
+					var k = d.grupoMaster;
+					console.log(M[k])
+					if(!M[k]) return console.log('error: '+k);
+					d.orc 	= F(M[k].orc);
+					d.real 	= F(M[k].real);
+					d.$orc 		= (M[k].orc);
+					d.$real 	= (M[k].real);
+
+				})
+				this.calcEbitda();
+				this.calcEbitdaGerencial();
+				this.refresh();
+			},
+			refresh:function() {
+				this.data = _.clone(this.$.dataTable.data);
+			},
+			calcEbitdaGerencial:function(){
+
+			},
+			calcEbitda:function() {
+				/*
+				RECEITA_LIQUIDA
+				PESSOAL_OPERACIONAL
+				CUSTOS_DE_AFRETAMENTO
+				CUSTO_DE_COMBUSTIVEL
+				DESP_TEC_MANUN
+				SEG_PI
+				PROVISAO
+				OUTRAS_DESP_OP
+				DESPESAS_ADMINISTRATIVAS
+				DESPESAS_COM
+				DESPESAS_EXTR*/
+
+				var G = _.chain(this.data).groupBy('grupoMaster').mapObject(function(X){return _.first(X)}).value();
+				var F = this.toFixedOne.bind(this);
+				console.log(G);
+				this.data = _.map(this.data,function(d){
+					if(d.grupoMaster == "EBITDA GERENCIAL")	{
+						
+						d.$orc 	= 
+							G["RECEITA LÍQUIDA"]		.$orc 		+  
+							G["PESSOAL OPERACIONAL"]	.$orc 		+
+							G["CUSTOS DE AFRET."]		.$orc 		+
+							G["CUSTO DE COMBUSTÍVEL"]	.$orc 		+
+							G["DESP TÉCN E MANUTENÇÃO"]	.$orc 		+
+							G["SEGUROS E P&I"]			.$orc 		+
+							G["PROVISÕES PARA DOCAGEM"]	.$orc 		+
+							G["DESP. OPERACIONAIS"]		.$orc 		+
+							G["DESP. ADMINISTRATIVAS"]	.$orc 		+
+							G["COMERCIAIS/COMISSÕES"]	.$orc 		+
+							G["DESP. EXTRAORDINÁRIAS"]	.$orc 		
+						;
+
+						d.$real 	= 
+							G["RECEITA LÍQUIDA"]		.$real 		+  
+							G["PESSOAL OPERACIONAL"]	.$real 		+
+							G["CUSTOS DE AFRET."]		.$real 		+
+							G["CUSTO DE COMBUSTÍVEL"]	.$real 		+
+							G["DESP TÉCN E MANUTENÇÃO"]	.$real 		+
+							G["SEGUROS E P&I"]			.$real 		+
+							G["PROVISÕES PARA DOCAGEM"]	.$real 		+
+							G["DESP. OPERACIONAIS"]		.$real 		+
+							G["DESP. ADMINISTRATIVAS"]	.$real 		+
+							G["COMERCIAIS/COMISSÕES"]	.$real 		+
+							G["DESP. EXTRAORDINÁRIAS"]	.$real 		
+						;
+
+						d.orc 	= F(d.$orc);
+						d.real 	= F(d.$real);
+					}
+					return d;
+				})
+
+			}
+		});
+
+
+	var labelGrupoMaster = function(nomeGrupoMaster) {
+		if(nomeGrupoMaster == "CUSTOS DE AFRETAMENTO")
+			return "CUSTOS DE AFRET.";
+		if(nomeGrupoMaster == "DESP TÉCN E MANUTENÃ‡ÃƒO")
+			return "DESP TÉCN/MANUNT.";
+		if(nomeGrupoMaster == "PROVISÃ•ES PARA DOCAGEM")
+			return "PROV. PARA DOCAGEM";
+		if(nomeGrupoMaster == "OUTRAS DESPESAS OPERACIONAIS")
+			return "DESP. OPERACIONAIS";
+		if(nomeGrupoMaster == "DESPESAS ADMINISTRATIVAS")
+			return "DESP. ADMINISTRATIVAS";
+		if(nomeGrupoMaster == "DESP. COMERCIAIS E COMISSÕES")
+			return "COMERCIAIS/COMISSÕES";
+		if(nomeGrupoMaster == "DESPESAS EXTRAORDINÁRIAS")
+			return "DESP. EXTRAORDINÁRIAS";
+		if(nomeGrupoMaster == "PESSOAL CORPORATIVO" || nomeGrupoMaster == "OUTRAS DESP. CORPORATIVA")
+			return "DESP. CORPORATIVA";
+		return nomeGrupoMaster;
+	}
+
+	</script>
+
+</dom-module>
+

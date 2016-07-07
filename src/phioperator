@@ -1,0 +1,89 @@
+var jStat = require('jStat').jStat
+var _ = require('underscore');
+var L = ["a","b","c",'d','e','f','g','h','i','j','k','l','m','n','o']//prime(100 ,true)
+var X = 1;
+var Combinatorics = require('js-combinatorics');
+
+
+
+var k = 2;
+
+console.log(compile_phi(k))
+
+
+function compile_phi(k) {
+    var latexExpr = '\n\\varphi_'+(k);
+    latexExpr += "\n\\Biggr\\langle_"+(L.length+1)+"^"+(k+1)+" \\Big\\{";
+    var sumLatexExprList = [];
+    _.times(L.length,function(t){
+
+        sumLatexExprList.push(compile_sum(t+1,k*L.length));
+
+    })
+    latexExpr += sumLatexExprList.join("|")
+    latexExpr += "\n\\Big\\}_{\\alpha_"+(k+1)+"} - \\mathcal M(\\mathcal X-\\alpha_"+(k+1)+") + "+ (k == 0 ? '0' : compile_phi(k-1)) 
+    +"_{\\varphi_"+(k-1)+"} \\Biggr\\rangle";
+
+    return latexExpr;
+}
+
+function compile_sum(t,k) {
+    var sums = [];
+    _.each(Combinatorics.power(L).nth(t+k),function(S)
+    {
+        sums.push(S);
+    })
+    return ('\n\\sum_\{\\{'+sums.join(',')+'\\}\}x')
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function prime(n,flag) {
+    ( typeof flag === "undefined" || flag === false ) ? flag = false : flag = true;
+
+    function isPrime(num) {
+        if ( num === 0 || num === 1 ) {
+            return false;
+        }
+        for ( var i = 2; i < num; i++ ) {
+            if ( num % i === 0 ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    if ( flag ) {
+        var arr = [2];
+        for ( var i = 3; i <= n; i+=2 ) {
+            if ( isPrime(i) ) {
+                arr.push(i);
+            }
+        }
+        return arr;
+    } else {
+        return isPrime(n);
+    }
+}

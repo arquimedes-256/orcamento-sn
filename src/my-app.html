@@ -22,6 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="my-icons.html">
 <link rel="import" href="sn-filters.html">
 
+<link rel="import" href="sn-mxm-data.html">
+
 <dom-module id="my-app">
 
   <template>
@@ -76,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer>
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
+          <a name="orcadorealizado-geral" href="/orcadorealizado-geral">View One</a>
           <!---
           <a name="view2" href="/view2">View Two</a>
           <a name="view3" href="/view3">View Three</a>
@@ -95,13 +97,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
-          <my-view1 name="view1"></my-view1>
+          <my-orcadorealizado-geral name="orcadorealizado-geral"></my-orcadorealizado-geral>
         </iron-pages>
 
       </app-header-layout>
 
     </app-drawer-layout>
-
+    <sn-mxm-data on-response-orcadorealizado="onResponseOrcadoRealizadoHandler"></sn-mxm-data>
   </template>
 
   <script>
@@ -125,13 +127,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
 
       _routePageChanged: function(page) {
-        this.page = page || 'view1';
+        this.page = page || 'orcadorealizado-geral';
       },
 
       _pageChanged: function(page) {
         // load page import on demand.
         this.importHref(
           this.resolveUrl('my-' + page + '.html'), null, null, true);
+      },
+      onResponseOrcadoRealizadoHandler:function(e,d) {
+        document.querySelector('* /deep/ my-orcadorealizado-geral').setData(d);
       }
 
     });
