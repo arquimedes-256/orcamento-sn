@@ -130,17 +130,61 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 					d.$real 	= (M[k].real);
 
 				})
-				this.calcEbitda();
 				this.calcEbitdaGerencial();
+				this.calcEbitdaTotal();
 				this.refresh();
 			},
 			refresh:function() {
 				this.data = _.clone(this.$.dataTable.data);
 			},
-			calcEbitdaGerencial:function(){
+			calcEbitdaTotal:function(){
+
+				var G = _.chain(this.data).groupBy('grupoMaster').mapObject(function(X){return _.first(X)}).value();
+				var F = this.toFixedOne.bind(this);
+				console.log(G);
+				this.data = _.map(this.data,function(d){
+					if(d.grupoMaster == "EBITDA")	{
+						
+						d.$orc 	= 
+							G["RECEITA LÍQUIDA"]		.$orc 		+  
+							G["PESSOAL OPERACIONAL"]	.$orc 		+
+							G["CUSTOS DE AFRET."]		.$orc 		+
+							G["CUSTO DE COMBUSTÍVEL"]	.$orc 		+
+							G["DESP TÉCN E MANUTENÇÃO"]	.$orc 		+
+							G["SEGUROS E P&I"]			.$orc 		+
+							G["PROVISÕES PARA DOCAGEM"]	.$orc 		+
+							G["DESP. OPERACIONAIS"]		.$orc 		+
+							G["DESP. ADMINISTRATIVAS"]	.$orc 		+
+							G["COMERCIAIS/COMISSÕES"]	.$orc 		+
+							G["DESP. EXTRAORDINÁRIAS"]	.$orc 		+
+							G["JURÍDICO CORPORATIVO"]	.$orc 		+
+							G["DESP. CORPORATIVA"]		.$orc
+						;
+
+						d.$real 	= 
+							G["RECEITA LÍQUIDA"]		.$real 		+  
+							G["PESSOAL OPERACIONAL"]	.$real 		+
+							G["CUSTOS DE AFRET."]		.$real 		+
+							G["CUSTO DE COMBUSTÍVEL"]	.$real 		+
+							G["DESP TÉCN E MANUTENÇÃO"]	.$real 		+
+							G["SEGUROS E P&I"]			.$real 		+
+							G["PROVISÕES PARA DOCAGEM"]	.$real 		+
+							G["DESP. OPERACIONAIS"]		.$real 		+
+							G["DESP. ADMINISTRATIVAS"]	.$real 		+
+							G["COMERCIAIS/COMISSÕES"]	.$real 		+
+							G["DESP. EXTRAORDINÁRIAS"]	.$real 		+
+							G["JURÍDICO CORPORATIVO"]	.$real 		+
+							G["DESP. CORPORATIVA"]		.$real
+						;
+
+						d.orc 	= F(d.$orc);
+						d.real 	= F(d.$real);
+					}
+					return d;
+				})
 
 			},
-			calcEbitda:function() {
+			calcEbitdaGerencial:function() {
 				/*
 				RECEITA_LIQUIDA
 				PESSOAL_OPERACIONAL
