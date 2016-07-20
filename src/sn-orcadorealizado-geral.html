@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 
-<dom-module id="my-orcadorealizado-geral">
+<dom-module id="sn-orcadorealizado-geral">
 
 	<template>
 
@@ -71,7 +71,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 						align="right" 
 						tooltip=""></paper-datatable-column>
 
-					</paper-datatable>
+	</paper-datatable>
 </paper-material>
 	</template>
 
@@ -79,7 +79,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 		Polymer({
 
-			is: 'my-orcadorealizado-geral',
+			is: 'sn-orcadorealizado-geral',
 			ready:function() {
 				this.data  =  [
 						{id:1,grupoMaster:"RECEITA BRUTA"            	,orc:0,real:0},
@@ -122,7 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 				})
 				_.each(D,function(d){
 					var k = d.grupoMaster;
-					console.log(M[k])
+					//console.log(M[k])
 					if(!M[k]) return console.log('error: '+k);
 					d.orc 	= F(M[k].orc);
 					d.real 	= F(M[k].real);
@@ -141,7 +141,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 				var G = _.chain(this.data).groupBy('grupoMaster').mapObject(function(X){return _.first(X)}).value();
 				var F = this.toFixedOne.bind(this);
-				console.log(G);
+				//console.log(G);
 				this.data = _.map(this.data,function(d){
 					if(d.grupoMaster == "EBITDA")	{
 						
@@ -200,7 +200,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 				var G = _.chain(this.data).groupBy('grupoMaster').mapObject(function(X){return _.first(X)}).value();
 				var F = this.toFixedOne.bind(this);
-				console.log(G);
+				//console.log(G);
 				this.data = _.map(this.data,function(d){
 					if(d.grupoMaster == "EBITDA GERENCIAL")	{
 						

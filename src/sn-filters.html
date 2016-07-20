@@ -19,9 +19,8 @@ Example:
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <dom-module id="sn-filter">
   <template>
-     <paper-dropdown-menu label="Filial" id="filial">
-          <paper-listbox class="dropdown-content">
-
+     <paper-dropdown-menu label="Filial" id="filial" on-iron-select="changeHandler">
+          <paper-listbox class="dropdown-content" selected="0">
            <paper-item>Total Empresa</paper-item>
            <paper-item>RGD</paper-item>
            <paper-item>PNG</paper-item>
@@ -37,8 +36,8 @@ Example:
           </paper-listbox>
         </paper-dropdown-menu>
         
-        <paper-dropdown-menu label="Mês Inicial" id="mesInicio">
-          <paper-listbox class="dropdown-content">
+        <paper-dropdown-menu label="Mês Inicial" id="mesInicio" on-iron-select="changeHandler">
+          <paper-listbox class="dropdown-content" selected="0">
            <paper-item>Todos</paper-item>
            <paper-item>Janeiro</paper-item>
            <paper-item>Fevereiro</paper-item>
@@ -55,8 +54,8 @@ Example:
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Mês Final" id="mesFim">
-          <paper-listbox class="dropdown-content">
+        <paper-dropdown-menu label="Mês Final" id="mesFim" on-iron-select="changeHandler">
+          <paper-listbox class="dropdown-content" selected="0" id="mesFimListBox">
            <paper-item>Todos</paper-item>
            <paper-item>Janeiro</paper-item>
            <paper-item>Fevereiro</paper-item>
@@ -81,7 +80,29 @@ Example:
   </style>
   <script>
     Polymer({
-      is: 'sn-filter'
+      is: 'sn-filter',
+      currentMesInicial:'Junho',
+      currentMesFinal:'Junho',
+      currentFilial:'Total Empresa',
+      ready:function () {
+        this.render();
+      },
+      render:function(){
+        
+      },
+      changeHandler:function(){
+        var mesList = 
+        ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        var obj = {
+          mesInicio : mesList.indexOf(this.$.mesInicio.selectedItem.innerText)  +1,
+          mesFim    : mesList.indexOf(this.$.mesFim.selectedItem.innerText)     +1,
+          filial    : this.$.filial.selectedItem.innerText
+        }
+        if(obj.mesInicio > obj.mesFim)
+          this.$.mesFimListBox.selected = obj.mesFim = obj.mesInicio ;
+
+        this.fire('sn-filter-change',obj)
+      }
     });
   </script>
 </dom-module>

@@ -1,0 +1,147 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="sn-tabela-mes.html">
+
+<dom-module id="sn-view-detalhamento">
+
+  <template>
+
+    <style>
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      .card {
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        margin: 24px;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #757575;
+      }
+      .circle {
+        display: inline-block;
+        height: 64px;
+        width: 64px;
+        border-radius: 50%;
+        background: #ddd;
+        line-height: 64px;
+        font-size: 30px;
+        color: #555;
+        text-align: center;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 16px 0;
+        color: #212121;
+      }
+      paper-material {
+        background:#FFF;
+        padding:8px;
+      }
+    </style>
+
+  <paper-material>
+   
+      <h1>RECEITA</h1>
+
+        <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="changeHandler">
+          <paper-listbox class="dropdown-content" selected="0" id="clienteListBox">
+           <paper-item>Cliente(1)</paper-item>
+           <paper-item>Cliente(2)</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Moeda" id="moeda" on-iron-select="changeHandler">
+          <paper-listbox class="dropdown-content" selected="0" id="moedaListBox">
+           <paper-item>Real</paper-item>
+           <paper-item>Dólar</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_refreshFaixasHandler">
+          <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox">
+          <paper-item>Todos</paper-item>
+          <template is="dom-repeat" items="{{faixaList}}">
+             <paper-item>{{ item }}</paper-item>
+          </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Tipo de Tarifa" id="tipoTarifa" on-iron-select="changeHandler">
+          <paper-listbox class="dropdown-content" selected="0" id="tipoTarifaListBox">
+           <paper-item>Por rebocador</paper-item>
+           <paper-item>Lumpsum</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+<div style="width:300px">
+        <paper-input label="Contrato" 	value="*" style="width:50%"></paper-input>
+        <paper-input label="Tarifa U$" 	value="3.25" style="width:50%"></paper-input>
+</div>
+
+       <sn-tabela-mes db="receita-qtd-navios" 
+       		k1="{{selectedCliente}}"
+       		dimensions="{{ selectedFaixas }}" 
+       		header="Quantidade de Navios"></sn-tabela-mes>
+
+       <sn-tabela-mes db="receita-qtd-rebocadores" 
+       		dimensions="{{ selectedFaixas }}" 
+       		header="Quantidade de Rebocadores"></sn-tabela-mes>
+
+       <sn-tabela-mes db="receita-tarifa" 
+       		dimensions="{{ selectedFaixas }}" 
+       		header="Tarifa"></sn-tabela-mes>
+
+       <sn-tabela-mes db="receita-total" 
+       		dimensions="{{ selectedFaixas }}" 
+       		header="Total"></sn-tabela-mes>
+
+  </template>
+</paper-material>
+  <script>
+
+    Polymer({
+
+      is: 'sn-view-detalhamento',
+      properties:{
+
+        faixaList:{
+
+          value:[
+            '0-10','10-20','20-30'
+          ]
+        },
+
+        selectedFaixas : {type:Array},
+        selectedCliente: {value:"Cliente1"}
+
+      },
+      ready:function() {
+        this._refreshFaixasHandler();
+      },
+      _refreshFaixasHandler:function(e,d){
+        if(d && d.item && d.item.innerText) {
+        	if(d.item.innerText == "Todos") {
+        		this.selectedFaixas = this.faixaList;
+         	}
+        	else {
+        		this.selectedFaixas = [(d && d.item && d.item.innerText)];
+        	}
+        }
+        else
+           this.selectedFaixas =_.first(this.faixaList)
+      },
+    });
+
+  </script>
+
+</dom-module>

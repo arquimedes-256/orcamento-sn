@@ -1,0 +1,128 @@
+
+<dom-module id="sn-tabela-mes">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<h4>{{header}}</h4>
+		 <paper-datatable data="{{data}}" id="dataTable" on-change="_changeHandler">
+
+          <paper-datatable-column 
+            header="#" 
+            property="dimension" 
+            align="left" 
+            tooltip=""></paper-datatable-column>
+
+          <paper-datatable-column editable dialog type="Number"
+            header="Jan" 
+            property="1" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Fev" 
+            property="2" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Mar" 
+            property="3" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Abr" 
+            property="4" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Mai" 
+            property="5" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Jun" 
+            property="6" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Jul" 
+            property="7" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Ago" 
+            property="8" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Set" 
+            property="9" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Out" 
+            property="10" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Nov" 
+            property="11" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+          <paper-datatable-column editable dialog type="Number"
+            header="Dez" 
+            property="12" 
+            align="right" 
+            tooltip=""></paper-datatable-column>
+        </paper-datatable>  
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-tabela-mes',
+			properties:{
+				header:{type:"String",value:"Header"},
+				data:{
+					value:[]
+				},
+				dimensions:{
+					observer:'_buildDimension'
+				},
+				db:{
+					observers:'_buildDB',type:String
+				},
+				k1:{type:String},k2:{type:String},k3:{type:String}
+			},
+			_buildDimension:function(){
+				
+				var D 	= [];
+				_.each(this.dimensions,function(d){
+					D.push({
+							dimension:{d:d,k1:this.k1, k2:this.k2, k3:this.k3},
+							1	:0,
+							2	:0,
+							3	:0,
+							4	:0,
+							5	:0,
+							6	:0,
+							7	:0,
+							8	:0,
+							9	:0,
+							10	:0,
+							11	:0,
+							12	:0
+						})
+				}.bind(this))
+				this.data = D;
+			},
+			_buildDB:function(){
+				
+					this.dbRef = new Firebase(FB_URL+"/"+this.db);
+					this.dbRef.update(_.groupBy(this.data,'dimension'));
+			},
+			_changeHandler:function() {
+				this._buildDB();
+			}
+		});
+	</script>
+</dom-module>
