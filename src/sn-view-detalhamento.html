@@ -88,20 +88,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-input label="Tarifa U$" 	value="3.25" style="width:50%"></paper-input>
 </div>
 
-       <sn-tabela-mes db="receita-qtd-navios" 
-       		k1="{{selectedCliente}}"
+       <sn-tabela-mes 
+       		id="tableA"
+       		db="receita-qtd-navios" 
+       		on-tabela-mes-build="_tabelaMesBuildHandler"
+       		path="{{selectedCliente}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Quantidade de Navios"></sn-tabela-mes>
 
-       <sn-tabela-mes db="receita-qtd-rebocadores" 
+       <sn-tabela-mes 
+       		id="tableB"
+       		db="receita-qtd-rebocadores" 
+       		on-tabela-mes-build="_tabelaMesBuildHandler"
+       		path="{{selectedCliente}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Quantidade de Rebocadores"></sn-tabela-mes>
 
-       <sn-tabela-mes db="receita-tarifa" 
+       <sn-tabela-mes 
+       		id="tableC"
+       		db="receita-tarifa" 
+       		on-tabela-mes-build="_tabelaMesBuildHandler"
+       		path="{{selectedCliente}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Tarifa"></sn-tabela-mes>
 
-       <sn-tabela-mes db="receita-total" 
+       <sn-tabela-mes 
+       		id="tabelaTotal"
+       		db="receita-total" 
+       		path="{{selectedCliente}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Total"></sn-tabela-mes>
 
@@ -122,7 +136,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         selectedFaixas : {type:Array},
-        selectedCliente: {value:"Cliente1"}
+        selectedCliente: {value:"Cliente1"},
+
 
       },
       ready:function() {
@@ -140,6 +155,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         else
            this.selectedFaixas =_.first(this.faixaList)
       },
+      _tabelaMesBuildHandler:function(){
+      		this.async(function(){
+      			var A = this.$.tableA.getStructuredData();
+		      	var B = this.$.tableB.getStructuredData();
+		      	var C = this.$.tableC.getStructuredData();
+
+		      	this.$.tabelaTotal.productABC(A,B,C);
+
+      		},500)
+      }
     });
 
   </script>

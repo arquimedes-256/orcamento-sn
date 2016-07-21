@@ -6,7 +6,7 @@
 				display: block;
 			}
 		</style>
-		<h4>{{header}}</h4>
+		<h4 style="margin: 0px;margin-top: 10px;">{{header}}</h4>
 		 <paper-datatable data="{{data}}" id="dataTable" on-change="_changeHandler">
 
           <paper-datatable-column 
@@ -81,7 +81,7 @@
 		Polymer({
 			is: 'sn-tabela-mes',
 			properties:{
-				header:{type:"String",value:"Header"},
+				header:{type:String,value:"Header"},
 				data:{
 					value:[]
 				},
@@ -91,14 +91,52 @@
 				db:{
 					observers:'_buildDB',type:String
 				},
-				k1:{type:String},k2:{type:String},k3:{type:String}
+				path:{type:String},
 			},
 			_buildDimension:function(){
-				
+				console.log('_buildDimension',this.data);
+
+				if(_.isEmpty(this.data))
+					new Firebase(FB_URL+"/"+this.path+"/"+this.db)
+						.on('value',function(dataSnap){
+							var V = dataSnap.val();
+							if(V) {
+								this.data = this._getListedData(V);
+							}
+							else
+							{
+								this._setSampleData();
+							}
+
+						}.bind(this));
+					
+				this.filterByDimensionsList();
+
+			},
+			_buildDB:function(){
+				console.log('_buildDB');
+
+				if(!this.path){console.warn('path is null');return;}
+
+				var Obj = this._getStructuredData(this.data);
+
+				new Firebase(FB_URL+"/"+this.path+"/"+this.db).update(Obj);
+				this.fire('tabela-mes-build')
+			},
+			_changeHandler:function() {
+				this._buildDB();
+			},
+			_getStructuredData:function(D) {
+				return _.mapObject(_.groupBy(D,'dimension'),function(x){return _.first(x)});
+			},
+			_getListedData:function(D){
+				return _.values(D);
+			},
+			_setSampleData:function(){
 				var D 	= [];
 				_.each(this.dimensions,function(d){
 					D.push({
-							dimension:{d:d,k1:this.k1, k2:this.k2, k3:this.k3},
+							dimension:d,
 							1	:0,
 							2	:0,
 							3	:0,
@@ -114,14 +152,49 @@
 						})
 				}.bind(this))
 				this.data = D;
-			},
-			_buildDB:function(){
-				
-					this.dbRef = new Firebase(FB_URL+"/"+this.db);
-					this.dbRef.update(_.groupBy(this.data,'dimension'));
-			},
-			_changeHandler:function() {
 				this._buildDB();
+			},
+			/* public */
+			getStructuredData:function(){
+				return this._getStructuredData(this.data);
+			},
+			productABC:function(A,B,C){
+				var Y = {};
+		      	_.each(A,function(vA,kA){
+		      		_.each(B,function(vB,kB){
+		      			_.each(C,function(vC,kC){
+		      				if(kA == kB && kB == kC) {
+		      					Y[kA] = {
+		      						1 : 	vA['1'] 	*vB['1'] 	*vC['1'] ,
+		      						2 : 	vA['2'] 	*vB['2'] 	*vC['2'] ,
+		      						3 : 	vA['3'] 	*vB['3'] 	*vC['3'] ,
+		      						4 : 	vA['4'] 	*vB['4'] 	*vC['4'] ,
+		      						5 : 	vA['5'] 	*vB['5'] 	*vC['5'] ,
+		      						6 : 	vA['6'] 	*vB['6'] 	*vC['6'] ,
+		      						7 : 	vA['7'] 	*vB['7'] 	*vC['7'] ,
+		      						8 : 	vA['8'] 	*vB['8'] 	*vC['8'] ,
+		      						9 : 	vA['9'] 	*vB['9'] 	*vC['9'] ,
+		      						10: 	vA['10'] 	*vB['10'] 	*vC['10'],
+		      						11: 	vA['11'] 	*vB['11'] 	*vC['11'],
+		      						12: 	vA['12'] 	*vB['12'] 	*vC['12'], 
+		      						dimension: vA.dimension
+		      					}
+		      				}
+		      			})
+		      		})
+		      	})
+		      	this.data = this._getListedData(Y);
+		      	this._buildDB();
+			},
+			filterByDimensionsList:function() {
+				var D = this.dimensions;
+				_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
+					tr.style.display = "table-row";
+					var tdText = tr.querySelector('td').innerText.trim()
+					console.log(tdText)
+					if(!_.contains(D,tdText))
+						tr.style.display = "none";
+				});
 			}
 		});
 	</script>
