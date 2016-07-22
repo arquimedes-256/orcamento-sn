@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="sn-tabela-mes.html">
 
 <dom-module id="sn-view-detalhamento">
+  <style is="custom-style" include="iron-flex"></style>
 
   <template>
 
@@ -53,23 +54,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <paper-material>
    
       <h1>RECEITA</h1>
+		    <sn-data-top id="dataTOP" 
+          on-response-faixacontrato="_faixaContratoHandler"
+          on-response-infocontrato="_infoContratoHandler">
+        </sn-data-top>
+       
 
-        <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="changeHandler">
+<div class="layout horizontal">
+        <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_changeHandlerCliente">
           <paper-listbox class="dropdown-content" selected="0" id="clienteListBox">
-           <paper-item>Cliente(1)</paper-item>
-           <paper-item>Cliente(2)</paper-item>
+          
+          <template is="dom-repeat" items="{{clientList}}">
+             <paper-item>{{ item.nome }}</paper-item>
+          </template>
           </paper-listbox>
-        </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Moeda" id="moeda" on-iron-select="changeHandler">
-          <paper-listbox class="dropdown-content" selected="0" id="moedaListBox">
-           <paper-item>Real</paper-item>
-           <paper-item>Dólar</paper-item>
-          </paper-listbox>
+        
         </paper-dropdown-menu>
-
-        <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_refreshFaixasHandler">
-          <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox">
+          <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_refreshFaixasHandler">
+          <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox" style="width: 92px;">
           <paper-item>Todos</paper-item>
           <template is="dom-repeat" items="{{faixaList}}">
              <paper-item>{{ item }}</paper-item>
@@ -77,22 +80,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </paper-listbox>
         </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Tipo de Tarifa" id="tipoTarifa" on-iron-select="changeHandler">
-          <paper-listbox class="dropdown-content" selected="0" id="tipoTarifaListBox">
-           <paper-item>Por rebocador</paper-item>
-           <paper-item>Lumpsum</paper-item>
+       <paper-dropdown-menu label="Terminal" id="terminal" on-iron-select="_changeHandlerTerminal">
+          <paper-listbox class="dropdown-content" selected="0" id="terminalList" style="width: 92px;">
+          <template is="dom-repeat" items="{{terminalList}}">
+             <paper-item style="width: 172px;">{{ item }}</paper-item>
+          </template>
           </paper-listbox>
         </paper-dropdown-menu>
-<div style="width:300px">
-        <paper-input label="Contrato" 	value="*" style="width:50%"></paper-input>
-        <paper-input label="Tarifa U$" 	value="3.25" style="width:50%"></paper-input>
+        <style>
+        #terminal /deep/ .dropdown-content {
+            width: 219px;
+        }
+        #terminal /deep/ iron-dropdown {
+        }
+        </style>
+        <paper-input 
+            label="Contrato"         
+            id="inputContrato" 
+            value="*" 
+            disabled></paper-input>
+        <paper-input 
+            label="Tipo de Tarifa"   
+            id="inputTipoTarifa" 
+            value="*" 
+            disabled></paper-input>
+        <paper-input 
+            label="Moeda"            
+            id="inputMoeda" 
+            value="*" 
+            disabled></paper-input>
+
+        <paper-input label="Tarifa U$"  value="3.25"  disabled></paper-input>
+         
 </div>
+       
+
+       
+
+
 
        <sn-tabela-mes 
        		id="tableA"
        		db="receita-qtd-navios" 
        		on-tabela-mes-build="_tabelaMesBuildHandler"
-       		path="{{selectedCliente}}"
+       		path="{{path}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Quantidade de Navios"></sn-tabela-mes>
 
@@ -100,7 +131,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        		id="tableB"
        		db="receita-qtd-rebocadores" 
        		on-tabela-mes-build="_tabelaMesBuildHandler"
-       		path="{{selectedCliente}}"
+       		path="{{path}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Quantidade de Rebocadores"></sn-tabela-mes>
 
@@ -108,14 +139,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        		id="tableC"
        		db="receita-tarifa" 
        		on-tabela-mes-build="_tabelaMesBuildHandler"
-       		path="{{selectedCliente}}"
+       		path="{{path}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Tarifa"></sn-tabela-mes>
 
        <sn-tabela-mes 
        		id="tabelaTotal"
        		db="receita-total" 
-       		path="{{selectedCliente}}"
+       		path="{{path}}"
        		dimensions="{{ selectedFaixas }}" 
        		header="Total"></sn-tabela-mes>
 
@@ -129,16 +160,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties:{
 
         faixaList:{
-
-          value:[
-            '0-10','10-20','20-30'
-          ]
+        	type:Array
+          
         },
 
         selectedFaixas : {type:Array},
         selectedCliente: {value:"Cliente1"},
+        clientList : {value:[
+
+        	{nome:"Saveiros" ,num_contrato:"RJ1000153"},
+        	{nome:"Camorim"  ,num_contrato:"RJ1000158"},
+          {nome:"Wallenius",num_contrato:"RJ1000590"}
+        ]},
 
 
+      },
+      observers:['_buildPath(selectedCliente,selectedTerminal)'],
+      _buildPath:function(){
+        if( this.selectedCliente && this.selectedTerminal)
+          this.path = this.selectedCliente + '/' + this.selectedTerminal
       },
       ready:function() {
         this._refreshFaixasHandler();
@@ -164,6 +204,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		      	this.$.tabelaTotal.productABC(A,B,C);
 
       		},500)
+      },
+      _changeHandlerCliente:function(e,d){
+      	this.selectedCliente = d.item.textContent;
+
+      	var num_contrato = _(this.clientList).groupBy('nome')[this.selectedCliente][0].num_contrato;
+        this.$.inputContrato.value = num_contrato;
+      	this.$.dataTOP.getFaixasContrato(num_contrato);
+        this.$.dataTOP.getInfoContrato(num_contrato);
+        //volta para faixa todos
+        this.$.faixaDWTListBox.selected  = 0;
+      },
+      _changeHandlerTerminal:function(e,d) {
+        this.selectedTerminal = d.item.textContent;
+        //volta para faixa todos
+        this.$.faixaDWTListBox.selected  = 0;
+      },
+      _faixaContratoHandler:function(e,d,s){
+      	this.selectedFaixas     = this.faixaList = this.$.dataTOP.faixaList;
+        this.terminalList       = this.$.dataTOP.terminalList;
+      },
+      _infoContratoHandler:function(e,d){
+        console.log(d);
+        this.$.inputMoeda.value       = d.DESCRICAO_MOEDA;
+        this.$.inputTipoTarifa.value  = d.CD_TIPO_CONTRATO
       }
     });
 

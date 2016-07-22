@@ -91,12 +91,12 @@
 				db:{
 					observers:'_buildDB',type:String
 				},
-				path:{type:String},
+				path:{type:String,observer:'_buildDimension'},
+				virtual:{type:Boolean}
 			},
 			_buildDimension:function(){
 				console.log('_buildDimension',this.data);
 
-				if(_.isEmpty(this.data))
 					new Firebase(FB_URL+"/"+this.path+"/"+this.db)
 						.on('value',function(dataSnap){
 							var V = dataSnap.val();
@@ -110,27 +110,33 @@
 
 						}.bind(this));
 					
-				this.filterByDimensionsList();
+				this.async(function(){
+					this.filterByDimensionsList();
+				});
 
 			},
 			_buildDB:function(){
 				console.log('_buildDB');
-
 				if(!this.path){console.warn('path is null');return;}
 
 				var Obj = this._getStructuredData(this.data);
 
-				new Firebase(FB_URL+"/"+this.path+"/"+this.db).update(Obj);
-				this.fire('tabela-mes-build')
+				new Firebase(FB_URL)
+					.child(this.path)
+					.child(this.db)
+					.update(Obj);
 			},
 			_changeHandler:function() {
+				this.fire('tabela-mes-build')
 				this._buildDB();
 			},
 			_getStructuredData:function(D) {
 				return _.mapObject(_.groupBy(D,'dimension'),function(x){return _.first(x)});
 			},
 			_getListedData:function(D){
-				return _.values(D);
+				return _.sortBy(_.values(D),function(d){ 
+
+					return parseInt(d.dimension.split('-')[0]) });
 			},
 			_setSampleData:function(){
 				var D 	= [];
@@ -187,14 +193,14 @@
 		      	this._buildDB();
 			},
 			filterByDimensionsList:function() {
-				var D = this.dimensions;
-				_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
-					tr.style.display = "table-row";
-					var tdText = tr.querySelector('td').innerText.trim()
-					console.log(tdText)
-					if(!_.contains(D,tdText))
-						tr.style.display = "none";
-				});
+
+					var D = this.dimensions;
+					_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
+						tr.style.display = "table-row";
+						var tdText = tr.querySelector('td').innerText.trim()
+						if(!_.contains(D,tdText))
+							tr.style.display = "none";
+					});
 			}
 		});
 	</script>

@@ -1,0 +1,55 @@
+<!--
+A comment describing this element
+
+Example:
+
+    <my-elem></my-elem>
+
+Example:
+
+    <my-elem>
+      <h2>Hello my-elem</h2>
+    </my-elem>
+
+@demo demo/index.html
+-->
+
+<dom-module id="sn-data-top">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<iron-ajax
+		    auto
+		    on-response="faixacontrato_responseHandler" id="ajaxFaixas" handle-as="json"></iron-ajax>
+		<iron-ajax
+		    auto
+		    on-response="infocontrato_responseHandler" id="ajaxInfo" handle-as="json"></iron-ajax>
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-data-top',
+			faixacontrato_responseHandler:function(e,d,s){
+
+				this.terminalList = _.uniq(_.map(e.detail.response,function(x){ return x.DESCRICAO_TERMINAL}));
+				this.faixaList = _.uniq(_.map(e.detail.response,function(c){ return c.DWT_INICIAL + '-' + c.DWT_FINAL }));
+				
+				this.fire('response-faixacontrato')
+			},
+			infocontrato_responseHandler:function(e,d,s){
+				var R = _.first(e.detail.response);
+				this.fire('response-infocontrato',R)
+			},
+			getFaixasContrato:function(num_contrato) {
+				this.$.ajaxFaixas.url = 
+				"http://www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_faixacontrato&num_contrato="+num_contrato;
+			},
+			getInfoContrato:function(num_contrato){
+				this.$.ajaxInfo.url = 
+				"http://www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
+			}
+		});
+	</script>
+</dom-module>
