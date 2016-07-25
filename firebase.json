@@ -1,0 +1,9 @@
+{
+  "firebase": "sn-orcamento",
+  "public": ".",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}

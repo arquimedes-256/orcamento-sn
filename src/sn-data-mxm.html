@@ -23,7 +23,7 @@ Example:
 		</style>
 		<iron-ajax
 		    auto
-		    url="http://sig.sulnorte.com.br/sn/bus?mes=6&ano=2016&finder=orcadorealizado&filial=Total%20Empresa&isKeepContaContabil=true"
+		    url="//sig.sulnorte.com.br/sn/bus?mes=6&ano=2016&finder=orcadorealizado&filial=Total%20Empresa&isKeepContaContabil=true"
 		    on-response="orcadorealizado_responseHandler" id="ajax" handle-as="json"></iron-ajax>
 	</template>
 	<script>
@@ -34,7 +34,7 @@ Example:
 			},
 			refresh:function(obj) {
 				this.$.ajax.url = 
-				"http://sig.sulnorte.com.br/sn/bus?mes="+obj.mesInicio+"&mesFinal="+obj.mesFim
+				"//sig.sulnorte.com.br/sn/bus?mes="+obj.mesInicio+"&mesFinal="+obj.mesFim
 				+"&ano="+2016+"&finder=orcadorealizado&filial="+obj.filial
 				+"&isKeepContaContabil=true";
 			}

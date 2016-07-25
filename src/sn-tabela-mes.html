@@ -7,7 +7,7 @@
 			}
 		</style>
 		<h4 style="margin: 0px;margin-top: 10px;">{{header}}</h4>
-		 <paper-datatable data="{{data}}" id="dataTable" on-change="_changeHandler">
+		 <paper-datatable data="{{data}}" id="dataTable">
 
           <paper-datatable-column 
             header="#" 
@@ -15,65 +15,65 @@
             align="left" 
             tooltip=""></paper-datatable-column>
 
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Jan" 
             property="1" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Fev" 
             property="2" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Mar" 
             property="3" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Abr" 
             property="4" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Mai" 
             property="5" 
             align="right" 
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Jun" 
             property="6" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Jul" 
             property="7" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Ago" 
             property="8" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Set" 
             property="9" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Out" 
             property="10" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Nov" 
             property="11" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable dialog type="Number"
+          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
             header="Dez" 
             property="12" 
-            align="right" 
+            align="right" default="0"
             tooltip=""></paper-datatable-column>
         </paper-datatable>  
 	</template>
@@ -85,19 +85,28 @@
 				data:{
 					value:[]
 				},
-				dimensions:{
-					observer:'_buildDimension'
-				},
 				db:{
 					observers:'_buildDB',type:String
 				},
-				path:{type:String,observer:'_buildDimension'},
-				virtual:{type:Boolean}
+				editable:{type:Boolean,value:false},
+				path:{type:String,observer:'_pathChanged'},
+				virtual:{type:Boolean},
+				dimensions:{type:Array,observer:'filterByDimensionsList'}
+			},
+			ready:function() {
+				this.addEventListener('keydown',this._changeHandler);
+			},
+			_changeHandler:function() {
+				this._buildDB();
+			},
+			_pathChanged:function(){
+				this._path = this.path.replace(/\s+/g,'-');
+				this._buildDimension();
 			},
 			_buildDimension:function(){
 				console.log('_buildDimension',this.data);
 
-					new Firebase(FB_URL+"/"+this.path+"/"+this.db)
+					new Firebase(FB_URL+"/"+this._path+"/"+this.db)
 						.on('value',function(dataSnap){
 							var V = dataSnap.val();
 							if(V) {
@@ -108,6 +117,8 @@
 								this._setSampleData();
 							}
 
+							this.fire('tabela-mes-build')
+
 						}.bind(this));
 					
 				this.async(function(){
@@ -117,21 +128,35 @@
 			},
 			_buildDB:function(){
 				console.log('_buildDB');
-				if(!this.path){console.warn('path is null');return;}
+				if(!this._path){console.warn('path is null');return;}
 
 				var Obj = this._getStructuredData(this.data);
 
-				new Firebase(FB_URL)
-					.child(this.path)
-					.child(this.db)
+				this._save(Obj);				
+			},
+			_save:function(Obj) {
+				new Firebase(FB_URL+"/"+this._path+"/"+this.db)
 					.update(Obj);
 			},
-			_changeHandler:function() {
-				this.fire('tabela-mes-build')
-				this._buildDB();
-			},
 			_getStructuredData:function(D) {
-				return _.mapObject(_.groupBy(D,'dimension'),function(x){return _.first(x)});
+				return _.mapObject(_.groupBy(D,'dimension'),function(x){
+					f = _.first(x);
+					
+					f['1']  = f['1'] |0;	
+					f['2']  = f['2'] |0;
+					f['3']  = f['3'] |0;
+					f['4']  = f['4'] |0;
+					f['5']  = f['5'] |0;
+					f['6']  = f['6'] |0;
+					f['7']  = f['7'] |0;
+					f['8']  = f['8'] |0;
+					f['9']  = f['9'] |0;
+					f['10'] = f['10']|0;
+					f['11'] = f['11']|0;
+					f['12'] = f['12']|0;
+
+					return f;
+				});
 			},
 			_getListedData:function(D){
 				return _.sortBy(_.values(D),function(d){ 
@@ -201,6 +226,27 @@
 						if(!_.contains(D,tdText))
 							tr.style.display = "none";
 					});
+			},
+			fill:function(table,usingMensure){
+
+				var M = _.mapObject(table,function(r,k){ 
+					return {
+      						1 : 	r[usingMensure],
+      						2 : 	r[usingMensure],
+      						3 : 	r[usingMensure],
+      						4 : 	r[usingMensure],
+      						5 : 	r[usingMensure],
+      						6 : 	r[usingMensure],
+      						7 : 	r[usingMensure],
+      						8 : 	r[usingMensure],
+      						9 : 	r[usingMensure],
+      						10: 	r[usingMensure],
+      						11: 	r[usingMensure],
+      						12: 	r[usingMensure],
+      						dimension: k
+      					}
+				});
+				this._save(M);
 			}
 		});
 	</script>

@@ -37,6 +37,23 @@ Example:
 				this.faixaList = _.uniq(_.map(e.detail.response,function(c){ return c.DWT_INICIAL + '-' + c.DWT_FINAL }));
 				
 				this.fire('response-faixacontrato')
+
+				this._buildTerminalFaixasTarifasIndex(e.detail.response);
+			},
+			_buildTerminalFaixasTarifasIndex:function(response){
+				var Y = {};
+				var X = _.chain(response)
+					.groupBy("DESCRICAO_TERMINAL").value();
+				_.each(X,function(vX,terminalKey){
+					if(!Y[terminalKey]) Y[terminalKey] = {};
+					_.each(vX,function(v){
+						v.VLR_LINER = parseFloat(v.VLR_LINER.replace(',','.'));
+						v.VLR_TRAMP = parseFloat(v.VLR_TRAMP.replace(',','.'));
+
+						Y[terminalKey][v.DWT_INICIAL+'-'+v.DWT_FINAL] = v;
+					})
+				})
+				this.terminalFaixasTarifa = Y;
 			},
 			infocontrato_responseHandler:function(e,d,s){
 				var R = _.first(e.detail.response);
@@ -44,11 +61,11 @@ Example:
 			},
 			getFaixasContrato:function(num_contrato) {
 				this.$.ajaxFaixas.url = 
-				"http://www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_faixacontrato&num_contrato="+num_contrato;
+				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_faixacontrato&num_contrato="+num_contrato;
 			},
 			getInfoContrato:function(num_contrato){
 				this.$.ajaxInfo.url = 
-				"http://www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
+				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
 			}
 		});
 	</script>
