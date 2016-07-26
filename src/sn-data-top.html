@@ -32,13 +32,29 @@ Example:
 		Polymer({
 			is: 'sn-data-top',
 			faixacontrato_responseHandler:function(e,d,s){
+				var V = e.detail.response;
 
-				this.terminalList = _.uniq(_.map(e.detail.response,function(x){ return x.DESCRICAO_TERMINAL}));
-				this.faixaList = _.uniq(_.map(e.detail.response,function(c){ return c.DWT_INICIAL + '-' + c.DWT_FINAL }));
+				//remover faixas desnecessarias
+				_.each(V,function($,k){
+
+					if(V[k+1]
+						&& V[k]['DESCRICAO_TERMINAL'] 	== V[k+1]['DESCRICAO_TERMINAL']
+						&& V[k]['VLR_LINER'] 			== V[k+1]['VLR_LINER']
+						&& V[k]['VLR_TRAMP'] 			== V[k+1]['VLR_TRAMP'] )
+					{
+						V[k+1]['DWT_INICIAL'] = V[k]['DWT_INICIAL']
+						V[k] = null;
+					}
+				});
+				V = _.difference(V,[null]);
+
+				this.terminalList 		= _.uniq(_.map(V,function(x){ return x.DESCRICAO_TERMINAL}));
+				this.faixaList 			= _.uniq(_.map(V,function(c){ return c.DWT_INICIAL + '-' + c.DWT_FINAL }));
 				
-				this.fire('response-faixacontrato')
 
-				this._buildTerminalFaixasTarifasIndex(e.detail.response);
+				this._buildTerminalFaixasTarifasIndex(V);
+
+				this.fire('response-faixacontrato')
 			},
 			_buildTerminalFaixasTarifasIndex:function(response){
 				var Y = {};
@@ -66,6 +82,9 @@ Example:
 			getInfoContrato:function(num_contrato){
 				this.$.ajaxInfo.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
+			},
+			getFaixasByTerminal:function(terminal) {
+				return _.keys(this.terminalFaixasTarifa[terminal]);
 			}
 		});
 	</script>

@@ -55,6 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		</style>
 
 	<paper-material>
+	 <sn-filter on-sn-filter-change="onFilterChangeHandler" id="filters"></sn-filter>
 	 <paper-datatable data="{{data}}" id="dataTable">
 					<paper-datatable-column 
 							header="Conta Gerencial" 
@@ -73,6 +74,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 	</paper-datatable>
 </paper-material>
+
+    <sn-mxm-data id="mxmData" on-response-orcadorealizado="onResponseOrcadoRealizadoHandler"></sn-mxm-data>
 	</template>
 
 	<script>
@@ -238,7 +241,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 					return d;
 				})
 
-			}
+			},
+
+		      onResponseOrcadoRealizadoHandler:function(e,d) {
+		        document.querySelector('* /deep/ sn-orcadorealizado-geral').setData(d);
+		      },
+		      onFilterChangeHandler:function(e,d,s) {
+		        this.$.mxmData.refresh(d);
+		      }
+
 		});
 
 

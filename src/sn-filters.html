@@ -19,63 +19,69 @@ Example:
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <dom-module id="sn-filter">
   <template>
-     <paper-dropdown-menu label="Filial" id="filial" on-iron-select="changeHandler">
-          <paper-listbox class="dropdown-content" selected="0">
-           <paper-item>Total Empresa</paper-item>
-           <paper-item>RGD</paper-item>
-           <paper-item>PNG</paper-item>
-           <paper-item>STR</paper-item>
-           <paper-item>SEP</paper-item>
-           <paper-item>RJ1</paper-item>
-           <paper-item>VIT</paper-item>
-           <paper-item>SDR</paper-item>
-           <paper-item>TMD</paper-item>
-           <paper-item>MAC</paper-item>
-           <paper-item>MTZ</paper-item>
-           
-          </paper-listbox>
-        </paper-dropdown-menu>
-        
-        <paper-dropdown-menu label="Mês Inicial" id="mesInicio" on-iron-select="changeHandler">
-          <paper-listbox class="dropdown-content" selected="0">
-           <paper-item>Todos</paper-item>
-           <paper-item>Janeiro</paper-item>
-           <paper-item>Fevereiro</paper-item>
-           <paper-item>Março</paper-item>
-           <paper-item>Abril</paper-item>
-           <paper-item>Maio</paper-item>
-           <paper-item>Junho</paper-item>
-           <paper-item>Julho</paper-item>
-           <paper-item>Agosto</paper-item>
-           <paper-item>Setembro</paper-item>
-           <paper-item>Outubro</paper-item>
-           <paper-item>Novembro</paper-item>
-           <paper-item>Dezembro</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
 
-        <paper-dropdown-menu label="Mês Final" id="mesFim" on-iron-select="changeHandler">
-          <paper-listbox class="dropdown-content" selected="0" id="mesFimListBox">
-           <paper-item>Todos</paper-item>
-           <paper-item>Janeiro</paper-item>
-           <paper-item>Fevereiro</paper-item>
-           <paper-item>Março</paper-item>
-           <paper-item>Abril</paper-item>
-           <paper-item>Maio</paper-item>
-           <paper-item>Junho</paper-item>
-           <paper-item>Julho</paper-item>
-           <paper-item>Agosto</paper-item>
-           <paper-item>Setembro</paper-item>
-           <paper-item>Outubro</paper-item>
-           <paper-item>Novembro</paper-item>
-           <paper-item>Dezembro</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
+    <div class="layout horizontal">
+      <h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">Visão Geral</h5>
+       <paper-dropdown-menu label="Filial" id="filial" on-iron-select="changeHandler">
+            <paper-listbox class="dropdown-content" selected="0">
+             <paper-item>Total Empresa</paper-item>
+             <paper-item>RGD</paper-item>
+             <paper-item>PNG</paper-item>
+             <paper-item>STR</paper-item>
+             <paper-item>SEP</paper-item>
+             <paper-item>RJ1</paper-item>
+             <paper-item>VIT</paper-item>
+             <paper-item>SDR</paper-item>
+             <paper-item>TMD</paper-item>
+             <paper-item>MAC</paper-item>
+             <paper-item>MTZ</paper-item>
+             
+            </paper-listbox>
+          </paper-dropdown-menu>
+          
+          <paper-dropdown-menu label="Mês Inicial" id="mesInicio" on-iron-select="changeHandler">
+            <paper-listbox class="dropdown-content" selected="0">
+             <paper-item>Todos</paper-item>
+             <paper-item>Janeiro</paper-item>
+             <paper-item>Fevereiro</paper-item>
+             <paper-item>Março</paper-item>
+             <paper-item>Abril</paper-item>
+             <paper-item>Maio</paper-item>
+             <paper-item>Junho</paper-item>
+             <paper-item>Julho</paper-item>
+             <paper-item>Agosto</paper-item>
+             <paper-item>Setembro</paper-item>
+             <paper-item>Outubro</paper-item>
+             <paper-item>Novembro</paper-item>
+             <paper-item>Dezembro</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+
+          <paper-dropdown-menu label="Mês Final" id="mesFim" on-iron-select="changeHandler">
+            <paper-listbox class="dropdown-content" selected="0" id="mesFimListBox">
+             <paper-item>Todos</paper-item>
+             <paper-item>Janeiro</paper-item>
+             <paper-item>Fevereiro</paper-item>
+             <paper-item>Março</paper-item>
+             <paper-item>Abril</paper-item>
+             <paper-item>Maio</paper-item>
+             <paper-item>Junho</paper-item>
+             <paper-item>Julho</paper-item>
+             <paper-item>Agosto</paper-item>
+             <paper-item>Setembro</paper-item>
+             <paper-item>Outubro</paper-item>
+             <paper-item>Novembro</paper-item>
+             <paper-item>Dezembro</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+
+      </div>
        
   </template>
   <style>
     paper-dropdown-menu {
-      width: 123px;
+          width: 127px;
+          margin-right: 14px;
     }
   </style>
   <script>

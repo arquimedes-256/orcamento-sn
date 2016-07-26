@@ -68,6 +68,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-drawer {
         --app-drawer-width:150px;
       }
+      #filterContainer /deep/ label {
+        color: #EF9A9A;
+      }
+      #filterContainer /deep/ .unfocused-line {
+        background:  #EF9A9A;
+      }
+      #filterContainer /deep/ input {
+        color: #FFCDD2;
+      }
+      #filterContainer /deep/ paper-input ,  
+      #filterContainer /deep/ paper-dropdown-menu {
+          width: 127px;
+          margin-right: 14px;
+      }
+       
 
     </style>
 
@@ -85,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="orcadorealizado-geral" href="/orcadorealizado-geral">Geral</a>
-          <a name="view-detalhamento" href="/view-detalhamento">Receita Bruta</a>
+          <a name="receita-bruta" href="/receita-bruta">Receita Bruta</a>
           <!---
           
           <a name="view3" href="/view3">View Three</a>
@@ -96,25 +111,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
 
-        <app-header condenses reveals effects="waterfall">
+        <app-header condenses reveals effects="waterfall" style="background:#B71C1C">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <!--
             <div title>SN-X</div> 
-            <sn-filter on-sn-filter-change="onFilterChangeHandler"></sn-filter>
+           
+            -->
+            <div id="filterContainer"></div>
           </app-toolbar>
         </app-header>
 
         <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
           <sn-orcadorealizado-geral 
             name="orcadorealizado-geral"></sn-orcadorealizado-geral>
-          <sn-view-detalhamento 
-            name="view-detalhamento"></sn-view-detalhamento>
+          <sn-receita-bruta 
+            name="receita-bruta"></sn-receita-bruta>
         </iron-pages>
 
       </app-header-layout>
 
     </app-drawer-layout>
-    <sn-mxm-data id="mxmData" on-response-orcadorealizado="onResponseOrcadoRealizadoHandler"></sn-mxm-data>
   </template>
 
   <script>
@@ -144,15 +161,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _pageChanged: function(page) {
         // load page import on demand.
         this.importHref(
-          this.resolveUrl('sn-' + page + '.html'), null, null, true);
-      },
-      onResponseOrcadoRealizadoHandler:function(e,d) {
-        document.querySelector('* /deep/ sn-orcadorealizado-geral').setData(d);
-      },
-      onFilterChangeHandler:function(e,d,s) {
-        this.$.mxmData.refresh(d);
-      }
+          this.resolveUrl('sn-' + page + '.html'), 
+          //onComplete
+          function(){
+            var filtersElement = document.querySelector('* /deep/ sn-' + page).$.filters;
+            with(document.querySelector('* /deep/ #filterContainer')){
+              innerHTML = ""
+              appendChild(filtersElement);
+            }
+          }, null, true);
 
+      },
     });
 
   </script>
