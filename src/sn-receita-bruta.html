@@ -46,8 +46,8 @@
          padding:8px;
          }
       </style>
-      <paper-material>
-         
+      
+      <paper-material>   
          <receita-bruta-filters 
           id="filters"
           on-faixas-changed="_faixasChangedHandler"
@@ -83,8 +83,9 @@
             path="{{_path}}"
             dimensions="{{ _selectedFaixas }}" 
             header="Total"></sn-tabela-mes>
+
+      </paper-material>
    </template>
-   </paper-material>
    <script>
       Polymer({
       
@@ -227,7 +228,7 @@
           else
              this.selectedFaixas =_.first(this.faixaList)
 
-          this.fire('faixas-changed');
+          this._refreshFaixas();
         },
         _changeClienteHandler:function(e,d){
           this.selectedCliente = d.item.textContent;
@@ -240,20 +241,23 @@
 
           this._refreshFilterData();
 
+          //fill
           this.fire('build-faixas',{
             faixasTarifa: this.$.dataTOP.terminalFaixasTarifa[this.selectedTerminal]
           })
-      
-          this.fire('faixas-changed');
+
+          this._refreshFaixas();
         },
         _changeTerminalHandler:function(e,d) {
           this.selectedTerminal = d.item.textContent;
           //volta para faixa todos
 
+          //fill
           this.fire('build-faixas',{
             faixasTarifa: this.$.dataTOP.terminalFaixasTarifa[this.selectedTerminal]
           })
 
+          this._refreshFaixas();
           this._refreshFilterData();
           
         },
@@ -265,14 +269,19 @@
         _faixaContratoHandler:function(e,d,s){
           var TOP = this.$.dataTOP;
           this.terminalList       = TOP.terminalList;
-          this.selectedFaixas     = this.faixaList = TOP.getFaixasByTerminal(this.selectedTerminal || _.first(this.terminalList));
-
-          this.fire('faixas-changed');
+          
+          this._refreshFaixas();
         },
         _infoContratoHandler:function(e,d){
           console.log(d);
           this.$.inputMoeda.value       = d.DESCRICAO_MOEDA;
           this.$.inputTipoTarifa.value  = d.CD_TIPO_CONTRATO
+        },
+        _refreshFaixas:function(){
+          var TOP = this.$.dataTOP;
+          this.selectedFaixas     = this.faixaList = TOP.getFaixasByTerminal(this.selectedTerminal || _.first(this.terminalList));
+          
+          this.fire('faixas-changed');
         }
     });
   </script>

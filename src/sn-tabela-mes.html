@@ -6,78 +6,88 @@
 			:host {
 				display: block;
 			}
+         h4 {
+    margin: 0px;
+    margin-top: 10px;
+    position: relative;
+    top: 4px;
+    left: 22px;
+    padding-top: 7px;
+    font-size: 14px;
+}
 		</style>
-		<h4 style="margin: 0px;margin-top: 10px;">{{header}}</h4>
-		 <paper-datatable data="{{data}}" id="dataTable">
 
-          <paper-datatable-column 
-            header="#" 
-            property="dimension" 
-            align="left" 
-            tooltip=""></paper-datatable-column>
+			<h4>{{header}}</h4>
+			 <paper-datatable data="{{data}}" id="dataTable">
 
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Jan" 
-            property="1" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Fev" 
-            property="2" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Mar" 
-            property="3" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Abr" 
-            property="4" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Mai" 
-            property="5" 
-            align="right" 
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Jun" 
-            property="6" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Jul" 
-            property="7" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Ago" 
-            property="8" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Set" 
-            property="9" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Out" 
-            property="10" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Nov" 
-            property="11" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
-            header="Dez" 
-            property="12" 
-            align="right" default="0"
-            tooltip=""></paper-datatable-column>
-        </paper-datatable>
-        <paper-progress indeterminate></paper-progress>  
+	          <paper-datatable-column 
+	            header="#" 
+	            property="dimension" 
+	            align="left" 
+	            tooltip=""></paper-datatable-column>
+
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Jan" 
+	            property="1" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Fev" 
+	            property="2" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Mar" 
+	            property="3" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Abr" 
+	            property="4" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Mai" 
+	            property="5" 
+	            align="right" 
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Jun" 
+	            property="6" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Jul" 
+	            property="7" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Ago" 
+	            property="8" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Set" 
+	            property="9" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Out" 
+	            property="10" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Nov" 
+	            property="11" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	            header="Dez" 
+	            property="12" 
+	            align="right" default="0"
+	            tooltip=""></paper-datatable-column>
+	        </paper-datatable>
+	        <paper-progress indeterminate></paper-progress>  
 	</template>
 	<script>
 		Polymer({
