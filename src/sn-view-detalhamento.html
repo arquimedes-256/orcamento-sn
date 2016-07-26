@@ -195,8 +195,9 @@
         _changeHandlerTerminal:function(e,d) {
           this.selectedTerminal = d.item.textContent;
           //volta para faixa todos
-          this.$.faixaDWTListBox.selected  = 0;
           this.$.tableTarifas.fill(this.$.dataTOP.terminalFaixasTarifa[this.selectedTerminal],'VLR_LINER');
+          this.$.faixaDWTListBox.selected  = 0;
+          
         },
         _faixaContratoHandler:function(e,d,s){
           this.selectedFaixas     = this.faixaList = this.$.dataTOP.faixaList;
