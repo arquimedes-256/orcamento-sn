@@ -31,6 +31,7 @@ Example:
 	<script>
 		Polymer({
 			is: 'sn-data-top',
+			
 			faixacontrato_responseHandler:function(e,d,s){
 				var V = e.detail.response;
 
@@ -56,6 +57,11 @@ Example:
 				this.callBackFaixasContrato();
 				this.fire('response-faixacontrato')
 			},
+			infocontrato_responseHandler:function(e,d,s){
+				var R = _.first(e.detail.response);
+				this.fire('response-infocontrato',R)
+			},
+
 			_buildTerminalFaixasTarifasIndex:function(response){
 				var Y = {};
 				var X = _.chain(response)
@@ -70,10 +76,6 @@ Example:
 					})
 				})
 				this._terminalFaixasTarifa = Y;
-			},
-			infocontrato_responseHandler:function(e,d,s){
-				var R = _.first(e.detail.response);
-				this.fire('response-infocontrato',R)
 			},
 			getFaixasContrato:function(num_contrato,callBackFaixasContrato) {
 				this.$.ajaxFaixas.url = 

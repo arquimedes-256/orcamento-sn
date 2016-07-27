@@ -109,9 +109,12 @@
 
           var F = {
             faixaDWT: function() {
-
-              //this._refreshFaixas();
-       
+            	
+       		  _.each(document
+       		  	.querySelectorAll('* /deep/ sn-receita-bruta /deep/ sn-tabela-mes')
+	   		  	,function(tabelaMesElement){
+	   		  		tabelaMesElement.filterByDimensionsList();
+	   		  	})
 
             },
             cliente:function() {
