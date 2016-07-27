@@ -9,6 +9,8 @@
    -->
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="sn-tabela-mes.html">
+<link rel="import" href="sn-receita-bruta-filters.html">
+
 <dom-module id="sn-receita-bruta">
    <style is="custom-style" include="iron-flex"></style>
    <template>
@@ -48,11 +50,12 @@
       </style>
       
       <paper-material>   
-         <receita-bruta-filters 
+
+         <sn-receita-bruta-filters 
           id="filters"
           on-faixas-changed="_faixasChangedHandler"
-          on-path-changed="_pathChangedHandler"
-          on-build-faixas="_changeTerminalHandler"></receita-bruta-filters>
+          on-build-faixas="_buildFaixasHandler"
+          on-path-changed="_pathChangedHandler"></sn-receita-bruta-filters>
 
          <sn-tabela-mes 
             editable
@@ -61,27 +64,34 @@
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
             dimensions="{{ _selectedFaixas }}" 
+            filter="#faixaDWT"
             header="Quantidade de Navios"></sn-tabela-mes>
+
          <sn-tabela-mes 
             editable
             id="tableB"
             db="receita-qtd-rebocadores" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}" 
+            dimensions="{{ _selectedFaixas }}"  
+            filter="#faixaDWT"
             header="Quantidade de Rebocadores"></sn-tabela-mes>
+
          <sn-tabela-mes 
             id="tableTarifas"
             db="receita-tarifa" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}" 
+            dimensions="{{ _selectedFaixas }}"  
+            filter="#faixaDWT"
             header="Tarifa"></sn-tabela-mes>
+
          <sn-tabela-mes 
             id="tabelaTotal"
             db="receita-total" 
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}" 
+            dimensions="{{ _selectedFaixas }}"  
+            filter="#faixaDWT"
             header="Total"></sn-tabela-mes>
 
       </paper-material>
@@ -92,18 +102,17 @@
         is: 'sn-receita-bruta',
         _tabelaMesBuildHandler:function(){
             this.async(function(){
-            var A = this.$.tableA.getStructuredData();
-            var B = this.$.tableB.getStructuredData();
-            var C = this.$.tableTarifas.getStructuredData();
-      
-            this.$.tabelaTotal.productABC(A,B,C);
+              var A = this.$.tableA.getStructuredData();
+              var B = this.$.tableB.getStructuredData();
+              var C = this.$.tableTarifas.getStructuredData();
+        
+              this.$.tabelaTotal.productABC(A,B,C);
       
             },500)
         },
-        _changeTerminalHandler:function(e,d){
-
+        _buildFaixasHandler:function(e,d){
           this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
-
+          this._selectedFaixas = _.keys(d.faixasTarifa);
         },
         _pathChangedHandler:function() {
           this._path = this.$.filters.path;
@@ -118,169 +127,3 @@
 </dom-module>
 
 
-
-<dom-module id="receita-bruta-filters">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-
-    paper-input[disabled] /deep/ * {
-      opacity:1!important;
-   
-    }
-
-    </style>
-    <sn-data-top id="dataTOP" 
-            on-response-faixacontrato="_faixaContratoHandler"
-            on-response-infocontrato="_infoContratoHandler">
-         </sn-data-top>
-         <div class="layout horizontal">
-            <h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">Receita Bruta</h5>
-            
-            <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_changeClienteHandler">
-               <paper-listbox class="dropdown-content" selected="0" id="clienteListBox">
-                  <template is="dom-repeat" items="{{clientList}}">
-                     <paper-item>{{ item.nome }}</paper-item>
-                  </template>
-               </paper-listbox>
-            </paper-dropdown-menu>
-            <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_refreshFaixasHandler">
-               <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox" style="width: 92px;">
-                  <paper-item>Todos</paper-item>
-                  <template is="dom-repeat" items="{{faixaList}}">
-                     <paper-item>{{ item }}</paper-item>
-                  </template>
-               </paper-listbox>
-            </paper-dropdown-menu>
-            <paper-dropdown-menu label="Terminal" id="terminal" on-iron-select="_changeTerminalHandler">
-               <paper-listbox class="dropdown-content" selected="0" id="terminalList" style="width: 92px;">
-                  <template is="dom-repeat" items="{{terminalList}}">
-                     <paper-item style="width: 172px;">{{ item }}</paper-item>
-                  </template>
-               </paper-listbox>
-            </paper-dropdown-menu>
-            <style>
-               #terminal /deep/ .dropdown-content {
-               width: 219px;
-               }
-               #terminal /deep/ iron-dropdown {
-               }
-            </style>
-            <paper-input 
-               label="Contrato"         
-               id="inputContrato" 
-               value="*" 
-               readonly></paper-input>
-            <paper-input 
-               label="Tipo de Tarifa"   
-               id="inputTipoTarifa" 
-               value="*" 
-               readonly></paper-input>
-            <paper-input 
-               label="Moeda"            
-               id="inputMoeda" 
-               value="*" 
-               readonly></paper-input>
-            <paper-input label="Tarifa U$"  value="3.25"  readonly></paper-input>
-         </div>
-  </template>
-  <script>
-    Polymer({
-      is: 'receita-bruta-filters',
-       properties:{
-      
-          faixaList:{
-            type:Array
-            
-          },
-          path:{type:String},
-          selectedFaixas : {type:Array},
-          selectedCliente: {value:"Cliente1"},
-          clientList : {value:[
-      
-            {nome:"Saveiros" ,num_contrato:"RJ1000153"},
-            {nome:"Camorim"  ,num_contrato:"RJ1000158"},
-            {nome:"Wallenius",num_contrato:"RJ1000590"}
-          ]},
-      
-      
-        },
-        observers:['_buildPath(selectedCliente,selectedTerminal)'],
-        _buildPath:function(){
-          if( this.selectedCliente && this.selectedTerminal)
-            this.path = this.selectedCliente + '/' + this.selectedTerminal
-            this.fire('path-changed');
-        },
-        ready:function() {
-          this._refreshFaixasHandler();
-        },
-        _refreshFaixasHandler:function(e,d){
-          if(d && d.item && d.item.innerText) {
-            if(d.item.innerText == "Todos") {
-              this.selectedFaixas = this.faixaList;
-            }
-            else {
-              this.selectedFaixas = [(d && d.item && d.item.innerText)];
-            }
-          }
-          else
-             this.selectedFaixas =_.first(this.faixaList)
-
-          this._refreshFaixas();
-        },
-        _changeClienteHandler:function(e,d){
-          this.selectedCliente = d.item.textContent;
-      
-          var num_contrato = _(this.clientList).groupBy('nome')[this.selectedCliente][0].num_contrato;
-          this.$.inputContrato.value = num_contrato;
-          this.$.dataTOP.getFaixasContrato(num_contrato);
-          this.$.dataTOP.getInfoContrato(num_contrato);
-          //volta para faixa todos
-
-          this._refreshFilterData();
-
-          //fill
-          this.fire('build-faixas',{
-            faixasTarifa: this.$.dataTOP.terminalFaixasTarifa[this.selectedTerminal]
-          })
-
-          this._refreshFaixas();
-        },
-        _changeTerminalHandler:function(e,d) {
-          this.selectedTerminal = d.item.textContent;
-          //volta para faixa todos
-
-          //fill
-          this.fire('build-faixas',{
-            faixasTarifa: this.$.dataTOP.terminalFaixasTarifa[this.selectedTerminal]
-          })
-
-          this._refreshFaixas();
-          this._refreshFilterData();
-          
-        },
-        _refreshFilterData:function(){
-
-          this.$.faixaDWTListBox.selected  = 0;
-
-        },
-        _faixaContratoHandler:function(e,d,s){
-          this.terminalList       = this.$.dataTOP.terminalList;
-          this._refreshFaixas();
-        },
-        _infoContratoHandler:function(e,d){
-          console.log(d);
-          this.$.inputMoeda.value       = d.DESCRICAO_MOEDA;
-          this.$.inputTipoTarifa.value  = d.CD_TIPO_CONTRATO
-        },
-        _refreshFaixas:function(){
-          var TOP = this.$.dataTOP;
-          this.selectedFaixas     = this.faixaList = TOP.getFaixasByTerminal(this.selectedTerminal || _.first(this.terminalList));
-          
-          this.fire('faixas-changed');
-        }
-    });
-  </script>
-</dom-module>

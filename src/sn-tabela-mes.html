@@ -3,18 +3,22 @@
 <dom-module id="sn-tabela-mes">
 	<template>
 		<style>
-			:host {
-				display: block;
-			}
+		:host {
+			display: block;
+		}
          h4 {
-    margin: 0px;
-    margin-top: 10px;
-    position: relative;
-    top: 4px;
-    left: 22px;
-    padding-top: 7px;
-    font-size: 14px;
-}
+		    margin: 0px;
+		    margin-top: 10px;
+		    position: relative;
+		    top: 4px;
+		    left: 22px;
+		    padding-top: 7px;
+		    font-size: 14px;
+		}
+		paper-datatable /deep/ td.bound-cell div span {
+		    flex: 1;
+		    font-size: 11px;
+		}
 		</style>
 
 			<h4>{{header}}</h4>
@@ -103,58 +107,75 @@
 				editable:{type:Boolean,value:false},
 				path:{type:String,observer:'_pathChanged'},
 				virtual:{type:Boolean},
-				dimensions:{type:Array,observer:'filterByDimensionsList'}
+				dimensions:{type:Array},
+				filter:{type:String}
 			},
+			observers:['_pathDBObserver(_path,db)','_dataDimensionsObserver(data,dimensions)'],
 			ready:function() {
 				this.addEventListener('keydown',this._changeHandler);
 			},
 			_changeHandler:function() {
 				this._buildDB();
 			},
-			_pathChanged:function(){
-				this._path = this.path.replace(/\s+/g,'-');
-				this._buildDimension();
+			_dataDimensionsObserver:function(){
+				if(_.isEmpty(this.data) && !_.isEmpty(this.dimensions))
+						this._setSampleData();
 			},
-			_buildDimension:function(){
-				console.log('_buildDimension',this.data);
+			_pathChanged:function(){
+				this.dimensions = [];
+				this._path = this.path.replace(/\s+/g,'-');
+			},
+			_pathDBObserver:function(_path,db){
+				this.data = [];
+				new Firebase(FB_URL+"/"+this._path+"/"+this.db)
+					.on('value',function(dataSnap){
 
-					new Firebase(FB_URL+"/"+this._path+"/"+this.db)
-						.on('value',function(dataSnap){
+						this.async(function()
+						{
+
 							var V = dataSnap.val();
-							if(!_.isEmpty(V)) {
+							var A = this.dimensions;
+							var B =  _.keys(V);
+							var DiffAB = _.difference(  A , B )
+							var isEmpty = _.isEmpty(DiffAB);
+
+							if(!isEmpty)
+							{
+								var ListData = this._getListedData(V);
+								_.each(DiffAB,function(d){
+									ListData.push({
+										dimension:d,
+										1	:0,
+										2	:0,
+										3	:0,
+										4	:0,
+										5	:0,
+										6	:0,
+										7	:0,
+										8	:0,
+										9	:0,
+										10	:0,
+										11	:0,
+										12	:0
+									})
+								})
+								this.data = ListData;
+							}
+							else if(!_.isEmpty(V)) {
 								this.data = this._getListedData(V);
 							}
 							else
 							{
 								this._setSampleData();
 							}
-
-
 							this.fire('tabela-mes-build')
+						},1000)
 
-							this.async(function(){
-								this.filterByDimensionsList();
-							});
+					}.bind(this));
+				
 
-						}.bind(this));
-					
-				this.async(function(){
-					this.filterByDimensionsList();
-				});
-
-			},
-			filterByDimensionsList:function() {
-
-					var D = this.dimensions;
-					_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
-						tr.style.display = "table-row";
-						var tdText = tr.querySelector('td').innerText.trim()
-						if(!_.contains(D,tdText))
-							tr.style.display = "none";
-					});
 			},
 			_buildDB:function(){
-				console.log('_buildDB');
 				if(!this._path){console.warn('path is null');return;}
 
 				var Obj = this._getStructuredData(this.data);
@@ -245,26 +266,40 @@
 		      	this._buildDB();
 			},
 			fill:function(table,usingMensure){
+				this.async(function(){
+					var M = _.mapObject(table,function(r,k){ 
+						return {
+	      						1 : 	r[usingMensure],
+	      						2 : 	r[usingMensure],
+	      						3 : 	r[usingMensure],
+	      						4 : 	r[usingMensure],
+	      						5 : 	r[usingMensure],
+	      						6 : 	r[usingMensure],
+	      						7 : 	r[usingMensure],
+	      						8 : 	r[usingMensure],
+	      						9 : 	r[usingMensure],
+	      						10: 	r[usingMensure],
+	      						11: 	r[usingMensure],
+	      						12: 	r[usingMensure],
+	      						dimension: k
+	      					}
+					});
+					this._save(M);
+				},5000)
+			},
 
-				var M = _.mapObject(table,function(r,k){ 
-					return {
-      						1 : 	r[usingMensure],
-      						2 : 	r[usingMensure],
-      						3 : 	r[usingMensure],
-      						4 : 	r[usingMensure],
-      						5 : 	r[usingMensure],
-      						6 : 	r[usingMensure],
-      						7 : 	r[usingMensure],
-      						8 : 	r[usingMensure],
-      						9 : 	r[usingMensure],
-      						10: 	r[usingMensure],
-      						11: 	r[usingMensure],
-      						12: 	r[usingMensure],
-      						dimension: k
-      					}
-				});
-				this._save(M);
-			}
+			filterByDimensionsList:function() {
+					var f = document.querySelector("* /deep/ #filterContainer /deep/ "+this.filter).value;
+					var D = f == "Todos" ? this.dimensions : [f];
+
+					_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
+						tr.style.display = "table-row";
+						var tdText = tr.querySelector('td').innerText.trim()
+						if(!_.contains(D,tdText))
+							tr.style.display = "none";
+					});
+			},
+
 		});
 	</script>
 </dom-module>

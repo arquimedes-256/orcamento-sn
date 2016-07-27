@@ -53,7 +53,7 @@ Example:
 				
 
 				this._buildTerminalFaixasTarifasIndex(V);
-
+				this.callBackFaixasContrato();
 				this.fire('response-faixacontrato')
 			},
 			_buildTerminalFaixasTarifasIndex:function(response){
@@ -69,23 +69,25 @@ Example:
 						Y[terminalKey][v.DWT_INICIAL+'-'+v.DWT_FINAL] = v;
 					})
 				})
-				this.terminalFaixasTarifa = Y;
+				this._terminalFaixasTarifa = Y;
 			},
 			infocontrato_responseHandler:function(e,d,s){
 				var R = _.first(e.detail.response);
 				this.fire('response-infocontrato',R)
 			},
-			getFaixasContrato:function(num_contrato) {
+			getFaixasContrato:function(num_contrato,callBackFaixasContrato) {
 				this.$.ajaxFaixas.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_faixacontrato&num_contrato="+num_contrato;
+
+				this.callBackFaixasContrato = callBackFaixasContrato;
 			},
 			getInfoContrato:function(num_contrato){
 				this.$.ajaxInfo.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
 			},
 			getFaixasByTerminal:function(terminal) {
-				if(this.terminalFaixasTarifa && terminal)
-					return _.keys(this.terminalFaixasTarifa[terminal]);
+				if(this._terminalFaixasTarifa && terminal)
+					return _.keys(this._terminalFaixasTarifa[terminal]);
 			}
 		});
 	</script>
