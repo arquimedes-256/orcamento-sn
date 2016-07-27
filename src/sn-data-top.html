@@ -84,7 +84,8 @@ Example:
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
 			},
 			getFaixasByTerminal:function(terminal) {
-				return _.keys(this.terminalFaixasTarifa[terminal]);
+				if(this.terminalFaixasTarifa && terminal)
+					return _.keys(this.terminalFaixasTarifa[terminal]);
 			}
 		});
 	</script>
