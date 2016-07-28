@@ -126,17 +126,23 @@
 			},
 			_pathDBObserver:function(_path,db){
 				this.data = [];
-				new Firebase(FB_URL+"/"+this._path+"/"+this.db)
-					.on('value',function(dataSnap){
+				var URL = FB_URL+"/"+this._path+"/"+this.db;
+
+				if(this.FBRef)
+					this.FBRef.off();
+
+				this.FBRef = new Firebase(URL);
+				this.FBRef.on('value',function(dataSnap){
 
 						this.async(function()
 						{
-
 							var V = dataSnap.val();
 							var A = this.dimensions;
 							var B =  _.keys(V);
 							var DiffAB = _.difference(  A , B )
 							var isEmpty = _.isEmpty(DiffAB);
+
+							console.log(URL,V);
 
 							if(!isEmpty)
 							{
@@ -160,14 +166,16 @@
 								})
 								this.data = ListData;
 							}
-							else if(!_.isEmpty(V)) {
+							
+
+							if(!_.isEmpty(V)) {
 								this.data = this._getListedData(V);
 							}
-							else
-							{
-								this._setSampleData();
+							if(_.isEmpty(this.data)) {
+								this.async(this._setSampleData)
 							}
-							this.fire('tabela-mes-build')
+							console.log(URL,this.data);
+
 						},1000)
 
 					}.bind(this));
@@ -183,7 +191,11 @@
 			},
 			_save:function(Obj) {
 				new Firebase(FB_URL+"/"+this._path+"/"+this.db)
-					.update(Obj);
+					.update(Obj,function(){
+
+							this.fire('tabela-mes-build');
+
+					}.bind(this));
 			},
 			_getStructuredData:function(D) {
 				return _.mapObject(_.groupBy(D,'dimension'),function(x){
@@ -211,26 +223,36 @@
 					return parseInt(d.dimension.split('-')[0]) });
 			},
 			_setSampleData:function(){
-				var D 	= [];
-				_.each(this.dimensions,function(d){
-					D.push({
-							dimension:d,
-							1	:0,
-							2	:0,
-							3	:0,
-							4	:0,
-							5	:0,
-							6	:0,
-							7	:0,
-							8	:0,
-							9	:0,
-							10	:0,
-							11	:0,
-							12	:0
-						})
-				}.bind(this))
-				this.data = D;
-				this._buildDB();
+				
+				var Interval = setInterval(function(){
+
+						if(_.isEmpty(this.dimensions))
+							return;
+						var D 	= [];
+						_.each(this.dimensions,function(d){
+							D.push({
+									dimension:d,
+									1	:0,
+									2	:0,
+									3	:0,
+									4	:0,
+									5	:0,
+									6	:0,
+									7	:0,
+									8	:0,
+									9	:0,
+									10	:0,
+									11	:0,
+									12	:0
+								})
+						}.bind(this))
+						this.data = D;
+						this._buildDB();
+						clearInterval(Interval);
+
+				}.bind(this),300)
+
+				
 			},
 			/* public */
 			getStructuredData:function(){
@@ -265,6 +287,7 @@
 		      	this._buildDB();
 			},
 			fill:function(table,usingMensure){
+				this.dimensions = _.keys(table);
 				this.async(function(){
 					var M = _.mapObject(table,function(r,k){ 
 						return {
@@ -288,7 +311,9 @@
 			},
 
 			filterByDimensionsList:function() {
-					var f = document.querySelector("* /deep/ #filterContainer /deep/ "+this.filter).value;
+					var F = document.querySelector("* /deep/ #filterContainer /deep/ "+this.filter);
+					if(!F) return;
+					var f = F.value;
 					var D = f == "Todos" ? this.dimensions : [f];
 
 					_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
