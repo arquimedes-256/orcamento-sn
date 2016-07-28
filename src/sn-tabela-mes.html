@@ -129,9 +129,10 @@
 				this._buildDB();
 			},
 			_dataDimensionsObserver:function(){
-				
+				this._removeFilters();
 			},
 			_pathChanged:function(){
+				this._removeFilters();
 				this.dimensions = [];
 				this._path = this.path.replace(/\s+/g,'-');
 			},
@@ -296,8 +297,10 @@
 			},
 			fill:function(table,usingMensure){
 				this.dimensions = _.keys(table);
-				if(_.isEmpty(this.dimensions))
+				if(_.isEmpty(this.dimensions)) {
+					console.log('fill-failed')
 					return this.fire('fill-failed')
+				}
 				this.async(function(){
 					var M = _.mapObject(table,function(r,k){ 
 						return {
@@ -333,6 +336,11 @@
 							tr.style.display = "none";
 					});
 			},
+			_removeFilters:function(){
+				_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
+						tr.style.display = "table-row";
+					});
+			}
 
 		});
 	</script>

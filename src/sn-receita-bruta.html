@@ -115,7 +115,9 @@
           this._selectedFaixas = _.keys(d.faixasTarifa);
         },
         _fillFailedHandler:function(){
-          this.$.filters.$.terminalList.selected = 0;
+          this.async(function(){
+            this.$.filters.$.terminalList.selected = 0;
+          },333)
         },
         _pathChangedHandler:function() {
           this._path = this.$.filters.path;

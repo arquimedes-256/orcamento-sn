@@ -10,17 +10,55 @@
 				display: block;
 			}
 			#dialog {
-				width: 300px;
+				width: 356px;
+			}
+			#dialog /deep/ label {
+				color: inherit!important;
+			}
+			#dialog /deep/ .unfocused-line {
+				background:  inherit!important;
+			}
+			#dialog /deep/ input {
+				color: inherit!important;
+			}
+			#dialog /deep/ paper-input ,  
+			#dialog /deep/ paper-dropdown-menu {
+			  width: inherit!important;
+			  margin-right: inherit!important;
 			}
 		</style>
 		<paper-dialog id="dialog">
 		  <h2>Novo Cliente</h2>
 		  <paper-dialog-scrollable>
-		    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-		      irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		    <paper-input label="Nome" value="{{ nomeCliente }}"></paper-input>
+
+			 <paper-datatable data="{{faixasCliente}}" id="dataTable">
+
+			 <paper-datatable-column 
+				type="Number"
+	            header="Faixa de" 
+	            property="faixaA" 
+	            align="right"></paper-datatable-column>
+	         <paper-datatable-column 
+				editable 
+				dialog 
+				type="Number"
+	            header="Faixa até" 
+	            property="faixaB" 
+	            align="right"></paper-datatable-column>
+
+	        <paper-datatable-column 
+				editable 
+				dialog 
+				type="Number"
+	            header="Tarifa R$" 
+	            property="tarifa" 
+	            align="right"></paper-datatable-column>
+
+			 <paper-datatable>
 		  </paper-dialog-scrollable>
 		  <div class="buttons">
-		    <paper-button dialog-dismiss>Cancel</paper-button>
+		    <paper-button dialog-dismiss>Cancelar</paper-button>
 		    <paper-button dialog-confirm autofocus>OK</paper-button>
 		  </div>
 		</paper-dialog>
@@ -28,9 +66,52 @@
 	<script>
 		Polymer({
 			is: 'sn-receita-bruta-novo-cliente',
+			properties:{
+				faixasCliente:{type:Array,observer:'_clientObserver'}
+			},
+			listeners:{
+				'change':'_clientObserver'
+			},
+			ready:function(){
+				this.nomeCliente = "*";
+				this.faixasCliente = [
+						{faixa:10	,tarifa:25},
+						{faixa:20 	,tarifa:35},
+						{faixa:30 	,tarifa:45},
+						{faixa:40 	,tarifa:55},
+						{faixa:50 	,tarifa:65}
+					]
+			},
 			open:function(){
 				this.$.dialog.open();
-			}
+			},
+			_clientObserver:function(){
+				console.log('_clientObserver')
+				_.each(this.faixasCliente,function(faixaTuple,k){
+
+					if(faixaTuple.faixaB)
+						faixaTuple.faixa 	= faixaTuple.faixaB;;
+					delete faixaTuple.faixaB;
+					delete faixaTuple.faixaA;
+
+				});
+				_.each(this.faixasCliente,function(faixaTuple,k){
+
+					var faixaA = k > 0 ? this.faixasCliente[k-1].faixa: 0;
+					var faixaB = faixaTuple.faixa;
+					
+
+					faixaTuple.faixaA = faixaA;
+					faixaTuple.faixaB = faixaB;
+
+					if(faixaTuple.faixaB < faixaTuple.faixaA) {
+						faixaTuple.faixa = faixaTuple.faixaB = faixaTuple.faixaA + 2;
+					}
+
+				}.bind(this))
+
+				this.$.dataTable.ready();
+			},
 		});
 	</script>
 </dom-module>
