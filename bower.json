@@ -20,7 +20,8 @@
     "paper-dropdown-menu": "~1.2.2",
     "paper-listbox": "~1.1.2",
     "paper-item": "~1.2.1",
-    "paper-menu": "~1.2.2"
+    "paper-menu": "~1.2.2",
+    "paper-progress": "polymerelements/paper-progress#~1.0.9"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"

@@ -91,7 +91,17 @@
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
 	        </paper-datatable>
-	        <paper-progress indeterminate></paper-progress>  
+	        <template is="dom-if" if="{{_dataIsEmpty(data)}}">
+	        	<paper-progress indeterminate style="width:100%"></paper-progress>  
+	        </template>
+	        <!--
+	        <style>
+	        paper-progress {
+	        	--paper-progress-secondary-color:#D50000;
+	        	--paper-progress-active-color: #FF1744;
+	        }
+	        </style>
+	    -->
 	</template>
 	<script>
 		Polymer({
@@ -114,6 +124,7 @@
 			ready:function() {
 				this.addEventListener('keydown',this._changeHandler);
 			},
+			_dataIsEmpty:function(data){ return _.isEmpty(data) },
 			_changeHandler:function() {
 				this._buildDB();
 			},
@@ -176,7 +187,7 @@
 							}
 							console.log(URL,this.data);
 
-						},1000)
+						})
 
 					}.bind(this));
 				
@@ -191,11 +202,8 @@
 			},
 			_save:function(Obj) {
 				new Firebase(FB_URL+"/"+this._path+"/"+this.db)
-					.update(Obj,function(){
-
-							this.fire('tabela-mes-build');
-
-					}.bind(this));
+					.update(Obj);
+				this.fire('tabela-mes-build');
 			},
 			_getStructuredData:function(D) {
 				return _.mapObject(_.groupBy(D,'dimension'),function(x){
@@ -288,6 +296,7 @@
 			},
 			fill:function(table,usingMensure){
 				this.dimensions = _.keys(table);
+				this.data = [];
 				this.async(function(){
 					var M = _.mapObject(table,function(r,k){ 
 						return {
