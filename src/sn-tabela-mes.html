@@ -183,11 +183,11 @@
 								this.data = this._getListedData(V);
 							}
 							if(_.isEmpty(this.data)) {
-								this.async(this._setSampleData)
+								this.async(this._setSampleData,333)
 							}
 							console.log(URL,this.data);
 
-						})
+						},333)
 
 					}.bind(this));
 				
@@ -296,7 +296,8 @@
 			},
 			fill:function(table,usingMensure){
 				this.dimensions = _.keys(table);
-				this.data = [];
+				if(_.isEmpty(this.dimensions))
+					return this.fire('fill-failed')
 				this.async(function(){
 					var M = _.mapObject(table,function(r,k){ 
 						return {
@@ -316,7 +317,7 @@
 	      					}
 					});
 					this._save(M);
-				},5000)
+				},333)
 			},
 
 			filterByDimensionsList:function() {

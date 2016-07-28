@@ -49,7 +49,7 @@
          }
       </style>
       
-      <paper-material>   
+      <paper-material on-fill-failed="_fillFailedHandler">   
 
          <sn-receita-bruta-filters 
           id="filters"
@@ -113,6 +113,9 @@
         _buildFaixasHandler:function(e,d){
           this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
           this._selectedFaixas = _.keys(d.faixasTarifa);
+        },
+        _fillFailedHandler:function(){
+          this.$.filters.$.terminalList.selected = 0;
         },
         _pathChangedHandler:function() {
           this._path = this.$.filters.path;
