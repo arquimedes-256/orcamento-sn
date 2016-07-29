@@ -130,6 +130,7 @@
 			},
 			_dataDimensionsObserver:function(){
 				this._removeFilters();
+				this.filterByDimensionsList();
 			},
 			_pathChanged:function(){
 				this._removeFilters();
@@ -204,24 +205,26 @@
 			_save:function(Obj) {
 				new Firebase(FB_URL+"/"+this._path+"/"+this.db)
 					.update(Obj);
+				
 				this.fire('tabela-mes-build');
+				
 			},
 			_getStructuredData:function(D) {
 				return _.mapObject(_.groupBy(D,'dimension'),function(x){
 					f = _.first(x);
 					
-					f['1']  = f['1'] |0;	
-					f['2']  = f['2'] |0;
-					f['3']  = f['3'] |0;
-					f['4']  = f['4'] |0;
-					f['5']  = f['5'] |0;
-					f['6']  = f['6'] |0;
-					f['7']  = f['7'] |0;
-					f['8']  = f['8'] |0;
-					f['9']  = f['9'] |0;
-					f['10'] = f['10']|0;
-					f['11'] = f['11']|0;
-					f['12'] = f['12']|0;
+					f['1']  = (f['1'] |0)	
+					f['2']  = (f['2'] |0)
+					f['3']  = (f['3'] |0)
+					f['4']  = (f['4'] |0)
+					f['5']  = (f['5'] |0)
+					f['6']  = (f['6'] |0)
+					f['7']  = (f['7'] |0)
+					f['8']  = (f['8'] |0)
+					f['9']  = (f['9'] |0)
+					f['10'] = (f['10']|0)
+					f['11'] = (f['11']|0)
+					f['12'] = (f['12']|0)
 
 					return f;
 				});
@@ -237,24 +240,7 @@
 
 						if(_.isEmpty(this.dimensions))
 							return;
-						var D 	= [];
-						_.each(this.dimensions,function(d){
-							D.push({
-									dimension:d,
-									1	:0,
-									2	:0,
-									3	:0,
-									4	:0,
-									5	:0,
-									6	:0,
-									7	:0,
-									8	:0,
-									9	:0,
-									10	:0,
-									11	:0,
-									12	:0
-								})
-						}.bind(this))
+						var D 	= this.getSampleData(0);
 						this.data = D;
 						this._buildDB();
 						clearInterval(Interval);
@@ -264,28 +250,51 @@
 				
 			},
 			/* public */
-			getStructuredData:function(){
-				return this._getStructuredData(this.data);
+			getSampleData:function(value,options){
+				options = options || {};
+				var D 	= [];
+				_.each(this.dimensions,function(d){
+					D.push({
+							dimension:d,
+							1	:value,
+							2	:value,
+							3	:value,
+							4	:value,
+							5	:value,
+							6	:value,
+							7	:value,
+							8	:value,
+							9	:value,
+							10	:value,
+							11	:value,
+							12	:value
+						})
+				}.bind(this))
+				return options.isStructured ? this._getStructuredData(D) : D;
 			},
-			productABC:function(A,B,C){
+			getStructuredData:function(options){
+				return this._getStructuredData(this.data,options);
+			},
+			productABC:function(A,B,C,options){
+				options = options || {tax:1}
 				var Y = {};
 		      	_.each(A,function(vA,kA){
 		      		_.each(B,function(vB,kB){
 		      			_.each(C,function(vC,kC){
 		      				if(kA == kB && kB == kC) {
 		      					Y[kA] = {
-		      						1 : 	vA['1'] 	*vB['1'] 	*vC['1'] ,
-		      						2 : 	vA['2'] 	*vB['2'] 	*vC['2'] ,
-		      						3 : 	vA['3'] 	*vB['3'] 	*vC['3'] ,
-		      						4 : 	vA['4'] 	*vB['4'] 	*vC['4'] ,
-		      						5 : 	vA['5'] 	*vB['5'] 	*vC['5'] ,
-		      						6 : 	vA['6'] 	*vB['6'] 	*vC['6'] ,
-		      						7 : 	vA['7'] 	*vB['7'] 	*vC['7'] ,
-		      						8 : 	vA['8'] 	*vB['8'] 	*vC['8'] ,
-		      						9 : 	vA['9'] 	*vB['9'] 	*vC['9'] ,
-		      						10: 	vA['10'] 	*vB['10'] 	*vC['10'],
-		      						11: 	vA['11'] 	*vB['11'] 	*vC['11'],
-		      						12: 	vA['12'] 	*vB['12'] 	*vC['12'], 
+		      						1 : 	vA['1'] 	*vB['1'] 	*vC['1']  * options.tax,
+		      						2 : 	vA['2'] 	*vB['2'] 	*vC['2']  * options.tax,
+		      						3 : 	vA['3'] 	*vB['3'] 	*vC['3']  * options.tax,
+		      						4 : 	vA['4'] 	*vB['4'] 	*vC['4']  * options.tax,
+		      						5 : 	vA['5'] 	*vB['5'] 	*vC['5']  * options.tax,
+		      						6 : 	vA['6'] 	*vB['6'] 	*vC['6']  * options.tax,
+		      						7 : 	vA['7'] 	*vB['7'] 	*vC['7']  * options.tax,
+		      						8 : 	vA['8'] 	*vB['8'] 	*vC['8']  * options.tax,
+		      						9 : 	vA['9'] 	*vB['9'] 	*vC['9']  * options.tax,
+		      						10: 	vA['10'] 	*vB['10'] 	*vC['10'] * options.tax,
+		      						11: 	vA['11'] 	*vB['11'] 	*vC['11'] * options.tax,
+		      						12: 	vA['12'] 	*vB['12'] 	*vC['12'] * options.tax, 
 		      						dimension: vA.dimension
 		      					}
 		      				}

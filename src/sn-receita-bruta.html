@@ -59,7 +59,7 @@
 
          <sn-tabela-mes 
             editable
-            id="tableA"
+            id="tableQTDNavios"
             db="receita-qtd-navios" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
@@ -69,7 +69,7 @@
 
          <sn-tabela-mes 
             editable
-            id="tableB"
+            id="tableQTDRebocadores"
             db="receita-qtd-rebocadores" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
@@ -92,7 +92,7 @@
             path="{{_path}}"
             dimensions="{{ _selectedFaixas }}"  
             filter="#faixaDWT"
-            header="Total"></sn-tabela-mes>
+            header="Total(R$)"></sn-tabela-mes>
 
       </paper-material>
    </template>
@@ -102,11 +102,26 @@
         is: 'sn-receita-bruta',
         _tabelaMesBuildHandler:function(){
             this.async(function(){
-              var A = this.$.tableA.getStructuredData();
-              var B = this.$.tableB.getStructuredData();
+              var tipoTarifa = this.$.filters.$.inputTipoTarifa.value
+              var moeda = this.$.filters.$.inputMoeda.value
+              var vlrCambio = parseFloat(this.$.filters.$.inputCambio.value);
+
+
+              var A = this.$.tableQTDNavios
+                          .getStructuredData();
+              var B = null;
               var C = this.$.tableTarifas.getStructuredData();
-        
-              this.$.tabelaTotal.productABC(A,B,C);
+
+              if(tipoTarifa == "REBOCADOR") {
+				B = this.$.tableQTDRebocadores
+                          .getStructuredData();
+              }
+              else {
+                B = this.$.tableQTDRebocadores
+                	.getSampleData(1,{isStructured:true});
+              }
+              
+              this.$.tabelaTotal.productABC(A,B,C,{tax:moeda == "DOLAR" ? vlrCambio : 1});
       
             },500)
         },

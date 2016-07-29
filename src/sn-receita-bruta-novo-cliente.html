@@ -1,6 +1,7 @@
 
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -16,10 +17,10 @@
 				width: 459px;
 			}
 			#dialog /deep/ label {
-				color: #EF5350!important;
+				color: #757575!important;
 			}
 			#dialog /deep/ .unfocused-line {
-				background:  #EF5350!important;
+				background:  #757575!important;
 			}
 			#dialog /deep/ input {
 				color: inherit!important;
@@ -29,17 +30,23 @@
 			  width: inherit!important;
 			  margin-right: inherit!important;
 			}
+			#dialog /deep/ #scrollable{
+				    max-height: 206px;
+			}
 		</style>
-		<paper-dialog id="dialog">
-		  <h2>Novo Cliente</h2>
+		<paper-dialog id="dialog" style="margin-top: 50px;">
+		  <h2>
+		  	Novo Cliente
+		  </h2>
 		   <paper-input 
 		    label="Nome" 
 		    value="{{ nomeCliente }}" 
+		    style="width:90%!important"
 		    always-float-label></paper-input>
-			<div class="layout vertical">
-				<div class="layout horizontal">
+		    <div class="layout horizontal">
 					<paper-dropdown-menu label="Tipo de Tarifa" id="tipoTarifa" on-iron-select="_onChangeFilter">
 		               <paper-listbox class="dropdown-content" selected="0" id="tipoTarifaList">
+		                  <paper-item>REBOCADOR</paper-item>
 		                  <paper-item>MANOBRA</paper-item>
 		                  <paper-item>LUMPSUM</paper-item>
 		              </paper-listbox>
@@ -51,11 +58,6 @@
 		                  <paper-item>DOLAR</paper-item>
 		              </paper-listbox>
 		            </paper-dropdown-menu>
-				</div>
-
-				<paper-button raised on-click="_addFaixaAction">
-					<iron-icon icon="av:playlist-add"></iron-icon>
-				</paper-button>
 			</div>
 		  <paper-dialog-scrollable>
 
@@ -94,10 +96,22 @@
 			</paper-datatable>
 		  </paper-dialog-scrollable>
 
-		  <div class="buttons">
-		    <paper-button dialog-dismiss>Cancelar</paper-button>
-		    <paper-button dialog-confirm autofocus>OK</paper-button>
-		  </div>
+			<div class="layout horizontal">
+				
+
+				
+			  <div class="buttons">
+			    <paper-button 
+				    raised style="background: #69F0AE;width: 271px;" 
+				    on-click="_saveClienteAction">
+					<iron-icon icon="icons:save"></iron-icon>
+				</paper-button>
+				<paper-button raised on-click="_addFaixaAction" style="background: #EEEEEE;">
+					<iron-icon icon="av:playlist-add"></iron-icon>
+				</paper-button>
+			  </div>
+
+			</div>
 		</paper-dialog>
 	</template>
 	<script>
@@ -112,11 +126,7 @@
 			ready:function(){
 				this.nomeCliente = "";
 				this.faixasCliente = [
-						{faixa:10	,tarifa:25},
-						{faixa:20 	,tarifa:35},
-						{faixa:30 	,tarifa:45},
-						{faixa:40 	,tarifa:55},
-						{faixa:50 	,tarifa:65}
+						{faixa:10	,tarifa:0},
 					]
 			},
 			open:function(){
@@ -165,11 +175,29 @@
 				var faixasClienteClone = _.clone(this.faixasCliente);
 
 				faixasClienteClone.push(
-					{faixa:lastFaixa.faixa+10 	,tarifa:0}
+					{faixa:lastFaixa ? lastFaixa.faixa+10 : 10 	,tarifa:0}
 				)
 				this.faixasCliente = faixasClienteClone;
 
 				this._renderCliente();
+
+				this.async(function(){
+					this.querySelector("* /deep/ #scrollable").scrollTop = 1e6;
+				},111)
+
+			},
+			_saveClienteAction:function(){
+				if(_.isEmpty(this.nomeCliente))
+					return alert("Nome do cliente vazio");
+				if(_.isEmpty(this.faixasCliente))
+					return alert("Por favor, insira as faixas");
+
+				var filial = document.querySelector('sn-app').filial;
+
+				new Firebase(FB_URL+"/clientes/"+filial+"/"+this.nomeCliente).set({
+					nome: 	this.nomeCliente,
+					faixas: this.faixasCliente
+				})
 
 			}
 		});

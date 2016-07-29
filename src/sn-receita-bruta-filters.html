@@ -1,4 +1,6 @@
 <link rel="import" href="sn-receita-bruta-novo-cliente.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
 
 <dom-module id="sn-receita-bruta-filters">
     <template>
@@ -27,7 +29,11 @@
                   <template is="dom-repeat" items="{{clientList}}">
                      <paper-item>{{ item.nome }}</paper-item>
                   </template>
-                  <paper-item style="border-top:1px solid #E0E0E0">Novo cliente</paper-item>
+                  <paper-item style="border-top:1px solid #E0E0E0">
+                  <iron-icon 
+                  icon="social:person-add" 
+                  style="position: relative;left: -5px;top: -1px;">
+                  </iron-icon>Novo cliente</paper-item>
               </paper-listbox>
               </paper-dropdown-menu>
 
@@ -59,7 +65,7 @@
     <paper-input label="Contrato" id="inputContrato" value="*" readonly></paper-input>
     <paper-input label="Tipo de Tarifa" id="inputTipoTarifa" value="*" readonly></paper-input>
     <paper-input label="Moeda" id="inputMoeda" value="*" readonly></paper-input>
-    <paper-input label="Tarifa U$" value="3.25" readonly></paper-input>
+    <paper-input label="Tarifa U$" id="inputCambio" value="3.25" readonly></paper-input>
 
     </div>
     </template>
@@ -78,21 +84,29 @@
                 selectedFaixas: {
                     type: Array
                 },
-                selectedCliente: {
-                    value: "Cliente1"
+                selectedTerminal:{
+                  type:String
+                },
+                selectedCliente:{
+                  type:String
                 },
                 clientList: {
                     value: [
 
                         {
-                            nome: "Saveiros",
-                            num_contrato: "RJ1000153"
+                          nome: "Saveiros",
+                          num_contrato: "RJ1000153"
                         }, {
-                            nome: "Camorim",
-                            num_contrato: "RJ1000158"
-                        }, {
-                            nome: "Wallenius",
-                            num_contrato: "RJ1000590"
+                          nome: "Camorim",
+                          num_contrato: "RJ1000158"
+                        }, 
+                        {
+                          nome: "Wallenius",
+                          num_contrato: "RJ1000590"
+                        } ,
+                        {
+                          nome: "Elcano",
+                          num_contrato :"RJ1000839"
                         }
                     ]
                 },
@@ -103,7 +117,7 @@
 
             _buildPath: function() {
                 if (this.selectedCliente && this.selectedTerminal)
-                    this.path = this.selectedCliente + '/' + this.selectedTerminal
+                    this.path = "receita/"+this.selectedCliente + '/' + this.selectedTerminal
                 this.fire('path-changed');
             },
             _onChangeFilter: function(e, d) {
@@ -123,16 +137,18 @@
 
                     },
                     cliente: function() {
-                        if (d.item.textContent == "Novo cliente") {
+                        if (d.item.textContent.trim() == "Novo cliente") {
                             this.async(function() {
                                 this.$.clienteListBox.selected = this.lastClientSelected | 0
                                 this.$.novoClienteElement.open();
+                                this._topFaixaContratoHandler();
                             }, 333);
                         } else {
                             
                             this.terminalList = [];
                             this.selectedFaixas = [];
                             this.faixaList = [];
+                            this.selectedTerminal = undefined;
 
                             this.lastClientSelected = this.$.clienteListBox.selected;
                             this.selectedCliente = d.item.textContent;
