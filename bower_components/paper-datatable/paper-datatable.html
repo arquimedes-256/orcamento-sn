@@ -925,7 +925,8 @@ A [material design implementation of a data table](https://www.google.com/design
 						}
 					}
 					var rowModel = this.$.rowRepeat.modelForElement(path[i]);
-
+					if(!rowModel)
+						return;
 					// clicks in the checkbox cell do not have a set column
 					if(ev.model.column){
 						var item = this._getByKey(rowModel.rowKey);

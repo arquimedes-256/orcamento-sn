@@ -27,26 +27,26 @@
                   <template is="dom-repeat" items="{{clientList}}">
                      <paper-item>{{ item.nome }}</paper-item>
                   </template>
-    <paper-item style="border-top:1px solid #E0E0E0" on-click="novoCliente">Novo cliente</paper-item>
-    </paper-listbox>
-    </paper-dropdown-menu>
+                  <paper-item style="border-top:1px solid #E0E0E0">Novo cliente</paper-item>
+              </paper-listbox>
+              </paper-dropdown-menu>
 
-    <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_onChangeFilter">
-        <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox" style="width: 92px;">
-            <paper-item>Todos</paper-item>
-            <template is="dom-repeat" items="{{faixaList}}">
-                     <paper-item>{{ item }}</paper-item>
-                  </template>
-        </paper-listbox>
-    </paper-dropdown-menu>
+              <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_onChangeFilter">
+                  <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox" style="width: 92px;">
+                      <paper-item>Todos</paper-item>
+                      <template is="dom-repeat" items="{{faixaList}}">
+                               <paper-item>{{ item }}</paper-item>
+                            </template>
+                  </paper-listbox>
+              </paper-dropdown-menu>
 
-    <paper-dropdown-menu label="Terminal" id="terminal" on-iron-select="_onChangeFilter">
-        <paper-listbox class="dropdown-content" selected="0" id="terminalList" style="width: 92px;">
-            <template is="dom-repeat" items="{{terminalList}}">
-                     <paper-item style="width: 172px;">{{ item }}</paper-item>
-                  </template>
-        </paper-listbox>
-    </paper-dropdown-menu>
+              <paper-dropdown-menu label="Terminal" id="terminal" on-iron-select="_onChangeFilter">
+                  <paper-listbox class="dropdown-content" selected="0" id="terminalList" style="width: 92px;">
+                      <template is="dom-repeat" items="{{terminalList}}">
+                               <paper-item style="width: 172px;">{{ item }}</paper-item>
+                            </template>
+                  </paper-listbox>
+              </paper-dropdown-menu>
 
     <style>
         #terminal /deep/ .dropdown-content {
@@ -129,6 +129,11 @@
                                 this.$.novoClienteElement.open();
                             }, 333);
                         } else {
+                            
+                            this.terminalList = [];
+                            this.selectedFaixas = [];
+                            this.faixaList = [];
+
                             this.lastClientSelected = this.$.clienteListBox.selected;
                             this.selectedCliente = d.item.textContent;
                             var num_contrato = _(this.clientList).groupBy('nome')[this.selectedCliente][0].num_contrato;

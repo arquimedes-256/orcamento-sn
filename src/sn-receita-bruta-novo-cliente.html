@@ -1,7 +1,10 @@
 
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+
 
 <dom-module id="sn-receita-bruta-novo-cliente">
 	<template>
@@ -10,13 +13,13 @@
 				display: block;
 			}
 			#dialog {
-				width: 356px;
+				width: 459px;
 			}
 			#dialog /deep/ label {
-				color: inherit!important;
+				color: #EF5350!important;
 			}
 			#dialog /deep/ .unfocused-line {
-				background:  inherit!important;
+				background:  #EF5350!important;
 			}
 			#dialog /deep/ input {
 				color: inherit!important;
@@ -29,34 +32,68 @@
 		</style>
 		<paper-dialog id="dialog">
 		  <h2>Novo Cliente</h2>
+		   <paper-input 
+		    label="Nome" 
+		    value="{{ nomeCliente }}" 
+		    always-float-label></paper-input>
+			<div class="layout vertical">
+				<div class="layout horizontal">
+					<paper-dropdown-menu label="Tipo de Tarifa" id="tipoTarifa" on-iron-select="_onChangeFilter">
+		               <paper-listbox class="dropdown-content" selected="0" id="tipoTarifaList">
+		                  <paper-item>MANOBRA</paper-item>
+		                  <paper-item>LUMPSUM</paper-item>
+		              </paper-listbox>
+		            </paper-dropdown-menu>
+
+		            <paper-dropdown-menu label="Moeda" id="moeda" on-iron-select="_onChangeFilter">
+		               <paper-listbox class="dropdown-content" selected="0" id="moedaList">
+		                  <paper-item>REAL</paper-item>
+		                  <paper-item>DOLAR</paper-item>
+		              </paper-listbox>
+		            </paper-dropdown-menu>
+				</div>
+
+				<paper-button raised on-click="_addFaixaAction">
+					<iron-icon icon="av:playlist-add"></iron-icon>
+				</paper-button>
+			</div>
 		  <paper-dialog-scrollable>
-		    <paper-input label="Nome" value="{{ nomeCliente }}"></paper-input>
 
-			 <paper-datatable data="{{faixasCliente}}" id="dataTable">
+		   
 
-			 <paper-datatable-column 
-				type="Number"
-	            header="Faixa de" 
-	            property="faixaA" 
-	            align="right"></paper-datatable-column>
-	         <paper-datatable-column 
-				editable 
-				dialog 
-				type="Number"
-	            header="Faixa até" 
-	            property="faixaB" 
-	            align="right"></paper-datatable-column>
+			 <paper-datatable data="[[faixasCliente]]" id="dataTable">
+				 <paper-datatable-column 
+					type="Number"
+		            header="Faixa de" 
+		            property="faixaA" 
+		            align="right"></paper-datatable-column>
+		         <paper-datatable-column 
+					editable 
+					dialog 
+					type="Number"
+		            header="Faixa até" 
+		            property="faixaB" 
+		            align="right"></paper-datatable-column>
 
-	        <paper-datatable-column 
-				editable 
-				dialog 
-				type="Number"
-	            header="Tarifa R$" 
-	            property="tarifa" 
-	            align="right"></paper-datatable-column>
+		        <paper-datatable-column 
+					editable 
+					dialog 
+					type="Number"
+		            header="Tarifa R$" 
+		            property="tarifa" 
+		            align="right"></paper-datatable-column>
 
-			 <paper-datatable>
+				<paper-datatable-column 
+		            align="right">
+					<template>
+			  			<iron-icon icon="icons:delete" 
+			  			style="cursor:pointer" 
+			  			on-click="_deleteFaixaAction"></iron-icon>
+					</template>
+		        </paper-datatable-column>
+			</paper-datatable>
 		  </paper-dialog-scrollable>
+
 		  <div class="buttons">
 		    <paper-button dialog-dismiss>Cancelar</paper-button>
 		    <paper-button dialog-confirm autofocus>OK</paper-button>
@@ -67,13 +104,13 @@
 		Polymer({
 			is: 'sn-receita-bruta-novo-cliente',
 			properties:{
-				faixasCliente:{type:Array,observer:'_clientObserver'}
+				faixasCliente:{type:Array,observer:'_renderCliente'}
 			},
 			listeners:{
-				'change':'_clientObserver'
+				'change':'_renderCliente'
 			},
 			ready:function(){
-				this.nomeCliente = "*";
+				this.nomeCliente = "";
 				this.faixasCliente = [
 						{faixa:10	,tarifa:25},
 						{faixa:20 	,tarifa:35},
@@ -85,8 +122,7 @@
 			open:function(){
 				this.$.dialog.open();
 			},
-			_clientObserver:function(){
-				console.log('_clientObserver')
+			_renderCliente:function(){
 				_.each(this.faixasCliente,function(faixaTuple,k){
 
 					if(faixaTuple.faixaB)
@@ -107,11 +143,35 @@
 					if(faixaTuple.faixaB < faixaTuple.faixaA) {
 						faixaTuple.faixa = faixaTuple.faixaB = faixaTuple.faixaA + 2;
 					}
+					if(faixaTuple.faixaB < 0)
+						faixaTuple.faixa = faixaTuple.faixaB = 5;
 
 				}.bind(this))
 
 				this.$.dataTable.ready();
 			},
+			_deleteFaixaAction:function(e,d){
+				var tr = e.path[4];
+				var k = +(tr.getAttribute('data-key').replace('#',''));
+				var faixasClienteClone = _.clone(this.faixasCliente);
+
+				faixasClienteClone[k] = null;
+				this.faixasCliente = _.difference(faixasClienteClone,[null]);
+
+				this._renderCliente();
+			},
+			_addFaixaAction:function(){
+				var lastFaixa = _.last(this.faixasCliente);
+				var faixasClienteClone = _.clone(this.faixasCliente);
+
+				faixasClienteClone.push(
+					{faixa:lastFaixa.faixa+10 	,tarifa:0}
+				)
+				this.faixasCliente = faixasClienteClone;
+
+				this._renderCliente();
+
+			}
 		});
 	</script>
 </dom-module>
