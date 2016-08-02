@@ -274,9 +274,10 @@
                 //volta para faixa todos
                 this.$.faixaDWTListBox.selected = 0;
                 //fill
-                this.fire('build-faixas', {
-                    faixasTarifa: this.$.dataTOP._terminalFaixasTarifa[this.selectedTerminal]
-                })
+                if(this.selectedTerminal)
+                  this.fire('build-faixas', {
+                      faixasTarifa: this.$.dataTOP._terminalFaixasTarifa[this.selectedTerminal]
+                  })
 
                 var TOP = this.$.dataTOP;
                 this.selectedFaixas = this.faixaList = 
