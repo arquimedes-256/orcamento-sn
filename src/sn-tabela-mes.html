@@ -118,7 +118,9 @@
 				path:{type:String,observer:'_pathChanged'},
 				virtual:{type:Boolean},
 				dimensions:{type:Array},
-				filter:{type:String}
+				filter:{type:String},
+				fillValue:{type:Number,value:0},
+				fillForward:{type:Boolean,value:false}
 			},
 			observers:['_pathDBObserver(_path,db)','_dataDimensionsObserver(data,dimensions)'],
 			ready:function() {
@@ -133,6 +135,8 @@
 				this.filterByDimensionsList();
 			},
 			_pathChanged:function(){
+				this.$.dataTable.progress = true;
+
 				this._removeFilters();
 				this.dimensions = [];
 				this._path = this.path.replace(/\s+/g,'-');
@@ -163,20 +167,20 @@
 								_.each(DiffAB,function(d){
 									ListData.push({
 										dimension:d,
-										1	:0,
-										2	:0,
-										3	:0,
-										4	:0,
-										5	:0,
-										6	:0,
-										7	:0,
-										8	:0,
-										9	:0,
-										10	:0,
-										11	:0,
-										12	:0
+										1	:this.fillValue,
+										2	:this.fillValue,
+										3	:this.fillValue,
+										4	:this.fillValue,
+										5	:this.fillValue,
+										6	:this.fillValue,
+										7	:this.fillValue,
+										8	:this.fillValue,
+										9	:this.fillValue,
+										10	:this.fillValue,
+										11	:this.fillValue,
+										12	:this.fillValue
 									})
-								})
+								}.bind(this))
 								this.data = ListData;
 							}
 							
@@ -188,6 +192,7 @@
 								this.async(this._setSampleData,333)
 							}
 							console.log(URL,this.data);
+							this.$.dataTable.progress = false;
 
 						},333)
 
@@ -240,7 +245,7 @@
 
 						if(_.isEmpty(this.dimensions))
 							return;
-						var D 	= this.getSampleData(0);
+						var D 	= this.getSampleData(this.fillValue);
 						this.data = D;
 						this._buildDB();
 						clearInterval(Interval);
@@ -275,29 +280,32 @@
 			getStructuredData:function(options){
 				return this._getStructuredData(this.data,options);
 			},
-			productABC:function(A,B,C,options){
+			productABC:function(A,B,C,D,options){
 				options = options || {tax:1}
 				var Y = {};
 		      	_.each(A,function(vA,kA){
 		      		_.each(B,function(vB,kB){
 		      			_.each(C,function(vC,kC){
-		      				if(kA == kB && kB == kC) {
-		      					Y[kA] = {
-		      						1 : 	vA['1'] 	*vB['1'] 	*vC['1']  * options.tax,
-		      						2 : 	vA['2'] 	*vB['2'] 	*vC['2']  * options.tax,
-		      						3 : 	vA['3'] 	*vB['3'] 	*vC['3']  * options.tax,
-		      						4 : 	vA['4'] 	*vB['4'] 	*vC['4']  * options.tax,
-		      						5 : 	vA['5'] 	*vB['5'] 	*vC['5']  * options.tax,
-		      						6 : 	vA['6'] 	*vB['6'] 	*vC['6']  * options.tax,
-		      						7 : 	vA['7'] 	*vB['7'] 	*vC['7']  * options.tax,
-		      						8 : 	vA['8'] 	*vB['8'] 	*vC['8']  * options.tax,
-		      						9 : 	vA['9'] 	*vB['9'] 	*vC['9']  * options.tax,
-		      						10: 	vA['10'] 	*vB['10'] 	*vC['10'] * options.tax,
-		      						11: 	vA['11'] 	*vB['11'] 	*vC['11'] * options.tax,
-		      						12: 	vA['12'] 	*vB['12'] 	*vC['12'] * options.tax, 
-		      						dimension: vA.dimension
-		      					}
-		      				}
+			      			_.each(D,function(vD,kD){
+
+			      				if(kA == kB && kB == kC && kC == kD) {
+			      					Y[kA] = {
+			      						1 : 	vA['1'] 	*vB['1'] 	*vC['1']  *vD['1']  * options.tax,
+			      						2 : 	vA['2'] 	*vB['2'] 	*vC['2']  *vD['2']  * options.tax,
+			      						3 : 	vA['3'] 	*vB['3'] 	*vC['3']  *vD['3']  * options.tax,
+			      						4 : 	vA['4'] 	*vB['4'] 	*vC['4']  *vD['4']  * options.tax,
+			      						5 : 	vA['5'] 	*vB['5'] 	*vC['5']  *vD['5']  * options.tax,
+			      						6 : 	vA['6'] 	*vB['6'] 	*vC['6']  *vD['6']  * options.tax,
+			      						7 : 	vA['7'] 	*vB['7'] 	*vC['7']  *vD['7']  * options.tax,
+			      						8 : 	vA['8'] 	*vB['8'] 	*vC['8']  *vD['8']  * options.tax,
+			      						9 : 	vA['9'] 	*vB['9'] 	*vC['9']  *vD['9']  * options.tax,
+			      						10: 	vA['10'] 	*vB['10'] 	*vC['10'] *vD['10'] * options.tax,
+			      						11: 	vA['11'] 	*vB['11'] 	*vC['11'] *vD['11'] * options.tax,
+			      						12: 	vA['12'] 	*vB['12'] 	*vC['12'] *vD['12'] * options.tax, 
+			      						dimension: vA.dimension
+			      					}
+			      				}
+			      			});
 		      			})
 		      		})
 		      	})

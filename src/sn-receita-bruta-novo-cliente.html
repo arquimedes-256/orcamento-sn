@@ -130,7 +130,9 @@
 					]
 			},
 			open:function(){
-				this.$.dialog.open();
+				if(this.isFirstTime)
+					this.$.dialog.open();
+				this.isFirstTime = true;
 			},
 			_renderCliente:function(){
 				_.each(this.faixasCliente,function(faixaTuple,k){

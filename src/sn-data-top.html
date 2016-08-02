@@ -69,8 +69,8 @@ Example:
 				_.each(X,function(vX,terminalKey){
 					if(!Y[terminalKey]) Y[terminalKey] = {};
 					_.each(vX,function(v){
-						v.VLR_LINER = parseFloat(v.VLR_LINER.replace(',','.'));
-						v.VLR_TRAMP = parseFloat(v.VLR_TRAMP.replace(',','.'));
+						v.VLR_LINER = parseFloat(v.VLR_LINER && v.VLR_LINER.replace(',','.'));
+						v.VLR_TRAMP = parseFloat(v.VLR_TRAMP && v.VLR_TRAMP.replace(',','.'));
 
 						Y[terminalKey][v.DWT_INICIAL+'-'+v.DWT_FINAL] = v;
 					})

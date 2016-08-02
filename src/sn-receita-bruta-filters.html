@@ -23,11 +23,40 @@
       <sn-receita-bruta-novo-cliente id="novoClienteElement"></sn-receita-bruta-novo-cliente>
          <div class="layout horizontal">
             <h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">Receita Bruta</h5>
-            
+
+          <style>
+          #filial /deep/ paper-input ,  
+          paper-dropdown-menu#filial {
+              width: 60px !important;
+              margin-right: 14px;
+          }
+          </style>
+          <paper-dropdown-menu label="Filial" id="filial" style="width:50px">
+            <paper-listbox class="dropdown-content" 
+            id="filial" 
+            selected="5" 
+            id="filialListBox"
+            on-iron-select="_onChangeFilter">
+             <paper-item>Total</paper-item>
+             <paper-item>RGD</paper-item>
+             <paper-item>PNG</paper-item>
+             <paper-item>STR</paper-item>
+             <paper-item>SEP</paper-item>
+             <paper-item>RJ1</paper-item>
+             <paper-item>VIT</paper-item>
+             <paper-item>SDR</paper-item>
+             <paper-item>TMD</paper-item>
+             <paper-item>MAC</paper-item>
+             <paper-item>MTZ</paper-item>
+             
+            </paper-listbox>
+          </paper-dropdown-menu>
+          
             <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_onChangeFilter">
-               <paper-listbox class="dropdown-content" selected="0" id="clienteListBox">
+               <paper-listbox class="dropdown-content" selected="0" 
+               id="clienteListBox">
                   <template is="dom-repeat" items="{{clientList}}">
-                     <paper-item>{{ item.nome }}</paper-item>
+                     <paper-item filial="[[item.num_contrato]]">{{ item.nome }}</paper-item>
                   </template>
                   <paper-item style="border-top:1px solid #E0E0E0">
                   <iron-icon 
@@ -76,7 +105,6 @@
 
                 faixaList: {
                     type: Array
-
                 },
                 path: {
                     type: String
@@ -88,33 +116,90 @@
                   type:String
                 },
                 selectedCliente:{
-                  type:String
+                  type:String,
+                  observer:'_selectedClienteChanged'
                 },
-                clientList: {
-                    value: [
-
+                currentFilial:{
+                  type:String,
+                  observer:'_currentFilialChanged'
+                },
+                clientList:{
+                  type:Array,
+                  observer:'_clientListChanged',
+                  value: [
                         {
-                          nome: "Saveiros",
-                          num_contrato: "RJ1000153"
-                        }, {
-                          nome: "Camorim",
-                          num_contrato: "RJ1000158"
+                          nome: "Saveiros",num_contrato: "RJ1000153"
                         }, 
                         {
-                          nome: "Wallenius",
-                          num_contrato: "RJ1000590"
+                          nome: "Camorim",num_contrato: "RJ1000158"
+                        }, 
+                        {
+                          nome: "Wallenius",num_contrato: "RJ1000590"
                         } ,
                         {
-                          nome: "Elcano",
-                          num_contrato :"RJ1000839"
+                          nome: "Elcano",num_contrato :"RJ1000839"
+                        },
+                        {
+                          nome:"Granel",num_contrato:"RGD000977"
+                        },
+                        {
+                          nome:"Hamburgsud",num_contrato:"RGD000801"
+                        },
+                        {
+                          nome:"BBC",num_contrato:"MAC000514"
+                        },
+                        {
+                          nome:"BBC",num_contrato:"PNG000852"
+                        },
+                        {
+                          nome:"Camorim",num_contrato:"SEP000309"
+                        },
+                        {
+                          nome:"Oceanus",num_contrato:"SDR001140"
+                        },
+                        {
+                          nome:"Cosco",num_contrato:"STR000675"
+                        },
+                        {
+                          nome:"Elcano",num_contrato:"VIT000783"
                         }
-                    ]
-                },
+                      ]
+                  }
+                }
+            ,
+            _currentFilialChanged:function(){
+              console.log('this.currentFilial',this.currentFilial)
+            },
+            _selectedClienteChanged:function(){
 
+              this.terminalList = [];
+              this.selectedFaixas = [];
+              this.faixaList = [];
+              this.selectedTerminal = undefined;
 
+              var num_contrato = 
+              _(this.clientList)
+                .groupBy('nome')[this.selectedCliente][0]
+                .num_contrato;
+              this.$.inputContrato.value = num_contrato;
+
+              this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
+              this.$.dataTOP.getInfoContrato(num_contrato);
             },
             observers: ['_buildPath(selectedCliente,selectedTerminal)'],
+            ready:function(){
 
+              setInterval(function(){
+                if((  this.$.faixaDWT.innerText.trim() == "Todos" 
+                  &&  this.selectedTerminal === undefined))
+                {
+                  this.selectedTerminal = _.first(this.terminalList);
+                  this._refreshFaixas();
+                }
+              }.bind(this),1000)
+
+              this.currentFilial = "RJ1";
+            },
             _buildPath: function() {
                 if (this.selectedCliente && this.selectedTerminal)
                     this.path = "receita/"+this.selectedCliente + '/' + this.selectedTerminal
@@ -140,28 +225,40 @@
                         if (d.item.textContent.trim() == "Novo cliente") {
                             this.async(function() {
                                 this.$.clienteListBox.selected = this.lastClientSelected | 0
+                                this.lastClientSelected = 0
                                 this.$.novoClienteElement.open();
                                 this._topFaixaContratoHandler();
                             }, 333);
                         } else {
                             
-                            this.terminalList = [];
-                            this.selectedFaixas = [];
-                            this.faixaList = [];
-                            this.selectedTerminal = undefined;
-
                             this.lastClientSelected = this.$.clienteListBox.selected;
                             this.selectedCliente = d.item.textContent;
-                            var num_contrato = _(this.clientList).groupBy('nome')[this.selectedCliente][0].num_contrato;
-                            this.$.inputContrato.value = num_contrato;
+                           
 
-                            this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
-                            this.$.dataTOP.getInfoContrato(num_contrato);
                         }
                     },
                     terminal: function() {
                         this.selectedTerminal = d.item.textContent;
                         this._refreshFaixas();
+                    },
+                    filial:function(){
+                      this.currentFilial = filterValue;
+                      var itFiltred = false;
+                      console.log('filtrando filial', this.currentFilial)
+                      //filtra filiais no comboBox
+                      _.each(this.$.clienteListBox.items,function(item,k){
+                        if(!item.filial)
+                          return;
+                        if(_.isEmpty(item.filial.match(this.currentFilial))) {
+                          item.hidden = true;
+                        }
+                        else {
+                          item.hidden = false;
+                          if(!itFiltred)
+                            this.$.clienteListBox.selected = k, itFiltred = true;
+                        }                          
+                      }
+                      .bind(this))
                     }
                 }
 
@@ -169,8 +266,11 @@
 
             },
             _refreshFaixas: function() {
-                if (!this.selectedTerminal)
+              console.log('2::.selectedTerminal,.lastClientSelected,.selectedCliente',this.selectedTerminal,this.lastClientSelected,this.selectedCliente)
+                if (!this.$.faixaDWTListBox)
                     return;
+                if(this.selectedTerminal === undefined)
+                  this.selectedTerminal = _.first(this.terminalList);
                 //volta para faixa todos
                 this.$.faixaDWTListBox.selected = 0;
                 //fill
@@ -179,7 +279,8 @@
                 })
 
                 var TOP = this.$.dataTOP;
-                this.selectedFaixas = this.faixaList = TOP.getFaixasByTerminal(this.selectedTerminal || _.first(this.terminalList));
+                this.selectedFaixas = this.faixaList = 
+                TOP.getFaixasByTerminal(this.selectedTerminal);
 
             },
 
