@@ -124,7 +124,7 @@
 			},
 			observers:['_pathDBObserver(_path,db)','_dataDimensionsObserver(data,dimensions)'],
 			ready:function() {
-				this.addEventListener('change',this._changeHandler);
+				this.addEventListener('data-changed',this._changeHandler);
 			},
 			_dataIsEmpty:function(data){ return _.isEmpty(data) },
 			_changeHandler:function() {
