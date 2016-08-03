@@ -3,6 +3,8 @@
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+
 <dom-module id="paper-datatable-edit-dialog">
 	<template>
 		<style>
@@ -32,6 +34,29 @@
 			<form is="iron-form" id="form" on-iron-form-presubmit="dismiss">
 				<content select="*"></content>
 			</form>
+			<div class="layout horizontal" style="
+				    position: relative;
+				    left: -20px;
+				">
+				<paper-button on-click="_fireFillBack"
+				 style="
+					    display: block!important;
+					    padding: 0px;
+					    min-width: 37px;
+					    ">
+					<iron-icon icon="icons:arrow-back"></iron-icon>
+				</paper-button>
+
+				<paper-button on-click="_fireFillForward"
+				 style="
+					    display: block!important;
+					    padding: 0px;
+					    min-width: 37px;
+					    text-align: right;
+					    ">
+					<iron-icon icon="icons:arrow-forward"></iron-icon>
+				</paper-button>
+			</div>
 		</paper-material>
 	</template>
 	<script>
@@ -47,7 +72,20 @@
 		Polymer({
 
 			is: 'paper-datatable-edit-dialog',
+			_fireFillBack:function(){
+				var col = this.positionedRelativeTo.cellIndex ;
+				var row = parseInt(
+					this.positionedRelativeTo.getAttribute("data-row-key").replace("#","")); 
 
+				this.fire('fill-back',{ col:col , row:row });
+			},
+			_fireFillForward:function(){
+				var col = this.positionedRelativeTo.cellIndex ;
+				var row = parseInt(
+					this.positionedRelativeTo.getAttribute("data-row-key").replace("#","")); 
+
+				this.fire('fill-forward',{ col:col , row:row });
+			},
 			properties: {
 				positionedRelativeTo: {
 					type: Element,

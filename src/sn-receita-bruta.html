@@ -96,8 +96,12 @@
             path="{{_path}}"
             dimensions="{{ _selectedFaixas }}"  
             filter="#faixaDWT"
-            fill-value="1"
+            
             fill-forward
+            fill-value="1"
+            min="1"
+            max="2"
+
             header="Reajuste"></sn-tabela-mes>
 
          <sn-tabela-mes 
@@ -138,7 +142,7 @@
               
               this.$.tabelaTotal.productABC(A,B,C,D,{tax:moeda == "DOLAR" ? vlrCambio : 1});
       
-            },500)
+            },1000)
         },
         _buildFaixasHandler:function(e,d){
           this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
