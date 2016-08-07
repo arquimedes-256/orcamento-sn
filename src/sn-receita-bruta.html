@@ -96,12 +96,7 @@
             path="{{_path}}"
             dimensions="{{ _selectedFaixas }}"  
             filter="#faixaDWT"
-            
-            fill-forward
-            fill-value="1"
-            min="1"
-            max="2"
-
+            percent
             header="Reajuste"></sn-tabela-mes>
 
          <sn-tabela-mes 
@@ -129,15 +124,13 @@
                           .getStructuredData();
               var B = null;
               var C = this.$.tableTarifas.getStructuredData();
-              var D = this.$.tableReajuste.getStructuredData();
+              var D = this.$.tableReajuste.getStructuredDataAsPercent();
 
               if(tipoTarifa == "REBOCADOR") {
-				B = this.$.tableQTDRebocadores
-                          .getStructuredData();
+				          B = this.$.tableQTDRebocadores.getStructuredData();
               }
               else {
-                B = this.$.tableQTDRebocadores
-                	.getSampleData(1,{isStructured:true});
+                B = this.$.tableQTDRebocadores.getSampleData(1,{isStructured:true});
               }
               
               this.$.tabelaTotal.productABC(A,B,C,D,{tax:moeda == "DOLAR" ? vlrCambio : 1});

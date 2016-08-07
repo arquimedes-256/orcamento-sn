@@ -186,7 +186,7 @@
               this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
               this.$.dataTOP.getInfoContrato(num_contrato);
             },
-            observers: ['_buildPath(selectedCliente,selectedTerminal)'],
+            observers: ['_buildPath(selectedCliente,selectedTerminal,currentFilial)'],
             ready:function(){
 
               setInterval(function(){
@@ -202,15 +202,18 @@
             },
             _buildPath: function() {
                 if (this.selectedCliente && this.selectedTerminal)
-                    this.path = "receita/"+this.selectedCliente + '/' + this.selectedTerminal
+                    this.path = "receita/"
+                      +this.currentFilial
+                      +'/'
+                      +this.selectedCliente 
+                      +'/' 
+                      + this.selectedTerminal;
+
                 this.fire('path-changed');
             },
             _onChangeFilter: function(e, d) {
-
                 var filterId = e.path[11].id;
                 var filterValue = d.item.innerText;
-
-
                 var F = {
                     faixaDWT: function() {
 

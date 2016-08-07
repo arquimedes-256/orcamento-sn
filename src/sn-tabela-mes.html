@@ -22,7 +22,7 @@
 		</style>
 
 			<h4>{{header}}</h4>
-			 <paper-datatable data="{{data}}" id="dataTable">
+			 <paper-datatable data="{{data}}" id="dataTable" percent='{{percent}}'>
 
 	          <paper-datatable-column 
 	            header="#" 
@@ -30,62 +30,62 @@
 	            align="left" 
 	            tooltip=""></paper-datatable-column>
 
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Jan" 
 	            property="1" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Fev" 
 	            property="2" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Mar" 
 	            property="3" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Abr" 
 	            property="4" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Mai" 
 	            property="5" 
 	            align="right" 
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Jun" 
 	            property="6" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Jul" 
 	            property="7" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Ago" 
 	            property="8" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Set" 
 	            property="9" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Out" 
 	            property="10" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Nov" 
 	            property="11" 
 	            align="right" default="0"
 	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number"
+	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Dez" 
 	            property="12" 
 	            align="right" default="0"
@@ -116,11 +116,12 @@ Polymer({
 			observers:'_buildDB',type:String
 		},
 		editable:{type:Boolean,value:false},
+		percent:{type:Boolean,value:false},
 		path:{type:String,observer:'_pathChanged'},
 		virtual:{type:Boolean},
 		dimensions:{type:Array},
-		filter:{type:String},
 		fillValue:{type:Number,value:0},
+		filter:{type:String}
 	},
 	observers:['_pathDBObserver(_path,db)','_dataDimensionsObserver(data,dimensions)'],
 	ready:function() {
@@ -181,6 +182,22 @@ Polymer({
 	_dataIsEmpty:function(data){ return _.isEmpty(data) },
 	_changeHandler:function() {
 		this._buildDB();
+
+		this._activePercentIfIs();
+	},
+	_activePercentIfIs:function(){
+		if(this.percent)
+			this.async(function(){
+
+				var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
+				_.each(TDs,function(td){
+					var s = td.innerText.trim();
+					if(s.match(/^-?\d+\.?\d*$/)) {
+						td.querySelector('span').innerHTML += '%';
+					}
+				})	
+
+			},333)
 	},
 	_dataDimensionsObserver:function(){
 		this._removeFilters();
@@ -203,8 +220,6 @@ Polymer({
 		this.FBRef = new Firebase(URL);
 		this.FBRef.on('value',function(dataSnap){
 
-				this.async(function()
-				{
 					var V = dataSnap.val();
 					var A = this.dimensions;
 					var B =  _.keys(V);
@@ -241,12 +256,10 @@ Polymer({
 						this.data = this._getListedData(V);
 					}
 					if(_.isEmpty(this.data)) {
-						this.async(this._setSampleData,333)
+						this._setSampleData();
 					}
 					console.log(URL,this.data);
 					this.$.dataTable.progress = false;
-
-				},333)
 
 			}.bind(this));
 	},
@@ -279,6 +292,27 @@ Polymer({
 			f['10'] = F(f['10']) && F(F(f['10']).toFixed(2));
 			f['11'] = F(f['11']) && F(F(f['11']).toFixed(2));
 			f['12'] = F(f['12']) && F(F(f['12']).toFixed(2));
+
+			return f;
+		});
+	},
+	getStructuredDataAsPercent:function() {
+		var D = JSON.parse(JSON.stringify(this.data));
+		return _.mapObject(_.groupBy(D,'dimension'),function(x){
+			f = _.first(x);
+			var F = parseFloat;
+			f['1']  = 1 + F( F(f['1'] ) && F(F(f['1'] ).toFixed(2)) )/100;	
+			f['2']  = 1 + F( F(f['2'] ) && F(F(f['2'] ).toFixed(2)) )/100;
+			f['3']  = 1 + F( F(f['3'] ) && F(F(f['3'] ).toFixed(2)) )/100;
+			f['4']  = 1 + F( F(f['4'] ) && F(F(f['4'] ).toFixed(2)) )/100;
+			f['5']  = 1 + F( F(f['5'] ) && F(F(f['5'] ).toFixed(2)) )/100;
+			f['6']  = 1 + F( F(f['6'] ) && F(F(f['6'] ).toFixed(2)) )/100;
+			f['7']  = 1 + F( F(f['7'] ) && F(F(f['7'] ).toFixed(2)) )/100;
+			f['8']  = 1 + F( F(f['8'] ) && F(F(f['8'] ).toFixed(2)) )/100;
+			f['9']  = 1 + F( F(f['9'] ) && F(F(f['9'] ).toFixed(2)) )/100;
+			f['10'] = 1 + F( F(f['10']) && F(F(f['10']).toFixed(2)) )/100;
+			f['11'] = 1 + F( F(f['11']) && F(F(f['11']).toFixed(2)) )/100;
+			f['12'] = 1 + F( F(f['12']) && F(F(f['12']).toFixed(2)) )/100;
 
 			return f;
 		});
@@ -366,26 +400,24 @@ Polymer({
 			console.log('fill-failed')
 			return this.fire('fill-failed')
 		}
-		this.async(function(){
-			var M = _.mapObject(table,function(r,k){ 
-				return {
-  						1 : 	r[usingMensure],
-  						2 : 	r[usingMensure],
-  						3 : 	r[usingMensure],
-  						4 : 	r[usingMensure],
-  						5 : 	r[usingMensure],
-  						6 : 	r[usingMensure],
-  						7 : 	r[usingMensure],
-  						8 : 	r[usingMensure],
-  						9 : 	r[usingMensure],
-  						10: 	r[usingMensure],
-  						11: 	r[usingMensure],
-  						12: 	r[usingMensure],
-  						dimension: k
-  					}
-			});
-			this._save(M);
-		},333)
+		var M = _.mapObject(table,function(r,k){ 
+			return {
+						1 : 	r[usingMensure],
+						2 : 	r[usingMensure],
+						3 : 	r[usingMensure],
+						4 : 	r[usingMensure],
+						5 : 	r[usingMensure],
+						6 : 	r[usingMensure],
+						7 : 	r[usingMensure],
+						8 : 	r[usingMensure],
+						9 : 	r[usingMensure],
+						10: 	r[usingMensure],
+						11: 	r[usingMensure],
+						12: 	r[usingMensure],
+						dimension: k
+					}
+		});
+		this._save(M);
 	},
 
 	filterByDimensionsList:function() {
