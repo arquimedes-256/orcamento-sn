@@ -17,11 +17,8 @@
 				margin:8px;
 				background:#FFF;
 			}
-			#out table {
-				width: 100%;
-			}
-			#out /deep/ th {
-				background:#F5F5F5!important;
+			#output /deep/ table {
+				width: 100%!important;
 			}
 		</style>
 		<div id="filters">Relatórios</div>
@@ -61,7 +58,7 @@
 			},
 			_getDataFromBase:function() {
 
-				new Firebase(FB_URL).on('value',function(dataSnap){
+				new Firebase(FB_URL).once('value',function(dataSnap){
 					
 					var G = dataSnap.val();
 					
