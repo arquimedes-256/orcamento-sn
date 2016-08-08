@@ -1,0 +1,115 @@
+* /deep/ .pvtUi {
+    color: #333;
+}
+* /deep/ table.pvtTable {
+    font-size: 8pt;
+    text-align: left;
+    border-collapse: collapse;
+}
+* /deep/ table.pvtTable tr th {
+    background-color: #F5F5F5;
+    border: 1px solid #E0E0E0;
+    font-size: 8pt;
+    padding: 11px;
+    vertical-align: middle;
+}
+* /deep/ table.pvtTable .pvtColLabel {
+    text-align: center;
+}
+* /deep/ table.pvtTable .pvtTotalLabel {
+    text-align: right;
+}
+* /deep/ table.pvtTable {
+    text-align: right;
+}
+* /deep/ table.pvtTable tr td {
+    color: #3D3D3D;
+    padding: 5px;
+    background-color: #FFF;
+    border: 1px solid #CDCDCD;
+    vertical-align: top;
+    text-align: right;
+}
+* /deep/ .pvtGrandTotal, .pvtTotal {
+    font-weight: 700;
+}
+* /deep/ .pvtVals {
+    text-align: center;
+}
+* /deep/ .pvtAggregator {
+    margin-bottom: 5px;
+}
+* /deep/ .pvtAxisContainer, * /deep/ .pvtVals {
+    border: 1px solid gray;
+    background: #EEE;
+    padding: 5px;
+    min-width: 20px;
+    min-height: 20px;
+}
+* /deep/ .pvtAxisContainer li {
+    padding: 8px 6px;
+    list-style-type: none;
+    cursor: move;
+}
+* /deep/ .pvtAxisContainer li.pvtPlaceholder {
+    -webkit-border-radius: 5px;
+    padding: 3px 15px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px dashed #aaa;
+}
+* /deep/ .pvtAxisContainer li span.pvtAttr {
+    background: #F3F3F3;
+    border: 1px solid #DEDEDE;
+    padding: 2px 5px;
+    white-space: nowrap;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+* /deep/ .pvtTriangle {
+    cursor: pointer;
+    color: grey;
+}
+* /deep/ .pvtHorizList li {
+    display: inline;
+}
+* /deep/ .pvtVertList {
+    vertical-align: top;
+}
+* /deep/ .pvtFilteredAttribute {
+    font-style: italic;
+}
+* /deep/ .pvtFilterBox {
+    z-index: 100;
+    width: 280px;
+    border: 1px solid gray;
+    background-color: #fff;
+    position: absolute;
+    padding: 20px;
+    text-align: center;
+}
+* /deep/ .pvtFilterBox h4 {
+    margin: 0;
+}
+* /deep/ .pvtFilterBox p {
+    margin: 1em auto;
+}
+* /deep/ .pvtFilterBox label {
+    font-weight: 400;
+}
+* /deep/ .pvtFilterBox input[type=checkbox] {
+    margin-right: 5px;
+}
+* /deep/ .pvtCheckContainer {
+    text-align: left;
+    overflow: scroll;
+    width: 100%;
+    max-height: 200px;
+}
+* /deep/ .pvtCheckContainer p {
+    margin: 5px;
+}
+* /deep/ .pvtRendererArea {
+    padding: 5px;
+}

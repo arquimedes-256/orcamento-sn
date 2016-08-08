@@ -97,9 +97,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <!-- Drawer content -->
       <app-drawer>
         <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="orcadorealizado-geral" href="/orcadorealizado-geral">Geral</a>
-          <a name="receita-bruta" href="/receita-bruta">Receita Bruta</a>
+        <iron-selector selected="{{page}}" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="visao-geral" href="/#/Visao-Geral">Geral</a>
+          <a name="relatorios" href="/#/Relatorios">Relatórios</a>
+          <a name="receita-bruta" href="/#/Receita-Bruta">Receita Bruta</a>
           <!---
           
           <a name="view3" href="/view3">View Three</a>
@@ -122,8 +123,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
-          <sn-orcadorealizado-geral 
-            name="orcadorealizado-geral"></sn-orcadorealizado-geral>
+          <sn-visao-geral 
+            name="visao-geral"></sn-visao-geral>
+          <sn-relatorios name="relatorios"></sn-relatorios>
           <sn-receita-bruta 
             name="receita-bruta"></sn-receita-bruta>
         </iron-pages>
@@ -154,7 +156,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
 
       _routePageChanged: function(page) {
-        this.page = page || 'orcadorealizado-geral';
+        this.page = page || 'visao-geral';
       },
 
       _pageChanged: function(page) {

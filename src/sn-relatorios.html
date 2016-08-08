@@ -1,0 +1,115 @@
+<link 
+	rel="style" 
+	href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.0.1/pivot.min.css">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+
+<dom-module id="sn-relatorios">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			#main{
+				padding:8px;
+				margin:8px;
+				background:#FFF;
+			}
+			#out table {
+				width: 100%;
+			}
+			#out /deep/ th {
+				background:#F5F5F5!important;
+			}
+		</style>
+		<div id="filters">Relatórios</div>
+		<paper-material id="main">
+			<paper-button on-click="_getDataFromBase" raised style="width: 100%;margin: 0px;margin-bottom: 7px;background: #F5F5F5;">
+				<iron-icon icon="image:flash-on"></iron-icon> 
+			</paper-button>
+			<paper-material id="output">Pressione para compilar</paper-material>
+		</paper-material>
+	</template>
+	<script>
+
+		const PATH_TEMPLATE = [
+										'Conta Gerencial',
+										'Filial',
+										'Cliente',
+										'Terminal',
+										'$'
+										];
+		Polymer({
+			is: 'sn-relatorios',
+			properties:{
+				_YList:{value:[],type:Array}
+			},
+			ready:function () {
+			
+			},
+			_render:function(data){
+				console.log('render',data)
+				var sum = $.pivotUtilities.aggregatorTemplates.sum;
+				jQuery(this.$.output).pivot(data,
+			    {
+			        rows: ["Filial","Cliente","Terminal"],
+			        cols: ["mes"],
+			        aggregator: sum()(["receita-total"])
+			    });
+			},
+			_getDataFromBase:function() {
+
+				new Firebase(FB_URL).on('value',function(dataSnap){
+					
+					var G = dataSnap.val();
+					
+					this._YList = [];
+					this._Parse(G,[]) 
+
+				}.bind(this));
+			},
+			_Parse:function(G,path){							
+				_.each(G,function(Gk,k){
+
+					if(_.isObject(Gk)) {
+						if(PATH_TEMPLATE.length == path.length)
+							this._BuildStar(path,Gk)
+						else
+							this._Parse(Gk,path.concat(k))
+					}
+				}
+				.bind(this))	
+			},
+			_BuildStar:function(path,Gn){
+				
+				var Y = {};
+
+				_.each(PATH_TEMPLATE,function(k,i){
+					Y[k] = path[i]
+				}.bind(this))
+
+				_.each([1,2,3,4,5,6,7,8,9,10,11,12],function(mes){
+					var Yk = _.clone(Y);
+					Yk.mes = mes;
+					Yk.dimension = Gn.dimension;
+					Yk[Yk.$] = Gn[mes];
+
+					this._YList.push(Yk);
+				}
+				.bind(this))
+				var mensures = _.chain(this._YList).pluck('$').uniq().value();
+				
+				_.each(this._YList,function(Y){
+					_.each(mensures,function(m){
+						if(Y[m] === undefined)
+							Y[m] = 0;
+					})
+				});
+
+				this._render(this._YList);
+			}
+		});
+	</script>
+</dom-module>

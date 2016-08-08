@@ -206,9 +206,10 @@ Polymer({
 	_pathChanged:function(){
 		this.$.dataTable.progress = true;
 
-		this._removeFilters();
 		this.dimensions = [];
 		this._path = this.path.replace(/\s+/g,'-');
+		this.async(
+		this._removeFilters,333)
 	},
 	_pathDBObserver:function(_path,db){
 		this.data = [];

@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 
-<dom-module id="sn-orcadorealizado-geral">
+<dom-module id="sn-visao-geral">
 
 	<template>
 
@@ -82,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 		Polymer({
 
-			is: 'sn-orcadorealizado-geral',
+			is: 'sn-visao-geral',
 			ready:function() {
 				this.data  =  [
 						{id:1,grupoMaster:"RECEITA BRUTA"            	,orc:0,real:0},
@@ -244,7 +244,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 			},
 
 		      onResponseOrcadoRealizadoHandler:function(e,d) {
-		        document.querySelector('* /deep/ sn-orcadorealizado-geral').setData(d);
+		        document.querySelector('* /deep/ sn-visao-geral').setData(d);
 		      },
 		      onFilterChangeHandler:function(e,d,s) {
 		        this.$.mxmData.refresh(d);
