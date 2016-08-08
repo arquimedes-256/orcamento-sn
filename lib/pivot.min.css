@@ -27,7 +27,7 @@
     padding: 5px;
     background-color: #FFF;
     border: 1px solid #CDCDCD;
-    vertical-align: top;
+    vertical-align: middle;
     text-align: right;
 }
 * /deep/ .pvtGrandTotal, .pvtTotal {

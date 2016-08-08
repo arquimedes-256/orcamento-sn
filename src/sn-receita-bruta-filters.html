@@ -34,10 +34,9 @@
           <paper-dropdown-menu label="Filial" id="filial" style="width:50px">
             <paper-listbox class="dropdown-content" 
             id="filial" 
-            selected="5" 
+            selected="4" 
             id="filialListBox"
             on-iron-select="_onChangeFilter">
-             <paper-item>Total</paper-item>
              <paper-item>RGD</paper-item>
              <paper-item>PNG</paper-item>
              <paper-item>STR</paper-item>
@@ -45,26 +44,23 @@
              <paper-item>RJ1</paper-item>
              <paper-item>VIT</paper-item>
              <paper-item>SDR</paper-item>
-             <paper-item>TMD</paper-item>
              <paper-item>MAC</paper-item>
-             <paper-item>MTZ</paper-item>
-             
             </paper-listbox>
           </paper-dropdown-menu>
           
-            <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_onChangeFilter">
-               <paper-listbox class="dropdown-content" selected="0" 
-               id="clienteListBox">
-                  <template is="dom-repeat" items="{{clientList}}">
-                     <paper-item filial="[[item.num_contrato]]">{{ item.nome }}</paper-item>
-                  </template>
-                  <paper-item style="border-top:1px solid #E0E0E0">
-                  <iron-icon 
-                  icon="social:person-add" 
-                  style="position: relative;left: -5px;top: -1px;">
-                  </iron-icon>Novo cliente</paper-item>
-              </paper-listbox>
-              </paper-dropdown-menu>
+          <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_onChangeFilter">
+           <paper-listbox class="dropdown-content" selected="0" 
+           id="clienteListBox">
+              <template is="dom-repeat" items="{{clientList}}">
+                 <paper-item filial="[[item.num_contrato]]">{{ item.nome }}</paper-item>
+              </template>
+              <paper-item style="border-top:1px solid #E0E0E0">
+              <iron-icon 
+              icon="social:person-add" 
+              style="position: relative;left: -5px;top: -1px;">
+              </iron-icon>Novo cliente</paper-item>
+          </paper-listbox>
+          </paper-dropdown-menu>
 
               <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_onChangeFilter">
                   <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox" style="width: 92px;">
@@ -121,7 +117,8 @@
                 },
                 currentFilial:{
                   type:String,
-                  observer:'_currentFilialChanged'
+                  observer:'_currentFilialChanged',
+                  value:null,
                 },
                 clientList:{
                   type:Array,
@@ -168,7 +165,7 @@
                 }
             ,
             _currentFilialChanged:function(){
-              console.log('this.currentFilial',this.currentFilial)
+              this._filtraClientePorFilial();
             },
             _selectedClienteChanged:function(){
 
@@ -246,30 +243,36 @@
                     },
                     filial:function(){
                       this.currentFilial = filterValue;
-                      var itFiltred = false;
                       console.log('filtrando filial', this.currentFilial)
-                      //filtra filiais no comboBox
-                      _.each(this.$.clienteListBox.items,function(item,k){
-                        if(!item.filial)
-                          return;
-                        if(_.isEmpty(item.filial.match(this.currentFilial))) {
-                          item.hidden = true;
-                        }
-                        else {
-                          item.hidden = false;
-                          if(!itFiltred)
-                            this.$.clienteListBox.selected = k, itFiltred = true;
-                        }                          
-                      }
-                      .bind(this))
                     }
                 }
 
                 F[filterId].bind(this)();
 
             },
+            _filtraClientePorFilial:function()
+            {
+              this.async(function()
+              {
+                var itFiltred = false;
+                //filtra filiais no comboBox
+                _.each(this.$.clienteListBox.items,function(item,k){
+                  if(!item.filial)
+                    return;
+                  if(_.isEmpty(item.filial.match(this.currentFilial))) {
+                    item.hidden = true;
+                  }
+                  else {
+                    item.hidden = false;
+                    if(!itFiltred)
+                      this.$.clienteListBox.selected = k, itFiltred = true;
+                  }                          
+                }
+                .bind(this))
+              },333)
+            },
             _refreshFaixas: function() {
-              console.log('2::.selectedTerminal,.lastClientSelected,.selectedCliente',this.selectedTerminal,this.lastClientSelected,this.selectedCliente)
+             
                 if (!this.$.faixaDWTListBox)
                     return;
                 if(this.selectedTerminal === undefined)
