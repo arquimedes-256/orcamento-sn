@@ -418,7 +418,9 @@ Polymer({
 						dimension: k
 					}
 		});
-		this._save(M);
+		this.async(function(){
+			this._save(M);
+		},1000)
 	},
 
 	filterByDimensionsList:function() {
