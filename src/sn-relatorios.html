@@ -1,8 +1,9 @@
 <link 
 	rel="style" 
 	href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.0.1/pivot.min.css">
-
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/image-icons.html">
 
@@ -11,21 +12,72 @@
 		<style>
 			:host {
 				display: block;
+				padding: 8px;
 			}
 			#main{
 				padding:8px;
-				margin:8px;
+				margin: 2px;
 				background:#FFF;
 			}
 			#output /deep/ table {
 				width: 100%!important;
 			}
+			#wrapper {
+				margin: 0px;margin-bottom: 7px;
+			}
 		</style>
-		<div id="filters"><h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">Relatórios</h5></div>
+		<div id="filters" class="layout horizontal">
+			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
+				Relatórios
+			</h5>
+			<div class="layout horizontal">
+				<div class="layout horizontal" id="wrapper">
+					<paper-dropdown-menu 
+						label="Mensurar:" 
+						id="mensura" 
+						on-iron-select="_onChangeFilter">
+			               <paper-listbox 
+				               class="dropdown-content" 
+				               selected="0" 
+				               id="tipoTarifaList">
+			                  <paper-item name="receita-total">Valor R$</paper-item>
+			                  <paper-item name="receita-qtd-navios">
+			                  	Qtd Navio
+			                  </paper-item>
+			                  <paper-item name="receita-qtd-rebocadores">
+			                  	Qtd Rebocador
+			                  </paper-item>
+			                  <paper-item name="receita-reajuste" type="avg">Reajuste</paper-item>
+			                  <paper-item name="receita-tarifa" type="avg">Tarifa</paper-item>
+			              </paper-listbox>
+			            </paper-dropdown-menu>
+					<paper-button on-click="_getDataFromBase" raised 
+					style="background: #F5F5F5;color: #000;height: 50px;margin-top: 9px;">
+						<iron-icon icon="image:flash-on"></iron-icon> 
+					</paper-button>
+				</div>
+		        <div id="checks" on-change="_checkboxChanged" style="height: 30px;margin-top: 26px;font-size: 15px;margin-left: 4px;">
+
+		        	<paper-checkbox class="red" id="1" dim="Filial">Filial</paper-checkbox>
+		        	<paper-checkbox class="red" id="2" dim="Cliente">Cliente</paper-checkbox>
+		        	<paper-checkbox class="red" id="3" dim="Terminal">Terminal</paper-checkbox>
+		        	<paper-checkbox class="red" id="4" dim="dimension">Faixa DWT</paper-checkbox>
+		        	<style is="custom-style">
+		        	paper-checkbox.red {
+						--paper-checkbox-checked-color: 		var(--paper-red-300);
+					    --paper-checkbox-checked-ink-color: 	var(--paper-red-300);
+					    --paper-checkbox-unchecked-color: 		var(--paper-red-200);
+					    --paper-checkbox-unchecked-ink-color: 	var(--paper-red-200);
+					    --paper-checkbox-label-color: 			var(--paper-red-50);
+					    --paper-checkbox-vertical-align: top;
+					  }
+		        	</style>
+		        </div>
+			</div>
+		</div>
 		<paper-material id="main">
-			<paper-button on-click="_getDataFromBase" raised style="width: 100%;margin: 0px;margin-bottom: 7px;background: #F5F5F5;">
-				<iron-icon icon="image:flash-on"></iron-icon> 
-			</paper-button>
+			
+			
 			<paper-material id="output">Pressione para compilar</paper-material>
 		</paper-material>
 	</template>
@@ -41,20 +93,40 @@
 		Polymer({
 			is: 'sn-relatorios',
 			properties:{
-				_YList:{value:[],type:Array}
+				_YList:{value:[],type:Array},
+				_currentRelatorio:{value:"receita-total"},
+				_compileList:["Filial","Cliente","Terminal"],
 			},
 			ready:function () {
-			
+				this.$['1'].checked = true;
 			},
 			_render:function(data){
 				console.log('render',data)
 				var sum = $.pivotUtilities.aggregatorTemplates.sum;
+
 				jQuery(this.$.output).pivot(data,
 			    {
-			        rows: ["Filial","Cliente","Terminal"],
+			        rows: this._compileList,
 			        cols: ["mes"],
-			        aggregator: sum()(["receita-total"])
+			        aggregator: sum()([this._currentRelatorio])
 			    });
+			},
+			_checkboxChanged:function(e,d){
+				var currentId = parseInt(e.target.id)
+				var C = this._compileList = [];
+
+				_.each(this.$.checks.querySelectorAll('paper-checkbox'),function(checkBox){
+
+					checkBox.checked = false;
+				})
+				_.each(this.$.checks.querySelectorAll('paper-checkbox'),function(checkBox){
+
+					console.log(checkBox.id,currentId);
+					if(checkBox.id <= currentId) {
+						checkBox.checked = true;
+						C.push(checkBox.getAttribute('dim'))
+					}
+				})
 			},
 			_getDataFromBase:function() {
 
@@ -95,19 +167,26 @@
 					Yk.dimension = Gn.dimension;
 					Yk[Yk.$] = Gn[mes];
 
-					this._YList.push(Yk);
+					if(Yk.$ == this._currentRelatorio && Gn[mes])
+						this._YList.push(Yk);
 				}
 				.bind(this))
+
 				var mensures = _.chain(this._YList).pluck('$').uniq().value();
 				
+				/*
 				_.each(this._YList,function(Y){
 					_.each(mensures,function(m){
 						if(Y[m] === undefined)
 							Y[m] = 0;
 					})
 				});
+				*/
 
 				this._render(this._YList);
+			},
+			_onChangeFilter:function(e,d){
+				this._currentRelatorio = d.item.getAttribute('name')
 			}
 		});
 	</script>

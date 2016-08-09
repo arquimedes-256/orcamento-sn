@@ -54,16 +54,19 @@
               <template is="dom-repeat" items="{{clientList}}">
                  <paper-item filial="[[item.num_contrato]]">{{ item.nome }}</paper-item>
               </template>
-              <paper-item style="border-top:1px solid #E0E0E0">
-              <iron-icon 
-              icon="social:person-add" 
-              style="position: relative;left: -5px;top: -1px;">
-              </iron-icon>Novo cliente</paper-item>
+
           </paper-listbox>
           </paper-dropdown-menu>
 
-              <paper-dropdown-menu label="Faixa DWT" id="faixaDWT" on-iron-select="_onChangeFilter">
-                  <paper-listbox class="dropdown-content" selected="0" id="faixaDWTListBox" style="width: 92px;">
+              <paper-dropdown-menu 
+                label="Faixa DWT" 
+                id="faixaDWT" 
+                on-iron-select="_onChangeFilter">
+                  <paper-listbox 
+                    class="dropdown-content" 
+                    selected="0" 
+                    id="faixaDWTListBox" 
+                    style="width: 92px;">
                       <paper-item>Todos</paper-item>
                       <template is="dom-repeat" items="{{faixaList}}">
                                <paper-item>{{ item }}</paper-item>
@@ -71,8 +74,15 @@
                   </paper-listbox>
               </paper-dropdown-menu>
 
-              <paper-dropdown-menu label="Terminal" id="terminal" on-iron-select="_onChangeFilter">
-                  <paper-listbox class="dropdown-content" selected="0" id="terminalList" style="width: 92px;">
+              <paper-dropdown-menu 
+                label="Terminal" 
+                id="terminal" 
+                on-iron-select="_onChangeFilter">
+                  <paper-listbox 
+                    class="dropdown-content" 
+                    selected="0" 
+                    id="terminalList" 
+                    style="width: 92px;">
                       <template is="dom-repeat" items="{{terminalList}}">
                                <paper-item style="width: 172px;">{{ item }}</paper-item>
                             </template>
@@ -96,210 +106,228 @@
     </template>
     <script>
         Polymer({
-            is: 'sn-receita-bruta-filters',
-            properties: {
+        	is: 'sn-receita-bruta-filters',
+        	properties: {
 
-                faixaList: {
-                    type: Array
-                },
-                path: {
-                    type: String
-                },
-                selectedFaixas: {
-                    type: Array
-                },
-                selectedTerminal:{
-                  type:String
-                },
-                selectedCliente:{
-                  type:String,
-                  observer:'_selectedClienteChanged'
-                },
-                currentFilial:{
-                  type:String,
-                  observer:'_currentFilialChanged',
-                  value:null,
-                },
-                clientList:{
-                  type:Array,
-                  observer:'_clientListChanged',
-                  value: [
-                        {
-                          nome: "Saveiros",num_contrato: "RJ1000153"
-                        }, 
-                        {
-                          nome: "Camorim",num_contrato: "RJ1000158"
-                        }, 
-                        {
-                          nome: "Wallenius",num_contrato: "RJ1000590"
-                        } ,
-                        {
-                          nome: "Elcano",num_contrato :"RJ1000839"
-                        },
-                        {
-                          nome:"Granel",num_contrato:"RGD000977"
-                        },
-                        {
-                          nome:"Hamburgsud",num_contrato:"RGD000801"
-                        },
-                        {
-                          nome:"BBC",num_contrato:"MAC000514"
-                        },
-                        {
-                          nome:"BBC",num_contrato:"PNG000852"
-                        },
-                        {
-                          nome:"Camorim",num_contrato:"SEP000309"
-                        },
-                        {
-                          nome:"Oceanus",num_contrato:"SDR001140"
-                        },
-                        {
-                          nome:"Cosco",num_contrato:"STR000675"
-                        },
-                        {
-                          nome:"Elcano",num_contrato:"VIT000783"
-                        }
-                      ]
-                  }
-                }
-            ,
-            _currentFilialChanged:function(){
-              this._filtraClientePorFilial();
-            },
-            _selectedClienteChanged:function(){
+        		faixaList: {
+        			type: Array
+        		},
+        		path: {
+        			type: String
+        		},
+        		selectedFaixas: {
+        			type: Array
+        		},
+        		selectedTerminal: {
+        			type: String
+        		},
+        		selectedCliente: {
+        			type: String,
+        			observer: '_selectedClienteChanged'
+        		},
+        		currentFilial: {
+        			type: String,
+        			observer: '_currentFilialChanged',
+        			value: null,
+        		},
+        		clientList: {
+        			type: Array,
+        			observer: '_clientListChanged',
+        			value: [{
+        				nome: "Saveiros",
+        				num_contrato: "RJ1000153"
+        			}, {
+        				nome: "Camorim",
+        				num_contrato: "RJ1000158"
+        			}, {
+        				nome: "Wallenius",
+        				num_contrato: "RJ1000590"
+        			}, {
+        				nome: "Elcano",
+        				num_contrato: "RJ1000839"
+        			}, {
+        				nome: "Granel",
+        				num_contrato: "RGD000977"
+        			}, {
+        				nome: "Hamburgsud",
+        				num_contrato: "RGD000801"
+        			}, {
+        				nome: "BBC",
+        				num_contrato: "MAC000514"
+        			}, {
+        				nome: "BBC",
+        				num_contrato: "PNG000852"
+        			}, {
+        				nome: "Camorim",
+        				num_contrato: "SEP000309"
+        			}, {
+        				nome: "Oceanus",
+        				num_contrato: "SDR001140"
+        			}, {
+        				nome: "Cosco",
+        				num_contrato: "STR000675"
+        			}, {
+        				nome: "Elcano",
+        				num_contrato: "VIT000783"
+        			}]
+        		}
+        	},
+        	_currentFilialChanged: function() {
+        		this._filtraClientePorFilial();
 
-              this.terminalList = [];
-              this.selectedFaixas = [];
-              this.faixaList = [];
-              this.selectedTerminal = undefined;
 
-              var num_contrato = 
-              _(this.clientList)
-                .groupBy('nome')[this.selectedCliente][0]
-                .num_contrato;
-              this.$.inputContrato.value = num_contrato;
+        		var ListBox = this.$.clienteListBox;
+        		
 
-              this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
-              this.$.dataTOP.getInfoContrato(num_contrato);
-            },
-            observers: ['_buildPath(selectedCliente,selectedTerminal,currentFilial)'],
-            ready:function(){
+        		new Firebase(FB_URL + "/clientes/" + this.currentFilial)
+        			.once("value", function(dataSnap) {
+        				$(ListBox.querySelectorAll('[remove-on-fetch-cliente]')).remove();
+        				var V = dataSnap.val();
+        				_.each(V, function(clienteV) {
+        					ListBox.innerHTML += 
+        					'<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
+        					+ clienteV.nome +
+        					'</paper-item>';
+        				});
+        				ListBox.innerHTML += 
+        				'<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
+		              +'<iron-icon '
+		              +'icon="social:person-add" '
+		             	+' style="position: relative;left: -5px;top: -1px;">'
+		              +'</iron-icon>Novo cliente</paper-item>';
+        			})
+        	},
+        	_selectedClienteChanged: function() {
 
-              setInterval(function(){
-                if((  this.$.faixaDWT.innerText.trim() == "Todos" 
-                  &&  this.selectedTerminal === undefined))
-                {
-                  this.selectedTerminal = _.first(this.terminalList);
-                  this._refreshFaixas();
-                }
-              }.bind(this),1000)
+        		this.terminalList = [];
+        		this.selectedFaixas = [];
+        		this.faixaList = [];
+        		this.selectedTerminal = undefined;
 
-              this.currentFilial = "RJ1";
-            },
-            _buildPath: function() {
-                if (this.selectedCliente && this.selectedTerminal)
-                    this.path = "receita/"
-                      +this.currentFilial
-                      +'/'
-                      +this.selectedCliente 
-                      +'/' 
-                      + this.selectedTerminal;
+        		var num_contrato =
+        			_(this.clientList)
+        			.groupBy('nome')[this.selectedCliente][0]
+        			.num_contrato;
+        		this.$.inputContrato.value = num_contrato;
 
-                this.fire('path-changed');
-            },
-            _onChangeFilter: function(e, d) {
-                var filterId = e.path[11].id;
-                var filterValue = d.item.innerText;
-                var F = {
-                    faixaDWT: function() {
+        		this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
+        		this.$.dataTOP.getInfoContrato(num_contrato);
+        	},
+        	observers: ['_buildPath(selectedCliente,selectedTerminal,currentFilial)'],
+        	ready: function() {
 
-                        _.each(document
-                            .querySelectorAll('* /deep/ sn-receita-bruta /deep/ sn-tabela-mes'),
-                            function(tabelaMesElement) {
-                                tabelaMesElement.filterByDimensionsList();
-                            })
+        		setInterval(function() {
+        			if ((this.$.faixaDWT.innerText.trim() == "Todos" &&
+        					this.selectedTerminal === undefined)) {
+        				this.selectedTerminal = _.first(this.terminalList);
+        				this._refreshFaixas();
+        			}
+        		}.bind(this), 1000)
 
-                    },
-                    cliente: function() {
-                        if (d.item.textContent.trim() == "Novo cliente") {
-                            this.async(function() {
-                                this.$.clienteListBox.selected = this.lastClientSelected | 0
-                                this.lastClientSelected = 0
-                                this.$.novoClienteElement.open();
-                                this._topFaixaContratoHandler();
-                            }, 333);
-                        } else {
-                            
-                            this.lastClientSelected = this.$.clienteListBox.selected;
-                            this.selectedCliente = d.item.textContent;
-                           
+        		this.currentFilial = "RJ1";
+        	},
+        	_buildPath: function() {
+        		if (this.selectedCliente && this.selectedTerminal)
+        			this.path = "receita/" +
+        			this.currentFilial +
+        			'/' +
+        			this.selectedCliente +
+        			'/' +
+        			this.selectedTerminal;
 
-                        }
-                    },
-                    terminal: function() {
-                        this.selectedTerminal = d.item.textContent;
-                        this._refreshFaixas();
-                    },
-                    filial:function(){
-                      this.currentFilial = filterValue;
-                      console.log('filtrando filial', this.currentFilial)
-                    }
-                }
+        		this.fire('path-changed');
+        	},
+        	_onChangeFilter: function(e, d) {
+        		var filterId = e.path[11].id;
+        		var filterValue = d.item.innerText;
+        		var F = {
+        			faixaDWT: function() {
 
-                F[filterId].bind(this)();
+        				_.each(document
+        					.querySelectorAll('* /deep/ sn-receita-bruta /deep/ sn-tabela-mes'),
+        					function(tabelaMesElement) {
+        						tabelaMesElement.filterByDimensionsList();
+        					})
 
-            },
-            _filtraClientePorFilial:function()
-            {
-              this.async(function()
-              {
-                var itFiltred = false;
-                //filtra filiais no comboBox
-                _.each(this.$.clienteListBox.items,function(item,k){
-                  if(!item.filial)
-                    return;
-                  if(_.isEmpty(item.filial.match(this.currentFilial))) {
-                    item.hidden = true;
-                  }
-                  else {
-                    item.hidden = false;
-                    if(!itFiltred)
-                      this.$.clienteListBox.selected = k, itFiltred = true;
-                  }                          
-                }
-                .bind(this))
-              },333)
-            },
-            _refreshFaixas: function() {
-             
-                if (!this.$.faixaDWTListBox)
-                    return;
-                if(this.selectedTerminal === undefined)
-                  this.selectedTerminal = _.first(this.terminalList);
-                //volta para faixa todos
-                this.$.faixaDWTListBox.selected = 0;
-                //fill
-                if(this.selectedTerminal)
-                  this.fire('build-faixas', {
-                      faixasTarifa: this.$.dataTOP._terminalFaixasTarifa[this.selectedTerminal]
-                  })
+        			},
+        			cliente: function() {
 
-                var TOP = this.$.dataTOP;
-                this.selectedFaixas = this.faixaList = 
-                TOP.getFaixasByTerminal(this.selectedTerminal);
+        				if (d.item.textContent.trim() == "Novo cliente") {
 
-            },
+        					this.async(function() {
+        						this.$.clienteListBox.selected = this.lastClientSelected | 0
+        						this.lastClientSelected = 0
+        						this.$.novoClienteElement.open();
+        						this._topFaixaContratoHandler();
+        					}, 333);
 
-            //TOPWEB responses
-            _topFaixaContratoHandler: function() {
-                this.terminalList = this.$.dataTOP.terminalList;
-                this._refreshFaixas();
-            },
-            _topInfoContratoHandler: function(e, d) {
-                this.$.inputMoeda.value = d.DESCRICAO_MOEDA;
-                this.$.inputTipoTarifa.value = d.CD_TIPO_CONTRATO
-            }
+        				} else {
+
+        					this.lastClientSelected = this.$.clienteListBox.selected;
+        					this.selectedCliente = d.item.textContent;
+
+        				}
+        			},
+        			terminal: function() {
+        				this.selectedTerminal = d.item.textContent;
+        				this._refreshFaixas();
+        			},
+        			filial: function() {
+        				this.currentFilial = filterValue;
+        				console.log('filtrando filial', this.currentFilial)
+        			}
+        		}
+
+        		F[filterId].bind(this)();
+
+        	},
+        	_filtraClientePorFilial: function() {
+        		this.async(function() {
+        			var itFiltred = false;
+        			//filtra filiais no comboBox
+        			_.each(this.$.clienteListBox.items, function(item, k) {
+        					if (!item.filial)
+        						return;
+        					if (_.isEmpty(item.filial.match(this.currentFilial))) {
+        						item.hidden = true;
+        					} else {
+        						item.hidden = false;
+        						if (!itFiltred)
+        							this.$.clienteListBox.selected = k, itFiltred = true;
+        					}
+        				}
+        				.bind(this))
+        		}, 333)
+        	},
+        	_refreshFaixas: function() {
+
+        		if (!this.$.faixaDWTListBox)
+        			return;
+        		if (this.selectedTerminal === undefined)
+        			this.selectedTerminal = _.first(this.terminalList);
+        		//volta para faixa todos
+        		this.$.faixaDWTListBox.selected = 0;
+        		//fill
+        		if (this.selectedTerminal)
+        			this.fire('build-faixas', {
+        				faixasTarifa: this.$.dataTOP._terminalFaixasTarifa[this.selectedTerminal]
+        			})
+
+        		var TOP = this.$.dataTOP;
+        		this.selectedFaixas = this.faixaList =
+        			TOP.getFaixasByTerminal(this.selectedTerminal);
+
+        	},
+
+        	//TOPWEB responses
+        	_topFaixaContratoHandler: function() {
+        		this.terminalList = this.$.dataTOP.terminalList;
+        		this._refreshFaixas();
+        	},
+        	_topInfoContratoHandler: function(e, d) {
+        		this.$.inputMoeda.value = d.DESCRICAO_MOEDA;
+        		this.$.inputTipoTarifa.value = d.CD_TIPO_CONTRATO
+        	}
 
         });
     </script>
