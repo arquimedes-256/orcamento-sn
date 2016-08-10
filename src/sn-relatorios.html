@@ -8,117 +8,125 @@
 <link rel="import" href="../bower_components/iron-icons/image-icons.html">
 
 <dom-module id="sn-relatorios">
-	<template>
-		<style>
-			:host {
-				display: block;
-				padding: 8px;
-			}
-			#main{
-				padding:8px;
-				margin: 2px;
-				background:#FFF;
-			}
-			#output /deep/ table {
-				width: 100%!important;
-			}
-			#wrapper {
-				margin: 0px;margin-bottom: 7px;
-			}
-		</style>
-		<div id="filters" class="layout horizontal">
-			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
-				Relatórios
-			</h5>
-			<div class="layout horizontal">
-				<div class="layout horizontal" id="wrapper">
-					<paper-dropdown-menu 
-						label="Mensurar:" 
-						id="mensura" 
-						on-iron-select="_onChangeFilter">
-			               <paper-listbox 
-				               class="dropdown-content" 
-				               selected="0" 
-				               id="tipoTarifaList">
-			                  <paper-item name="receita-total">Valor R$</paper-item>
-			                  <paper-item name="receita-qtd-navios">
-			                  	Qtd Navio
-			                  </paper-item>
-			                  <paper-item name="receita-qtd-rebocadores">
-			                  	Qtd Rebocador
-			                  </paper-item>
-			                  <paper-item name="receita-reajuste" type="avg">Reajuste</paper-item>
-			                  <paper-item name="receita-tarifa" type="avg">Tarifa</paper-item>
-			              </paper-listbox>
-			            </paper-dropdown-menu>
-					<paper-button on-click="_getDataFromBase" raised 
-					style="background: #F5F5F5;color: #000;height: 50px;margin-top: 9px;">
-						<iron-icon icon="image:flash-on"></iron-icon> 
-					</paper-button>
-				</div>
-		        <div id="checks" on-change="_checkboxChanged" style="height: 30px;margin-top: 26px;font-size: 15px;margin-left: 4px;">
-
-		        	<paper-checkbox class="red" id="1" dim="Filial">Filial</paper-checkbox>
-		        	<paper-checkbox class="red" id="2" dim="Cliente">Cliente</paper-checkbox>
-		        	<paper-checkbox class="red" id="3" dim="Terminal">Terminal</paper-checkbox>
-		        	<paper-checkbox class="red" id="4" dim="dimension">Faixa DWT</paper-checkbox>
-		        	<style is="custom-style">
-		        	paper-checkbox.red {
-						--paper-checkbox-checked-color: 		var(--paper-red-300);
-					    --paper-checkbox-checked-ink-color: 	var(--paper-red-300);
-					    --paper-checkbox-unchecked-color: 		var(--paper-red-200);
-					    --paper-checkbox-unchecked-ink-color: 	var(--paper-red-200);
-					    --paper-checkbox-label-color: 			var(--paper-red-50);
-					    --paper-checkbox-vertical-align: top;
-					  }
-		        	</style>
-		        </div>
+<template>
+	<style>
+		:host {
+			display: block;
+			padding: 8px;
+		}
+		#main{
+			padding:8px;
+			margin: 2px;
+			background:#FFF;
+		}
+		#output /deep/ table {
+			width: 100%!important;
+		}
+		#wrapper {
+			margin: 0px;margin-bottom: 7px;
+		}
+	</style>
+	<div id="filters" class="layout horizontal">
+		<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
+			Relatórios
+		</h5>
+		<div class="layout horizontal">
+			<div class="layout horizontal" id="wrapper">
+				<paper-dropdown-menu 
+					label="Mensurar:" 
+					id="mensura" 
+					on-iron-select="_onChangeFilter">
+		               <paper-listbox 
+			               class="dropdown-content" 
+			               selected="0" 
+			               id="tipoTarifaList">
+		                  <paper-item name="receita-total">Valor R$</paper-item>
+		                  <paper-item name="receita-qtd-navios">
+		                  	Qtd Navio
+		                  </paper-item>
+		                  <paper-item name="receita-qtd-rebocadores">
+		                  	Qtd Rebocador
+		                  </paper-item>
+		                  <paper-item name="receita-reajuste" type="avg">Reajuste</paper-item>
+		                  <paper-item name="receita-tarifa" type="avg">Tarifa</paper-item>
+		              </paper-listbox>
+		            </paper-dropdown-menu>
+				<paper-button on-click="_getDataFromBase" raised 
+				style="background: #F5F5F5;color: #000;height: 50px;margin-top: 9px;">
+					<iron-icon icon="image:flash-on"></iron-icon> 
+				</paper-button>
 			</div>
+	        <div id="checks" on-change="_checkboxChanged" style="height: 30px;margin-top: 26px;font-size: 15px;margin-left: 4px;">
+
+	        	<paper-checkbox class="red" id="1" dim="Filial">Filial</paper-checkbox>
+	        	<paper-checkbox class="red" id="2" dim="Cliente">Cliente</paper-checkbox>
+	        	<paper-checkbox class="red" id="3" dim="Terminal">Terminal</paper-checkbox>
+	        	<paper-checkbox class="red" id="4" dim="dimension">Faixa DWT</paper-checkbox>
+	        	<style is="custom-style">
+	        	paper-checkbox.red {
+					--paper-checkbox-checked-color: 		var(--paper-red-300);
+				    --paper-checkbox-checked-ink-color: 	var(--paper-red-300);
+				    --paper-checkbox-unchecked-color: 		var(--paper-red-200);
+				    --paper-checkbox-unchecked-ink-color: 	var(--paper-red-200);
+				    --paper-checkbox-label-color: 			var(--paper-red-50);
+				    --paper-checkbox-vertical-align: top;
+				  }
+	        	</style>
+	        	<paper-checkbox ignore class="red" dim="Cambio">Câmbio</paper-checkbox>
+	        </div>
 		</div>
-		<paper-material id="main">
-			
-			
-			<paper-material id="output">Pressione para compilar</paper-material>
-		</paper-material>
-	</template>
-	<script>
+	</div>
+	<paper-material id="main">
+		
+		
+		<paper-material id="output">Pressione para compilar</paper-material>
+	</paper-material>
+</template>
+<script>
 
 const PATH_TEMPLATE = [
-								'Conta Gerencial',
-								'Filial',
-								'Cliente',
-								'Terminal',
-								'$'
-								];
+							'Conta Gerencial',
+							'Filial',
+							'Cliente',
+							'Terminal',
+							'$'
+							];
 Polymer({
-	is: 'sn-relatorios',
-	properties:{
-		_YList:{value:[],type:Array},
-		_currentRelatorio:{value:"receita-total"},
-		_compileList:["Filial","Cliente","Terminal"],
-	},
-	ready:function () {
-		this.$['1'].checked = true;
-	},
-	_render:function(data){
-		console.log('render',data)
-		var sum = $.pivotUtilities.aggregatorTemplates.sum;
+is: 'sn-relatorios',
+properties:{
+	_YList:{value:[],type:Array},
+	_currentRelatorio:{value:"receita-total"},
+	_compileList:["Filial","Cliente","Terminal"],
+},
+ready:function () {
+	this.$['1'].checked = true;
+},
+_render:function(data){
+	console.log('render',data)
+	var sum = $.pivotUtilities.aggregatorTemplates.sum;
 
-		jQuery(this.$.output).pivot(data,
-	    {
-	        rows: this._compileList,
-	        cols: ["mes"],
-	        aggregator: sum()([this._currentRelatorio])
-	    });
-	},
-	_checkboxChanged:function(e,d){
-		var currentId = parseInt(e.target.id)
-		var C = this._compileList = [];
+	jQuery(this.$.output).pivot(data,
+    {
+        rows: this._compileList,
+        cols: ["mes"],
+        aggregator: sum()([this._currentRelatorio])
+    });
+},
+_checkboxChanged:function(e,d){
 
-		_.each(this.$.checks.querySelectorAll('paper-checkbox'),function(checkBox){
+	var C = this._compileList;
+	var Target = e.target;
+
+	if(!Target.attributes.hasOwnProperty('ignore')) {
+		C = this._compileList = [];
+
+		var currentId = parseInt(Target.id)
+		var checkBoxElementList = this.$.checks.querySelectorAll('paper-checkbox:not([ignore])')
+
+		_.each(checkBoxElementList,function(checkBox){
 			checkBox.checked = false;
 		})
-		_.each(this.$.checks.querySelectorAll('paper-checkbox'),function(checkBox){
+		_.each(checkBoxElementList,function(checkBox){
 
 			console.log(checkBox.id,currentId);
 			if(checkBox.id <= currentId) {
@@ -126,67 +134,84 @@ Polymer({
 				C.push(checkBox.getAttribute('dim'))
 			}
 		})
-	},
-	_getDataFromBase:function() {
 
-		jQuery(this.$.output).html("Compilando...");
-		
-		new Firebase(FB_URL).once('value',function(dataSnap){
-			
-			var G = dataSnap.val();
-			
-			this._YList = [];
-			this._Parse(G,[]) 
-
-		}.bind(this));
-	},
-	_Parse:function(G,path){							
-		_.each(G,function(Gk,k){
-
-			if(_.isObject(Gk)) {
-				if(PATH_TEMPLATE.length == path.length)
-					this._BuildStar(path,Gk)
-				else
-					this._Parse(Gk,path.concat(k))
-			}
-		}
-		.bind(this))	
-		this._render(this._YList);
-	},
-	_BuildStar:function(path,Gn){
-		
-		var Y = {};
-
-		_.each(PATH_TEMPLATE,function(k,i){
-			Y[k] = path[i]
-		}.bind(this))
-
-		_.each([1,2,3,4,5,6,7,8,9,10,11,12],function(mes){
-			var Yk = _.clone(Y);
-			Yk.mes = mes;
-			Yk.dimension = Gn.dimension;
-			Yk[Yk.$] = Gn[mes];
-
-			if(Yk.$ == this._currentRelatorio && Gn[mes])
-				this._YList.push(Yk);
-		}
-		.bind(this))
-
-		var mensures = _.chain(this._YList).pluck('$').uniq().value();
-		
-		/*
-		_.each(this._YList,function(Y){
-			_.each(mensures,function(m){
-				if(Y[m] === undefined)
-					Y[m] = 0;
-			})
-		});
-		*/
-
-	},
-	_onChangeFilter:function(e,d){
-		this._currentRelatorio = d.item.getAttribute('name')
 	}
+	
+	var checkBoxElementListIgnored = this.$.checks.querySelectorAll('paper-checkbox[ignore]')
+	_.each(checkBoxElementListIgnored,function(checkBox)
+	{
+		var dim = checkBox.getAttribute('dim');
+
+		if(checkBox.checked)
+			C.push(dim)
+		else if(_.contains(C,dim)) {
+			C = this._compileList = _.difference(this._compileList,[dim]);
+			debugger;
+		}
+	}
+	.bind(this));
+
+},
+_getDataFromBase:function() {
+
+	jQuery(this.$.output).html("Compilando...");
+	
+	new Firebase(FB_URL).once('value',function(dataSnap){
+		
+		var G = dataSnap.val();
+		
+		this._YList = [];
+		this._Parse(G,[]) 
+
+	}.bind(this));
+},
+_Parse:function(G,path){							
+	_.each(G,function(Gk,k){
+
+		if(_.isObject(Gk)) {
+			if(PATH_TEMPLATE.length == path.length)
+				this._BuildStar(path,Gk)
+			else
+				this._Parse(Gk,path.concat(k))
+		}
+	}
+	.bind(this))	
+	this._render(this._YList);
+},
+_BuildStar:function(path,Gn){
+	
+	var Y = {};
+
+	_.each(PATH_TEMPLATE,function(k,i){
+		Y[k] = path[i]
+	}.bind(this))
+
+	_.each([1,2,3,4,5,6,7,8,9,10,11,12],function(mes){
+		var Yk = _.clone(Y);
+		Yk.mes = mes;
+		Yk.dimension = Gn.dimension;
+		Yk[Yk.$] = Gn[mes];
+		Yk.Cambio = FILIAL_CLIENT_TO_TARIFA[Yk.Filial+':'+Yk.Cliente] || TARIFA_PADRAO
+		if(Yk.$ == this._currentRelatorio && Gn[mes])
+			this._YList.push(Yk);
+	}
+	.bind(this))
+
+	var mensures = _.chain(this._YList).pluck('$').uniq().value();
+	
+	/*
+	_.each(this._YList,function(Y){
+		_.each(mensures,function(m){
+			if(Y[m] === undefined)
+				Y[m] = 0;
+		})
+	});
+	*/
+
+},
+_onChangeFilter:function(e,d){
+	this._currentRelatorio = d.item.getAttribute('name')
+}
 });
-	</script>
+</script>
 </dom-module>

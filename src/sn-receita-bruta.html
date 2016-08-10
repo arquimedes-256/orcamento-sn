@@ -68,7 +68,7 @@
             dimensions="{{ _selectedFaixas }}" 
             filter="#faixaDWT"
             header="Quantidade de Navios"></sn-tabela-mes>
-            
+
          <sn-tabela-mes 
             editable
             id="tableQTDRebocadores"
@@ -131,10 +131,11 @@
 				          B = this.$.tableQTDRebocadores.getStructuredData();
               }
               else {
-                B = this.$.tableQTDRebocadores.getSampleData(1,{isStructured:true});
+                  B = this.$.tableQTDRebocadores.getSampleData(1,{isStructured:true});
               }
               
-              this.$.tabelaTotal.productABC(A,B,C,D,{tax:moeda == "DOLAR" ? vlrCambio : 1});
+              this.$.tabelaTotal.productABC(A,B,C,D,
+                {tax:moeda == "DOLAR" ? vlrCambio : 1});
       
             },1000)
         },
