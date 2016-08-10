@@ -204,7 +204,6 @@ Polymer({
 			},333)
 	},
 	_dataDimensionsObserver:function(){
-		this._removeFilters();
 		this.filterByDimensionsList();
 	},
 	_pathChanged:function(){
@@ -212,8 +211,7 @@ Polymer({
 
 		this.dimensions = [];
 		this._path = this.path.replace(/\s+/g,'-');
-		this.async(
-		this._removeFilters,333)
+		this.async(this._removeFilters,1000)
 	},
 	_pathDBObserver:function(_path,db){
 		this.data = [];
@@ -428,17 +426,19 @@ Polymer({
 	},
 
 	filterByDimensionsList:function() {
-			var F = document.querySelector("* /deep/ #filterContainer /deep/ "+this.filter);
-			if(!F) return;
-			var f = F.value;
-			var D = f == "Todos" ? this.dimensions : [f];
+		this._removeFilters();
+		
+		var F = document.querySelector("* /deep/ #filterContainer /deep/ "+this.filter);
+		if(!F) return;
+		var f = F.value;
+		var D = f == "Todos" ? this.dimensions : [f];
 
-			_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
-				tr.style.display = "table-row";
-				var tdText = tr.querySelector('td').innerText.trim()
-				if(!_.contains(D,tdText))
-					tr.style.display = "none";
-			});
+		_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
+			tr.style.display = "table-row";
+			var tdText = tr.querySelector('td').innerText.trim()
+			if(!_.contains(D,tdText))
+				tr.style.display = "none";
+		});
 	},
 	_removeFilters:function(){
 		_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
