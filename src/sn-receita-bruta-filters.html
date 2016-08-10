@@ -112,7 +112,6 @@
     </div>
     </template>
     <script>
-const TARIFA_PADRAO = 3.25;
 Polymer({
 	is: 'sn-receita-bruta-filters',
 	properties: {
@@ -141,43 +140,7 @@ Polymer({
 		clientList: {
 			type: Array,
 			observer: '_clientListChanged',
-			value: [{
-				nome: "Saveiros",
-				num_contrato: "RJ1000153",tarifaFixa:2.34
-			}, {
-				nome: "Camorim",
-				num_contrato: "RJ1000158",tarifaFixa:2.34
-			}, {
-				nome: "Wallenius",
-				num_contrato: "RJ1000590",tarifaFixa:2.34
-			}, {
-				nome: "Elcano",
-				num_contrato: "RJ1000839"
-			}, {
-				nome: "Granel",
-				num_contrato: "RGD000977"
-			}, {
-				nome: "Hamburgsud",
-				num_contrato: "RGD000801"
-			}, {
-				nome: "BBC",
-				num_contrato: "MAC000514"
-			}, {
-				nome: "BBC",
-				num_contrato: "PNG000852"
-			}, {
-				nome: "Camorim",
-				num_contrato: "SEP000309"
-			}, {
-				nome: "Oceanus",
-				num_contrato: "SDR001140"
-			}, {
-				nome: "Cosco",
-				num_contrato: "STR000675"
-			}, {
-				nome: "Elcano",
-				num_contrato: "VIT000783"
-			}]
+			value: CLIENT_LIST
 		}
 	},
 	_currentFilialChanged: function() {
