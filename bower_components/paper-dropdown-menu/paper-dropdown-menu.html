@@ -336,7 +336,14 @@ respectively.
           if (!selectedItem) {
             value = '';
           } else {
-            value = selectedItem.label || selectedItem.textContent.trim();
+            value = 
+            (
+              selectedItem.querySelector('[nome-cliente]') 
+              && selectedItem.querySelector('[nome-cliente]')
+              .textContent.trim() 
+            )
+            || selectedItem.label 
+            || selectedItem.textContent.trim();
           }
 
           this._setValue(value);

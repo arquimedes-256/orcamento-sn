@@ -59,6 +59,16 @@
 
          
 
+    <sn-tabela-mes 
+            editable
+            id="tableQTDNavios"
+            db="receita-qtd-navios" 
+            on-tabela-mes-build="_tabelaMesBuildHandler"
+            path="{{_path}}"
+            dimensions="{{ _selectedFaixas }}" 
+            filter="#faixaDWT"
+            header="Quantidade de Navios"></sn-tabela-mes>
+            
          <sn-tabela-mes 
             editable
             id="tableQTDRebocadores"
@@ -69,15 +79,6 @@
             filter="#faixaDWT"
             header="Quantidade de Rebocadores"></sn-tabela-mes>
 		
-		<sn-tabela-mes 
-            editable
-            id="tableQTDNavios"
-            db="receita-qtd-navios" 
-            on-tabela-mes-build="_tabelaMesBuildHandler"
-            path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}" 
-            filter="#faixaDWT"
-            header="Quantidade de Navios"></sn-tabela-mes>
 
          <sn-tabela-mes 
             id="tableTarifas"
