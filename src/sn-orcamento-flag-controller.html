@@ -1,0 +1,59 @@
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="sn-orcamento-flag-controller">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+			.toogle-button-green {
+				--paper-toggle-button-checked-button-color:  var(--paper-green-500);
+    			--paper-toggle-button-checked-ink-color: var(--paper-green-500);
+    			font-size: 13px;height: 64px;
+			}
+			* /deep/ * {
+				color:#FFF!important;
+			}
+		</style>
+		<paper-toggle-button id="button" on-change="_changeAction" class="toogle-button-green">
+		{{label}}
+		</paper-toggle-button>
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-orcamento-flag-controller',
+			properties:{
+				path:{type:String,observer:'_pathChanged'},
+				label:{value:'Editando'}
+			},
+			ready:function(){
+			
+			},
+			_changeAction:function(){
+				var v = this.$.button.checked;
+				new Firebase(FB_URL+"/flag-controller/"+this.path).set({value:v})
+			},
+			_pathChanged:function(){
+				if(this.FBRef)
+					this.FBRef.off();
+				this._observeDB();
+			},
+			_observeDB:function(){
+				if(!this.path)
+					return;
+				this.FBRef = new Firebase(FB_URL+"/flag-controller/"+this.path);
+				this.FBRef.on('value',function(snap){
+					var v = snap.val();
+					this.$.button.checked = v ? v.value : false;
+
+					if(this.$.button.checked)
+						this.label = "Pronto!";
+					else
+						this.label = "Editando"
+				}
+				.bind(this))
+			}
+
+		});
+	</script>
+</dom-module>

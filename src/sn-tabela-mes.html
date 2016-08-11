@@ -300,7 +300,7 @@ Polymer({
 		});
 	},
 	getStructuredDataAsPercent:function() {
-		var D = JSON.parse(JSON.stringify(this.data));
+		var D = JSON.parse(JSON.stringify(this.data) || '{}');
 		return _.mapObject(_.groupBy(D,'dimension'),function(x){
 			f = _.first(x);
 			var F = parseFloat;

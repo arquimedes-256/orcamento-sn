@@ -1,6 +1,7 @@
 <link rel="import" href="sn-receita-bruta-novo-cliente.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="sn-orcamento-flag-controller.html">
 
 <dom-module id="sn-receita-bruta-filters">
     <template>
@@ -114,7 +115,8 @@
     <paper-input label="Tipo de Tarifa" id="inputTipoTarifa" value="*" readonly></paper-input>
     <paper-input label="Moeda" id="inputMoeda" value="*" readonly></paper-input>
     <paper-input label="Tarifa U$" id="inputCambio" value="3.25" readonly></paper-input>
-
+    
+    <sn-orcamento-flag-controller path="{{path}}"></sn-orcamento-flag-controller>
     </div>
     </template>
     <script>
