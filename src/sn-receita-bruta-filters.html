@@ -13,7 +13,11 @@
       opacity:1!important;
    
     }
-    * /deep/ [contrato], * /deep/ [tarifa-fixa] {
+    * /deep/ [contrato], 
+    * /deep/ [tarifa-fixa], 
+    * /deep/ [moeda],
+    * /deep/ [tipo-tarifa],
+    * /deep/ [faixa-json] {
         display:none!important;
     }
 
@@ -23,7 +27,9 @@
             on-response-faixacontrato="_topFaixaContratoHandler"
             on-response-infocontrato="_topInfoContratoHandler">
          </sn-data-top>
-      <sn-receita-bruta-novo-cliente id="novoClienteElement"></sn-receita-bruta-novo-cliente>
+      <sn-receita-bruta-novo-cliente 
+        id="novoClienteElement"
+        on-save-cliente="_fetchCustomClients"></sn-receita-bruta-novo-cliente>
          <div class="layout horizontal">
             <h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">Receita Bruta</h5>
 
@@ -145,29 +151,32 @@ Polymer({
 	},
 	_currentFilialChanged: function() {
 		this._filtraClientePorFilial();
-
-
-		var ListBox = this.$.clienteListBox;
-		
-
-		new Firebase(FB_URL + "/clientes/" + this.currentFilial)
-			.once("value", function(dataSnap) {
-				$(ListBox.querySelectorAll('[remove-on-fetch-cliente]')).remove();
-				var V = dataSnap.val();
-				_.each(V, function(clienteV) {
-					ListBox.innerHTML += 
-					'<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
-					+ '<span nome-cliente>'+ clienteV.nome +'</span>'
-					+ '</paper-item>';
-				});
-				ListBox.innerHTML += 
-				'<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
+        this._fetchCustomClients();
+	},
+    _fetchCustomClients:function(){
+        var ListBox = this.$.clienteListBox;
+        new Firebase(FB_URL + "/clientes/" + this.currentFilial)
+            .once("value", function(dataSnap) {
+                $(ListBox.querySelectorAll('[remove-on-fetch-cliente]')).remove();
+                var V = dataSnap.val();
+                _.each(V, function(clienteV) {
+                    ListBox.innerHTML += 
+                    '<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
+                    + '<span nome-cliente>' +clienteV.nome      +'</span>'
+                    + '<span tarifa-fixa>'  +clienteV.cambio    +'</span>'
+                    + '<span moeda>'  +clienteV.moeda    +'</span>'
+                    + '<span tipo-tarifa>'  +clienteV.tipoTarifa    +'</span>'
+                    + '<span faixa-json>'+ JSON.stringify(clienteV.faixas) +'</span>'
+                    + '</paper-item>';
+                });
+                ListBox.innerHTML += 
+                '<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
               +'<iron-icon '
               +'icon="social:person-add" '
-             	+' style="position: relative;left: -5px;top: -1px;">'
+                +' style="position: relative;left: -5px;top: -1px;">'
               +'</iron-icon>Novo cliente</paper-item>';
-			})
-	},
+            })
+    },
 	_selectedClienteChanged: function() {
 
 		this.terminalList = [];
@@ -175,14 +184,47 @@ Polymer({
 		this.faixaList = [];
 		this.selectedTerminal = undefined;
 
-		var num_contrato =
-			_(this.clientList)
-			.groupBy('nome')[this.selectedCliente][0]
-			.num_contrato;
-		this.$.inputContrato.value = num_contrato;
+        var cliente = FILIAL_CLIENT_TO_CLIENTE[this.currentFilial+':'+this.selectedCliente]
+		
 
-		this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
-		this.$.dataTOP.getInfoContrato(num_contrato);
+        if(cliente != null) 
+        {
+            var num_contrato = cliente.num_contrato;
+
+            this.$.inputContrato.value = num_contrato;
+            //infos do TOP
+            this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
+            this.$.dataTOP.getInfoContrato(num_contrato);
+        }
+        else //if custom cliente
+        {
+            var clienteElement = this.$.cliente.selectedItem;
+            var moeda       = clienteElement
+                .querySelector('[moeda]')
+                .innerText;
+            var tipoTarifa  = clienteElement
+                .querySelector('[tipo-tarifa]')
+                .innerText;
+            var faixasMeta = JSON.parse(clienteElement
+                .querySelector('[faixa-json]')
+                .innerText);
+
+            this.$.inputContrato.value = "N/A";
+            this.$.dataTOP.destroy();
+
+            this.terminalList = ["*"];
+            this.selectedTerminal = "*";
+
+            this.$.inputMoeda.value = moeda;
+            this.$.inputTipoTarifa.value = tipoTarifa;
+            var faixasObj = {};
+            _.each(faixasMeta,function(f){
+                faixasObj[f.faixaA+'-'+f.faixaB] = {VLR_LINER:f.tarifa};
+            })
+            this.fire('build-faixas', {
+                faixasTarifa: faixasObj
+            })
+        }
 	},
 	observers: ['_buildPath(selectedCliente,selectedTerminal,currentFilial)'],
 	ready: function() {
@@ -280,16 +322,18 @@ Polymer({
 		if (this.selectedTerminal === undefined)
 			this.selectedTerminal = _.first(this.terminalList);
 		//volta para faixa todos
-		this.$.faixaDWTListBox.selected = 0;
-		//fill
-		if (this.selectedTerminal)
-			this.fire('build-faixas', {
-				faixasTarifa: this.$.dataTOP._terminalFaixasTarifa[this.selectedTerminal]
-			})
+	
+        if(this.$.dataTOP._terminalFaixasTarifa) {
+            this.$.faixaDWTListBox.selected = 0;
+            if (this.selectedTerminal)
+                this.fire('build-faixas', {
+                    faixasTarifa: this.$.dataTOP._terminalFaixasTarifa[this.selectedTerminal]
+                })
 
-		var TOP = this.$.dataTOP;
-		this.selectedFaixas = this.faixaList =
-			TOP.getFaixasByTerminal(this.selectedTerminal);
+            var TOP = this.$.dataTOP;
+            this.selectedFaixas = this.faixaList =
+                TOP.getFaixasByTerminal(this.selectedTerminal);
+        }
 
 	},
 

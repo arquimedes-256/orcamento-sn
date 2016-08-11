@@ -31,7 +31,11 @@ Example:
 	<script>
 		Polymer({
 			is: 'sn-data-top',
-			
+			destroy:function(){
+				this.terminalList			= null;
+				this.faixaList				= null;
+				this._terminalFaixasTarifa	= null;
+			},
 			faixacontrato_responseHandler:function(e,d,s){
 				var V = e.detail.response;
 

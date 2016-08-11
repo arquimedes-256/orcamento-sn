@@ -109,7 +109,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       nome: "Elcano",
       num_contrato: "VIT000783"
   }];
-  var FILIAL_CLIENT_TO_TARIFA = _.mapObject(_.groupBy(CLIENT_LIST,function(c){ return _.first(c.num_contrato,3).join("")+':'+c.nome }),function(C){ return _.first(C).tarifaFixa });
+  var FILIAL_CLIENT_TO_TARIFA   = _.mapObject(_.groupBy(CLIENT_LIST,function(c){ return _.first(c.num_contrato,3).join("")+':'+c.nome }),function(C){ return _.first(C).tarifaFixa });
+  var FILIAL_CLIENT_TO_CLIENTE  = _.mapObject(_.groupBy(CLIENT_LIST,function(c){ return _.first(c.num_contrato,3).join("")+':'+c.nome }),function(C){ return _.first(C) });
   
   </script>
   <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>

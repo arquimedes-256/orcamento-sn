@@ -8,198 +8,229 @@
 
 
 <dom-module id="sn-receita-bruta-novo-cliente">
-	<template>
-		<style>
-			:host {
-				display: block;
-			}
-			#dialog {
-				width: 459px;
-			}
-			#dialog /deep/ label {
-				color: #757575!important;
-			}
-			#dialog /deep/ .unfocused-line {
-				background:  #757575!important;
-			}
-			#dialog /deep/ input {
-				color: inherit!important;
-			}
-			#dialog /deep/ paper-input ,  
-			#dialog /deep/ paper-dropdown-menu {
-			  width: inherit!important;
-			  margin-right: inherit!important;
-			}
-			#dialog /deep/ #scrollable{
-				    max-height: 206px;
-			}
-		</style>
-		<paper-dialog id="dialog" style="margin-top: 50px;">
-		  <h2>
-		  	Novo Cliente
-		  </h2>
-		   <paper-input 
-		    label="Nome" 
-		    value="{{ nomeCliente }}" 
-		    style="width:90%!important"
-		    always-float-label></paper-input>
-		    <div class="layout horizontal">
-					<paper-dropdown-menu label="Tipo de Tarifa" id="tipoTarifa" on-iron-select="_onChangeFilter">
-		               <paper-listbox class="dropdown-content" selected="0" id="tipoTarifaList">
-		                  <paper-item>REBOCADOR</paper-item>
-		                  <paper-item>MANOBRA</paper-item>
-		                  <paper-item>LUMPSUM</paper-item>
-		              </paper-listbox>
-		            </paper-dropdown-menu>
-
-		            <paper-dropdown-menu label="Moeda" id="moeda" on-iron-select="_onChangeFilter">
-		               <paper-listbox class="dropdown-content" selected="0" id="moedaList">
-		                  <paper-item>REAL</paper-item>
-		                  <paper-item>DOLAR</paper-item>
-		              </paper-listbox>
-		            </paper-dropdown-menu>
-			</div>
-		  <paper-dialog-scrollable>
-
-		   
-
-			 <paper-datatable data="[[faixasCliente]]" id="dataTable">
-				 <paper-datatable-column 
-					type="Number"
-		            header="Faixa de" 
-		            property="faixaA" 
-		            align="right"></paper-datatable-column>
-		         <paper-datatable-column 
-					editable 
-					dialog 
-					type="Number"
-		            header="Faixa até" 
-		            property="faixaB" 
-		            align="right"></paper-datatable-column>
-
-		        <paper-datatable-column 
-					editable 
-					dialog 
-					type="Number"
-		            header="Tarifa R$" 
-		            property="tarifa" 
-		            align="right"></paper-datatable-column>
-
-				<paper-datatable-column 
-		            align="right">
-					<template>
-			  			<iron-icon icon="icons:delete" 
-			  			style="cursor:pointer" 
-			  			on-click="_deleteFaixaAction"></iron-icon>
-					</template>
-		        </paper-datatable-column>
-			</paper-datatable>
-		  </paper-dialog-scrollable>
-
+<template>
+	<style>
+		:host {
+			display: block;
+		}
+		#dialog {
+			width: 459px;
+		}
+		#dialog /deep/ label {
+			color: #757575!important;
+		}
+		#dialog /deep/ .unfocused-line {
+			background:  #757575!important;
+		}
+		#dialog /deep/ input {
+			color: inherit!important;
+		}
+		#dialog /deep/ paper-input ,  
+		#dialog /deep/ paper-dropdown-menu {
+		  width: inherit!important;
+		  margin-right: inherit!important;
+		}
+		#dialog /deep/ #scrollable{
+			    max-height: 206px;
+		}
+	</style>
+	<paper-dialog id="dialog" style="margin-top: 50px;">
+	  <h2>
+	  	Novo Cliente
+	 	</h2>
+	 	<div class="layout vertical">
 			<div class="layout horizontal">
-				
+			   <paper-input 
+			    label="Nome" 
+			    value="{{ nomeCliente }}" 
+			    always-float-label
+			    class="flex"></paper-input>
 
-				
-			  <div class="buttons">
-			    <paper-button 
-				    raised style="background: #69F0AE;width: 271px;" 
-				    on-click="_saveClienteAction">
-					<iron-icon icon="icons:save"></iron-icon>
-				</paper-button>
-				<paper-button raised on-click="_addFaixaAction" style="background: #EEEEEE;">
-					<iron-icon icon="av:playlist-add"></iron-icon>
-				</paper-button>
-			  </div>
+			    <paper-input always-float-label 
+			    	label="Câmbio" 
+			    	numeric 
+			    	value="{{cambioCliente}}"
+			    	class="flex">
+			    </paper-input>
 
 			</div>
-		</paper-dialog>
-	</template>
-	<script>
-		Polymer({
-			is: 'sn-receita-bruta-novo-cliente',
-			properties:{
-				faixasCliente:{type:Array,observer:'_renderCliente'}
-			},
-			listeners:{
-				'change':'_renderCliente'
-			},
-			ready:function(){
-				this.nomeCliente = "";
-				this.faixasCliente = [
-						{faixa:10	,tarifa:0},
-					]
-			},
-			open:function(){
-				this.$.dialog.open();
-			},
-			_renderCliente:function(){
-				_.each(this.faixasCliente,function(faixaTuple,k){
+		    <div class="layout horizontal">
+				<paper-dropdown-menu 
+					label="Tipo de Tarifa" 
+					id="tipoTarifa" 
+					on-iron-select="_onChangeFilter"
+					class="flex">
+	               <paper-listbox 
+		               class="dropdown-content" 
+		               selected="0" 
+		               id="tipoTarifaList">
+	                  <paper-item>REBOCADOR</paper-item>
+	                  <paper-item>MANOBRA</paper-item>
+	                  <paper-item>LUMPSUM</paper-item>
+	              </paper-listbox>
+	            </paper-dropdown-menu>
 
-					if(faixaTuple.faixaB)
-						faixaTuple.faixa 	= faixaTuple.faixaB;;
-					delete faixaTuple.faixaB;
-					delete faixaTuple.faixaA;
+	            <paper-dropdown-menu 
+	            	label="Moeda" 
+	            	id="moeda" 
+	            	on-iron-select="_onChangeFilter"
+	            	class="flex">
+	               <paper-listbox class="dropdown-content" selected="0" id="moedaList">
+	                  <paper-item>REAL</paper-item>
+	                  <paper-item>DOLAR</paper-item>
+	              </paper-listbox>
+	            </paper-dropdown-menu>
+			</div>	
+	 	</div>
+		
+	  <paper-dialog-scrollable>
+		 <paper-datatable data="[[faixasCliente]]" id="dataTable">
+			 <paper-datatable-column 
+				type="Number"
+	            header="Faixa de" 
+	            property="faixaA" 
+	            align="right"></paper-datatable-column>
+	         <paper-datatable-column 
+				editable 
+				dialog 
+				type="Number"
+	            header="Faixa até" 
+	            property="faixaB" 
+	            align="right"></paper-datatable-column>
 
-				});
-				_.each(this.faixasCliente,function(faixaTuple,k){
+	        <paper-datatable-column 
+				editable 
+				dialog 
+				type="Number"
+	            header="Tarifa R$" 
+	            property="tarifa" 
+	            align="right"></paper-datatable-column>
 
-					var faixaA = k > 0 ? this.faixasCliente[k-1].faixa: 0;
-					var faixaB = faixaTuple.faixa;
-					
+			<paper-datatable-column 
+	            align="right">
+				<template>
+		  			<iron-icon icon="icons:delete" 
+		  			style="cursor:pointer" 
+		  			on-click="_deleteFaixaAction"></iron-icon>
+				</template>
+	        </paper-datatable-column>
+		</paper-datatable>
+	  </paper-dialog-scrollable>
 
-					faixaTuple.faixaA = faixaA;
-					faixaTuple.faixaB = faixaB;
+	  <div class="buttons layout horizontal">
+	    <paper-button 
+		    raised style="background: #69F0AE;" 
+		    class="flex"
+		    on-click="_saveClienteAction">
+			<iron-icon icon="icons:save"></iron-icon>
+		</paper-button>
+		<paper-button raised on-click="_addFaixaAction" style="background: #EEEEEE;">
+			<iron-icon icon="av:playlist-add"></iron-icon>
+		</paper-button>
+	  </div>
 
-					if(faixaTuple.faixaB < faixaTuple.faixaA) {
-						faixaTuple.faixa = faixaTuple.faixaB = faixaTuple.faixaA + 2;
-					}
-					if(faixaTuple.faixaB < 0)
-						faixaTuple.faixa = faixaTuple.faixaB = 5;
+	</paper-dialog>
+</template>
+<script>
+Polymer({
+	is: 'sn-receita-bruta-novo-cliente',
+	properties:{
+		faixasCliente:{type:Array,observer:'_renderCliente'}
+	},
+	listeners:{
+		'change':'_renderCliente'
+	},
+	ready:function(){
 
-				}.bind(this))
+		this.nomeCliente = "";
+		this.faixasCliente = [
+				{faixa:10	,tarifa:0},
+			]
+		this.cambioCliente = TARIFA_PADRAO;
 
-				this.$.dataTable.ready();
-			},
-			_deleteFaixaAction:function(e,d){
-				var tr = e.path[4];
-				var k = +(tr.getAttribute('data-key').replace('#',''));
-				var faixasClienteClone = _.clone(this.faixasCliente);
+	},
+	open:function(){
+		this.$.dialog.open();
+	},
+	_renderCliente:function(){
+		_.each(this.faixasCliente,function(faixaTuple,k){
 
-				faixasClienteClone[k] = null;
-				this.faixasCliente = _.difference(faixasClienteClone,[null]);
+			if(faixaTuple.faixaB)
+				faixaTuple.faixa 	= faixaTuple.faixaB;;
+			delete faixaTuple.faixaB;
+			delete faixaTuple.faixaA;
 
-				this._renderCliente();
-			},
-			_addFaixaAction:function(){
-				var lastFaixa = _.last(this.faixasCliente);
-				var faixasClienteClone = _.clone(this.faixasCliente);
-
-				faixasClienteClone.push(
-					{faixa:lastFaixa ? lastFaixa.faixa+10 : 10 	,tarifa:0}
-				)
-				this.faixasCliente = faixasClienteClone;
-
-				this._renderCliente();
-
-				this.async(function(){
-					this.querySelector("* /deep/ #scrollable").scrollTop = 1e6;
-				},111)
-
-			},
-			_saveClienteAction:function(){
-				if(_.isEmpty(this.nomeCliente))
-					return alert("Nome do cliente vazio");
-				if(_.isEmpty(this.faixasCliente))
-					return alert("Por favor, insira as faixas");
-
-				var filial = document.querySelector('sn-app').filial;
-
-				new Firebase(FB_URL+"/clientes/"+filial+"/"+this.nomeCliente).set({
-					nome: 	this.nomeCliente,
-					faixas: this.faixasCliente
-				})
-
-			}
 		});
-	</script>
+		_.each(this.faixasCliente,function(faixaTuple,k){
+
+			var faixaA = k > 0 ? this.faixasCliente[k-1].faixa: 0;
+			var faixaB = faixaTuple.faixa;
+			
+
+			faixaTuple.faixaA = faixaA;
+			faixaTuple.faixaB = faixaB;
+
+			if(faixaTuple.faixaB < faixaTuple.faixaA) {
+				faixaTuple.faixa = faixaTuple.faixaB = faixaTuple.faixaA + 2;
+			}
+			if(faixaTuple.faixaB < 0)
+				faixaTuple.faixa = faixaTuple.faixaB = 5;
+
+		}.bind(this))
+
+		this.$.dataTable.ready();
+	},
+	_deleteFaixaAction:function(e,d){
+		var tr = e.path[4];
+		var k = +(tr.getAttribute('data-key').replace('#',''));
+		var faixasClienteClone = _.clone(this.faixasCliente);
+
+		faixasClienteClone[k] = null;
+		this.faixasCliente = _.difference(faixasClienteClone,[null]);
+
+		this._renderCliente();
+	},
+	_addFaixaAction:function(){
+		var lastFaixa = _.last(this.faixasCliente);
+		var faixasClienteClone = _.clone(this.faixasCliente);
+
+		faixasClienteClone.push(
+			{faixa:lastFaixa ? lastFaixa.faixa+10 : 10 	,tarifa:0}
+		)
+		this.faixasCliente = faixasClienteClone;
+
+		this._renderCliente();
+
+		this.async(function(){
+			this.querySelector("* /deep/ #scrollable").scrollTop = 1e6;
+		},111)
+
+	},
+	_saveClienteAction:function(){
+		if(_.isEmpty(this.nomeCliente))
+			return alert("Nome do cliente vazio");
+		if(_.isEmpty(this.faixasCliente))
+			return alert("Por favor, insira as faixas");
+
+		var objToSave = {
+			nome: 		this.nomeCliente,
+			faixas: 	this.faixasCliente,
+			tipoTarifa: this.$.tipoTarifa.value,
+			moeda: 		this.$.moeda.value
+		};
+
+		var filial = document.querySelector('sn-app').filial;
+		var cambio = parseFloat(new String(this.cambioCliente).replace(',','.'))
+
+
+		if(cambio != TARIFA_PADRAO)
+			objToSave.cambio = cambio;
+		new Firebase(FB_URL+"/clientes/"+filial+"/"+this.nomeCliente)
+		.set(objToSave,function(){
+			this.fire('save-cliente')
+		}.bind(this))
+		
+	}
+});
+</script>
 </dom-module>
