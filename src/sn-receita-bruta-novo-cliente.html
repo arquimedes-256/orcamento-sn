@@ -223,7 +223,7 @@ Polymer({
 			moeda: 		this.$.moeda.value
 		};
 
-		var filial = document.querySelector('sn-app').filial;
+		var filial = document.querySelector('* /deep/ paper-dropdown-menu#filial').value;
 		var cambio = parseFloat(new String(this.cambioCliente).replace(',','.'))
 
 
