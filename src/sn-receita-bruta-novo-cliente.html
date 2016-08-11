@@ -142,15 +142,19 @@ Polymer({
 	},
 	ready:function(){
 
+		this._init();
+
+	},
+	open:function(){
+		this._init();
+		this.$.dialog.open();
+	},
+	_init:function(){
 		this.nomeCliente = "";
 		this.faixasCliente = [
 				{faixa:10	,tarifa:0},
 			]
 		this.cambioCliente = TARIFA_PADRAO;
-
-	},
-	open:function(){
-		this.$.dialog.open();
 	},
 	_renderCliente:function(){
 		_.each(this.faixasCliente,function(faixaTuple,k){
@@ -227,6 +231,8 @@ Polymer({
 			objToSave.cambio = cambio;
 		new Firebase(FB_URL+"/clientes/"+filial+"/"+this.nomeCliente)
 		.set(objToSave,function(){
+			this.$.dialog.close();
+			alert("Cliente registrado com sucesso!");
 			this.fire('save-cliente')
 		}.bind(this))
 		
