@@ -91,6 +91,24 @@ const PATH_TEMPLATE = [
 							'Terminal',
 							'$'
 							];
+function sumAgg(attributes) {
+    var attr = attributes[0];
+    return function(data, rowKey, colKey) {
+        return {
+            count: 0,
+            push: function(record) {
+                this.count += record[attr];
+            },
+            value: function() {
+                return this.count;
+            },
+            format: function(x) {
+                return Math.round(x);
+            }
+        };
+    };
+}
+
 Polymer({
 is: 'sn-relatorios',
 properties:{
@@ -103,13 +121,12 @@ ready:function () {
 },
 _render:function(data){
 	console.log('render',data)
-	var sum = $.pivotUtilities.aggregatorTemplates.sum;
 
 	jQuery(this.$.output).pivot(data,
     {
         rows: this._compileList,
         cols: ["mes"],
-        aggregator: sum()([this._currentRelatorio])
+        aggregator: sumAgg([this._currentRelatorio])
     });
 },
 _checkboxChanged:function(e,d){
