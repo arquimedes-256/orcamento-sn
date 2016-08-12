@@ -36,7 +36,7 @@
 	</style>
 	<paper-dialog id="dialog" style="margin-top: 50px;">
 	  <h2>
-	  	Novo Cliente
+	  	{{title}}
 	 	</h2>
 	 	<div class="layout vertical">
 			<div class="layout horizontal">
@@ -44,7 +44,7 @@
 			    label="Nome" 
 			    value="{{ nomeCliente }}" 
 			    always-float-label
-			    class="flex"></paper-input>
+			    class="flex" id="inputCliente"></paper-input>
 
 			    <paper-input always-float-label 
 			    	label="Câmbio" 
@@ -62,11 +62,12 @@
 					class="flex">
 	               <paper-listbox 
 		               class="dropdown-content" 
-		               selected="0" 
+		               selected="{{tarifaCliente}}" 
+		               attr-for-selected="name"
 		               id="tipoTarifaList">
-	                  <paper-item>REBOCADOR</paper-item>
-	                  <paper-item>MANOBRA</paper-item>
-	                  <paper-item>LUMPSUM</paper-item>
+	                  <paper-item name="REBOCADOR">REBOCADOR</paper-item>
+	                  <paper-item name="MANOBRA">MANOBRA</paper-item>
+	                  <paper-item name="LUMPSUM">LUMPSUM</paper-item>
 	              </paper-listbox>
 	            </paper-dropdown-menu>
 
@@ -75,9 +76,13 @@
 	            	id="moeda" 
 	            	on-iron-select="_onChangeFilter"
 	            	class="flex">
-	               <paper-listbox class="dropdown-content" selected="0" id="moedaList">
-	                  <paper-item>REAL</paper-item>
-	                  <paper-item>DOLAR</paper-item>
+	               <paper-listbox 
+		               class="dropdown-content" 
+		               selected="{{moedaCliente}}" 
+		               attr-for-selected="name"
+		               id="moedaList">
+	                  <paper-item name="REAL">REAL</paper-item>
+	                  <paper-item name="DOLAR">DOLAR</paper-item>
 	              </paper-listbox>
 	            </paper-dropdown-menu>
 			</div>	
@@ -135,7 +140,8 @@
 Polymer({
 	is: 'sn-receita-bruta-novo-cliente',
 	properties:{
-		faixasCliente:{type:Array,observer:'_renderCliente'}
+		faixasCliente:{type:Array,observer:'_renderCliente'},
+		title:{value:"Novo Cliente"}
 	},
 	listeners:{
 		'change':'_renderCliente'
@@ -145,16 +151,30 @@ Polymer({
 		this._init();
 
 	},
-	open:function(){
-		this._init();
+	open:function(cliente){
+		this._init(cliente);
 		this.$.dialog.open();
 	},
-	_init:function(){
-		this.nomeCliente = "";
-		this.faixasCliente = [
-				{faixa:10	,tarifa:0},
-			]
-		this.cambioCliente = TARIFA_PADRAO;
+	_init:function(cliente){
+		if(cliente) {
+			this.nomeCliente 	= cliente.nome;
+			this.faixasCliente 	= cliente.faixas;
+			this.tarifaCliente 	= cliente.tipoTarifa;
+			this.moedaCliente 	= cliente.moeda;
+			this.cambioCliente 	= cliente.cambio || TARIFA_PADRAO;
+			this.title = "Editar "+cliente.nome
+			this.$.inputCliente.disabled = true;
+		}
+		else {
+			this.nomeCliente = "";
+			this.faixasCliente = [
+					{faixa:10	,tarifa:0},
+				]
+			this.cambioCliente = TARIFA_PADRAO;
+			this.title = "Novo Cliente"
+			this.$.inputCliente.disabled = false;
+		}
+		
 	},
 	_renderCliente:function(){
 		_.each(this.faixasCliente,function(faixaTuple,k){
@@ -224,8 +244,8 @@ Polymer({
 		var objToSave = {
 			nome: 		this.nomeCliente,
 			faixas: 	this.faixasCliente,
-			tipoTarifa: this.$.tipoTarifa.value,
-			moeda: 		this.$.moeda.value
+			tipoTarifa: this.tarifaCliente,
+			moeda: 		this.moedaCliente
 		};
 
 		var cambio = parseFloat(new String(this.cambioCliente).replace(',','.'))

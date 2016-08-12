@@ -19,7 +19,8 @@
     * /deep/ [tarifa-fixa], 
     * /deep/ [moeda],
     * /deep/ [tipo-tarifa],
-    * /deep/ [faixa-json] {
+    * /deep/ [faixa-json],
+    * /deep/ [cliente-json] {
         display:none!important;
     }
 
@@ -61,7 +62,7 @@
              <paper-item>MAC</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
-          
+          <div style="position:relative">
           <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_onChangeFilter">
            <paper-listbox class="dropdown-content" selected="0" 
            id="clienteListBox">
@@ -75,8 +76,13 @@
 
           </paper-listbox>
           </paper-dropdown-menu>
-          <paper-fab icon="icons:edit"></paper-fab>
-
+          <paper-fab icon="create" 
+          	hidden='{{ !_editClientButtonEnabled }}'
+            on-click="_editClientAction"
+            mini 
+            style="background:#F5F5F5;color:#212121;position:absolute;right: 4px;top: 33px;">
+          </paper-fab>
+          </div>
               <paper-dropdown-menu 
                 label="Faixa DWT" 
                 id="faixaDWT" 
@@ -127,7 +133,9 @@
 Polymer({
 	is: 'sn-receita-bruta-filters',
 	properties: {
-
+		_editClientButtonEnabled:{
+			type:Boolean,value:false
+		},
 		faixaList: {
 			type: Array
 		},
@@ -159,28 +167,34 @@ Polymer({
 		this._filtraClientePorFilial();
         this._fetchCustomClients();
 	},
-    _fetchCustomClients:function(){
-        var ListBox = this.$.clienteListBox;
-        new Firebase(FB_URL + "/clientes/" + this.currentFilial)
-            .once("value", function(dataSnap) {
-                $(ListBox.querySelectorAll('[remove-on-fetch-cliente]')).remove();
-                var V = dataSnap.val();
-                _.each(V, function(clienteV) {
-                    ListBox.innerHTML += 
-                    '<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
-                    + '<span nome-cliente>' +clienteV.nome      +'</span>'
-                    + '<span tarifa-fixa>'  +clienteV.cambio    +'</span>'
-                    + '<span moeda>'  +clienteV.moeda    +'</span>'
-                    + '<span tipo-tarifa>'  +clienteV.tipoTarifa    +'</span>'
-                    + '<span faixa-json>'+ JSON.stringify(clienteV.faixas) +'</span>'
-                    + '</paper-item>';
-                });
-                ListBox.innerHTML += 
-                '<paper-item style="border-top:1px solid #E0E0E0;font-size: 12px;" remove-on-fetch-cliente>'
-                +'<iron-icon  icon="social:person-add" style="position: relative;left: -5px;top: -1px;">'
-                +'</iron-icon>Novo cliente</paper-item>';
-            })
-    },
+  _editClientAction:function(){
+    var clienteObject = JSON.parse(jQuery(this.$.cliente).find('[nome-cliente="'+this.selectedCliente+'"]').parent().find('[cliente-json]').text());
+    this.$.novoClienteElement.open(clienteObject);
+  },
+  _fetchCustomClients:function(){
+      var ListBox = this.$.clienteListBox;
+      new Firebase(FB_URL + "/clientes/" + this.currentFilial)
+          .once("value", function(dataSnap) {
+              $(ListBox.querySelectorAll('[remove-on-fetch-cliente]')).remove();
+              var V = dataSnap.val();
+              _.each(V, function(clienteV) {
+                  ListBox.innerHTML += 
+                  '<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
+                  + '<span nome-cliente="'+clienteV.nome      +'">'+clienteV.nome+'</span>'
+                  + '<span tarifa-fixa>'  +clienteV.cambio    +'</span>'
+                  + '<span moeda>'        +clienteV.moeda     +'</span>'
+                  + '<span tipo-tarifa>'  +clienteV.tipoTarifa              +'</span>'
+                  + '<span faixa-json>'   + JSON.stringify(clienteV.faixas) +'</span>'
+                  + '<span cliente-json>' + JSON.stringify(clienteV)        +'</span>'
+                  + '</paper-item>';
+              });
+              ListBox.innerHTML += 
+              '<paper-item style="border-top:1px solid #E0E0E0;font-size: 12px;" remove-on-fetch-cliente>'
+              +'<iron-icon  icon="social:person-add" style="position: relative;left: -5px;top: -1px;">'
+              +'</iron-icon>Novo cliente</paper-item>';
+          })
+					this.async(this._fetchCurrentCustomClient,333)
+  },
 	_selectedClienteChanged: function() {
 
 		this.terminalList = [];
@@ -199,36 +213,43 @@ Polymer({
             //infos do TOP
             this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
             this.$.dataTOP.getInfoContrato(num_contrato);
+        		this._editClientButtonEnabled = false;
         }
         else //if custom cliente
         {
-            var clienteElement = this.$.cliente.selectedItem;
-            var moeda       = clienteElement
-                .querySelector('[moeda]')
-                .innerText;
-            var tipoTarifa  = clienteElement
-                .querySelector('[tipo-tarifa]')
-                .innerText;
-            var faixasMeta = JSON.parse(clienteElement
-                .querySelector('[faixa-json]')
-                .innerText);
-
-            this.$.inputContrato.value = "N/A";
-            this.$.dataTOP.destroy();
-
-            this.terminalList = ["*"];
-            this.selectedTerminal = "*";
-
-            this.$.inputMoeda.value = moeda;
-            this.$.inputTipoTarifa.value = tipoTarifa;
-            var faixasObj = {};
-            _.each(faixasMeta,function(f){
-                faixasObj[f.faixaA+'-'+f.faixaB] = {VLR_LINER:f.tarifa};
-            })
-            this.fire('build-faixas', {
-                faixasTarifa: faixasObj
-            })
+        	this._editClientButtonEnabled = true;
+        	this._fetchCurrentCustomClient();
         }
+	},
+	_fetchCurrentCustomClient:function(){
+		var clienteElement = this.$.cliente.selectedItem;
+		if(!clienteElement)
+		  return;
+		var moeda       = clienteElement
+		    .querySelector('[moeda]')
+		    .innerText;
+		var tipoTarifa  = clienteElement
+		    .querySelector('[tipo-tarifa]')
+		    .innerText;
+		var faixasMeta = JSON.parse(clienteElement
+		    .querySelector('[faixa-json]')
+		    .innerText);
+
+		this.$.inputContrato.value = "N/A";
+		this.$.dataTOP.destroy();
+
+		this.terminalList = ["*"];
+		this.selectedTerminal = "*";
+
+		this.$.inputMoeda.value = moeda;
+		this.$.inputTipoTarifa.value = tipoTarifa;
+		var faixasObj = {};
+		_.each(faixasMeta,function(f){
+		    faixasObj[f.faixaA+'-'+f.faixaB] = {VLR_LINER:f.tarifa};
+		})
+		this.fire('build-faixas', {
+		    faixasTarifa: faixasObj
+		})
 	},
 	observers: ['_buildPath(selectedCliente,selectedTerminal,currentFilial)'],
 	ready: function() {
@@ -283,8 +304,8 @@ Polymer({
 					this.lastClientSelected = this.$.clienteListBox.selected;
 					this.selectedCliente = d.item.querySelector('[nome-cliente]').innerText;
                     
-                    var tarifaCliente = parseFloat(d.item.querySelector('[tarifa-fixa]').innerText);
-                    this.$.inputCambio.value = tarifaCliente || TARIFA_PADRAO;
+          var tarifaCliente = parseFloat(d.item.querySelector('[tarifa-fixa]').innerText);
+          this.$.inputCambio.value = tarifaCliente || TARIFA_PADRAO;
 				}
 			},
 			terminal: function() {
