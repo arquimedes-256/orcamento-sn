@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="sn-orcamento-flag-controller.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 
 <dom-module id="sn-receita-bruta-filters">
     <template>
@@ -28,9 +29,12 @@
             on-response-faixacontrato="_topFaixaContratoHandler"
             on-response-infocontrato="_topInfoContratoHandler">
          </sn-data-top>
+      
       <sn-receita-bruta-novo-cliente 
         id="novoClienteElement"
-        on-save-cliente="_fetchCustomClients"></sn-receita-bruta-novo-cliente>
+        on-save-cliente="_fetchCustomClients">
+      </sn-receita-bruta-novo-cliente>
+
          <div class="layout horizontal">
             <h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">Receita Bruta</h5>
 
@@ -71,6 +75,7 @@
 
           </paper-listbox>
           </paper-dropdown-menu>
+          <paper-fab icon="icons:edit"></paper-fab>
 
               <paper-dropdown-menu 
                 label="Faixa DWT" 
