@@ -103,7 +103,7 @@ function sumAgg(attributes) {
                 return this.count;
             },
             format: function(x) {
-                return Math.round(x);
+                return Math.round(x).formatMoney(0);
             }
         };
     };
