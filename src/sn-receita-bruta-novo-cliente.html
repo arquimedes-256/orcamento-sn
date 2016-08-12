@@ -212,9 +212,14 @@ Polymer({
 	},
 	_saveClienteAction:function(){
 		if(_.isEmpty(this.nomeCliente))
-			return alert("Nome do cliente vazio");
+			return alert("Nome do cliente vazio!");
 		if(_.isEmpty(this.faixasCliente))
-			return alert("Por favor, insira as faixas");
+			return alert("Por favor, insira as faixas.");
+
+		var filial = document.querySelector('* /deep/ paper-dropdown-menu#filial').value;
+
+		if(FILIAL_CLIENT_TO_TARIFA[filial+':'+this.nomeCliente])
+			return alert("Esse nome já existe na lista de clientes pré-definidas.");
 
 		var objToSave = {
 			nome: 		this.nomeCliente,
@@ -223,7 +228,6 @@ Polymer({
 			moeda: 		this.$.moeda.value
 		};
 
-		var filial = document.querySelector('* /deep/ paper-dropdown-menu#filial').value;
 		var cambio = parseFloat(new String(this.cambioCliente).replace(',','.'))
 
 
