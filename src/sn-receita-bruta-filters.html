@@ -171,11 +171,9 @@ Polymer({
                     + '</paper-item>';
                 });
                 ListBox.innerHTML += 
-                '<paper-item style="border-top:1px solid #E0E0E0" remove-on-fetch-cliente>'
-              +'<iron-icon '
-              +'icon="social:person-add" '
-                +' style="position: relative;left: -5px;top: -1px;">'
-              +'</iron-icon>Novo cliente</paper-item>';
+                '<paper-item style="border-top:1px solid #E0E0E0;font-size: 12px;" remove-on-fetch-cliente>'
+                +'<iron-icon  icon="social:person-add" style="position: relative;left: -5px;top: -1px;">'
+                +'</iron-icon>Novo cliente</paper-item>';
             })
     },
 	_selectedClienteChanged: function() {
