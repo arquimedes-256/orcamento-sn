@@ -34,6 +34,16 @@
 	            align="left" 
 	            tooltip=""></paper-datatable-column>
 
+	        <template is="dom-if" if="{{meta}}">
+				<paper-datatable-column 
+		            header="{{metaHeader}}" 
+		            property="meta" 
+		            align="right" 
+		            editable='{{metaEditable}}' dialog='{{metaEditable}}'
+		            default="0"
+		            tooltip=""></paper-datatable-column>
+		    </template>
+
 	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
 	            header="Jan" 
 	            property="1" 
@@ -123,6 +133,9 @@ Polymer({
 		percent:{type:Boolean,value:false},
 		path:{type:String,observer:'_pathChanged'},
 		virtual:{type:Boolean},
+		meta:{type:Boolean},
+		metaHeader:{type:String},
+		metaEditable:{type:Boolean},
 		dimensions:{type:Array},
 		fillValue:{type:Number,value:0},
 		filter:{type:String}
@@ -322,8 +335,10 @@ Polymer({
 	},
 	_getListedData:function(D){
 		return _.sortBy(_.values(D),function(d){ 
-
-			return parseInt(d.dimension.split('-')[0]) });
+			return d.dimension.indexOf('-') > 0 ? 
+				parseInt(d.dimension.split('-')[0])
+			: d.dimension;
+		}) 
 	},
 	_setSampleData:function(){
 		

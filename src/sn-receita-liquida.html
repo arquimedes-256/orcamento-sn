@@ -1,0 +1,65 @@
+
+<link rel="import" href="sn-tabela-mes.html">
+
+<dom-module id="sn-receita-liquida">
+	<template>
+		<style>
+			:host {
+				display: block;
+         		padding: 10px;
+			}
+			
+         paper-material {
+	         background:#FFF;
+	         padding:8px;
+         }
+		</style>
+		<div id="filters">
+		</div>
+		<paper-material>
+
+			<sn-tabela-mes 
+	            id="tablePercentualFixo"
+	            db="percentual-fixo" 
+	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            path="{{_path}}"
+	            dimensions="{{ _dimensions }}"  
+	            header="Deduções da Receita - Percentual Fixo"
+	            meta
+	            meta-header="%"></sn-tabela-mes>
+
+	        <sn-tabela-mes 
+	            id="tablePercentualManual"
+	            db="percentual-manual" 
+	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            path="{{_path}}"
+	            dimensions="{{ _dimensions }}"  
+	            header="Deduções da Receita - Percentual Manual"
+	            meta
+	            meta-header="%"
+	            meta-editable></sn-tabela-mes>
+
+		</paper-material>
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-receita-liquida',
+			properties:{
+				_path:{type:String},
+				_dimensions:{type:String},
+				_currentFilial:{type:Array}
+			},
+			observers:['_buildPath(_currentFilial)'],
+			ready:function(){
+				this._currentFilial = "RJ1";
+			},
+			_buildPath:function(){
+				this._path = "receita-liquida/"+this._currentFilial;
+				this._dimensions = ['PIS','Cofins','ISS'];
+			},
+			_tabelaMesBuildHandler:function(){
+				console.log('deducoes')
+			}
+		});
+	</script>
+</dom-module>
