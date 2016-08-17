@@ -20,7 +20,11 @@
 		</div>
 		<paper-material>
 
-			<sn-relatorios></sn-relatorios>
+			<sn-relatorios 
+				filial="{{_currentFilial}}" 
+				id="relatorio" 
+				not-ui
+				on-get-data-from-base="_getDataFromBaseHandler"></sn-relatorios>
 
 			<sn-tabela-mes 
 	            id="tablePercentualFixo"
@@ -51,7 +55,7 @@
 			properties:{
 				_path:{type:String},
 				_dimensions:{type:String},
-				_currentFilial:{type:Array}
+				_currentFilial:{type:String}
 			},
 			observers:['_buildPath(_currentFilial)'],
 			ready:function(){
@@ -60,9 +64,20 @@
 			_buildPath:function(){
 				this._path = "receita-liquida/"+this._currentFilial;
 				this._dimensions = ['PIS','Cofins','ISS'];
+				this.$.relatorio.render(
+					{
+						aggList:['Filial','Tipo de Faturamento'],
+						aggregator:'receita-total',
+						filterMap:{Filial:'RJ1'}
+					});
 			},
+			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(){
 				console.log('deducoes')
+			},
+			//sn-relatorios
+			_getDataFromBaseHandler:function(e){
+				var List = e.detail;
 			}
 		});
 	</script>

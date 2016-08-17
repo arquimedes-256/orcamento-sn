@@ -34,11 +34,11 @@
 			<div class="layout horizontal" id="wrapper">
 				<paper-dropdown-menu 
 					label="Mensurar:" 
-					id="mensura" 
-					on-iron-select="_onChangeFilter">
+					id="mensura">
 		               <paper-listbox 
 			               class="dropdown-content" 
-			               selected="0" 
+			               selected="{{_currentRelatorio}}" 
+		            	   attr-for-selected="name" 
 			               id="tipoTarifaList">
 		                  <paper-item name="receita-total">Valor R$</paper-item>
 		                  <paper-item name="receita-qtd-navios">
@@ -121,6 +121,8 @@ properties:{
 	_YList:{value:[],type:Array},
 	_currentRelatorio:{value:"receita-total"},
 	_compileList:["Filial","Cliente","Terminal"],
+	filial:{type:String},
+	notUI:{type:Boolean,value:false}
 },
 ready:function () {
 	this.$['1'].checked = true;
@@ -138,12 +140,28 @@ _observerCustomClientesAndCreateGlobalMap:function(){
 		})
 	});
 },
-_render:function(data){
-	console.log('render',data)
+render:function(renderOptions){
 
+	this._compileList 		= renderOptions.aggList;
+	this._currentRelatorio 	= renderOptions.aggregator;
+	this._filterMap 		= renderOptions.filterMap;
+	this._getDataFromBase();
+},
+_filterData:function(data){
+	var Fv = _.values(this._filterMap);
+
+	return _.filter(data,function(d){
+		var Vd = _.values(d);
+		if(_.difference(Vd,Fv).length == Vd.length - Fv.length)
+			return true;
+	});
+},
+_render:function(data){
+	
+	data = this._filterData(data);
 	jQuery(this.$.output).pivot(data,
     {
-        rows: this._compileList,
+        rows: _.uniq(this._compileList),
         cols: ["mes"],
         aggregator: sumAgg([this._currentRelatorio])
     });
@@ -197,7 +215,8 @@ _getDataFromBase:function() {
 		
 		this._YList = [];
 		this._Parse(G,[]) 
-
+		this._render(this._YList);
+		this.fire('get-data-from-base',this._YList);
 	}.bind(this));
 },
 _Parse:function(G,path){							
@@ -211,7 +230,6 @@ _Parse:function(G,path){
 		}
 	}
 	.bind(this))	
-	this._render(this._YList);
 },
 _BuildStar:function(path,Gn){
 	
