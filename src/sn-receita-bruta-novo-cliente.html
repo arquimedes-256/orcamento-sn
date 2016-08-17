@@ -85,6 +85,22 @@
 	                  <paper-item name="DOLAR">DOLAR</paper-item>
 	              </paper-listbox>
 	            </paper-dropdown-menu>
+
+	             <paper-dropdown-menu 
+	            	label="Tipo de Faturamento" 
+	            	id="tipoFaturamento" 
+	            	on-iron-select="_onChangeFilter"
+	            	class="flex">
+	               <paper-listbox 
+		               class="dropdown-content" 
+		               selected="{{tipoFaturamentoCliente}}" 
+		               attr-for-selected="name"
+		               id="tipoFaturamentoList">
+	                  <paper-item name="FATURA">FATURA</paper-item>
+	                  <paper-item name="INVOICE">INVOICE</paper-item>
+	              </paper-listbox>
+	            </paper-dropdown-menu>
+
 			</div>	
 	 	</div>
 		
@@ -157,11 +173,14 @@ Polymer({
 	},
 	_init:function(cliente){
 		if(cliente) {
-			this.nomeCliente 	= cliente.nome;
-			this.faixasCliente 	= cliente.faixas;
-			this.tarifaCliente 	= cliente.tipoTarifa;
-			this.moedaCliente 	= cliente.moeda;
-			this.cambioCliente 	= cliente.cambio || TARIFA_PADRAO;
+			//atributos cliente
+			this.nomeCliente 			= cliente.nome;
+			this.faixasCliente 			= cliente.faixas;
+			this.tarifaCliente 			= cliente.tipoTarifa;
+			this.moedaCliente 			= cliente.moeda;
+			this.cambioCliente 			= cliente.cambio || TARIFA_PADRAO;
+			this.tipoFaturamentoCliente = cliente.tipoFaturamento;
+
 			this.title = "Editar "+cliente.nome
 			this.$.inputCliente.disabled = true;
 		}
@@ -242,12 +261,15 @@ Polymer({
 			return alert("Esse nome já existe na lista de clientes pré-definidas.");
 
 		var objToSave = {
-			nome: 		this.nomeCliente,
-			faixas: 	this.faixasCliente,
-			tipoTarifa: this.tarifaCliente,
-			moeda: 		this.moedaCliente
+			nome: 				this.nomeCliente,
+			faixas: 			this.faixasCliente,
+			tipoTarifa: 		this.tarifaCliente,
+			tipoFaturamento: 	this.tipoFaturamentoCliente,
+			moeda: 				this.moedaCliente
 		};
-
+		if(_.contains(objToSave,undefined))
+			return alert("Por favor defina todos os campos.");
+		
 		var cambio = parseFloat(new String(this.cambioCliente).replace(',','.'))
 
 
