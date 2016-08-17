@@ -23,10 +23,18 @@ Example:
 		</style>
 		<iron-ajax
 		    auto
-		    on-response="faixacontrato_responseHandler" id="ajaxFaixas" handle-as="json"></iron-ajax>
+		    on-response="faixacontrato_responseHandler" 
+		    id="ajaxFaixas" 
+		    handle-as="json"></iron-ajax>
 		<iron-ajax
 		    auto
-		    on-response="infocontrato_responseHandler" id="ajaxInfo" handle-as="json"></iron-ajax>
+		    on-response="infocontrato_responseHandler" 
+		    id="ajaxInfo" 
+		    handle-as="json"></iron-ajax>
+		<iron-ajax
+		    auto
+		    on-response="infomultiplecontratos_responseHandler" id="ajaxInfoMultiple" 
+		    handle-as="json"></iron-ajax>
 	</template>
 	<script>
 		Polymer({
@@ -35,6 +43,9 @@ Example:
 				this.terminalList			= null;
 				this.faixaList				= null;
 				this._terminalFaixasTarifa	= null;
+			},
+			ready:function(){
+				this._getInfoContratoMultiple();
 			},
 			faixacontrato_responseHandler:function(e,d,s){
 				var V = e.detail.response;
@@ -65,7 +76,10 @@ Example:
 				var R = _.first(e.detail.response);
 				this.fire('response-infocontrato',R)
 			},
-
+			infomultiplecontratos_responseHandler:function(e,d){
+				var R = (e.detail.response);
+				this.fire('response-infomultiplecontratos',R)
+			},
 			_buildTerminalFaixasTarifasIndex:function(response){
 				var Y = {};
 				var X = _.chain(response)
@@ -90,6 +104,11 @@ Example:
 			getInfoContrato:function(num_contrato){
 				this.$.ajaxInfo.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
+			},
+			_getInfoContratoMultiple:function(){
+				var num_contrato = _(CLIENT_LIST).pluck('num_contrato').map(function(c){return "'"+c+"'"}).join(',');
+				this.$.ajaxInfoMultiple.url = 
+				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infomultiplecontrato&num_contrato="+num_contrato;
 			},
 			getFaixasByTerminal:function(terminal) {
 				if(this._terminalFaixasTarifa && terminal)
