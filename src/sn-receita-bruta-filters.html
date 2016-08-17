@@ -66,7 +66,7 @@
           <paper-dropdown-menu label="Cliente" id="cliente" on-iron-select="_onChangeFilter">
            <paper-listbox class="dropdown-content" selected="0" 
            id="clienteListBox">
-              <template is="dom-repeat" items="[[clientList]]">
+              <template is="dom-repeat" items="{{clientList}}">
                  <paper-item>
                     <span nome-cliente>{{ item.nome }}</span>
                     <span contrato>{{item.num_contrato}}</span>

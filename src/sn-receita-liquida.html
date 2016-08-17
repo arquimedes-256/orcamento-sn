@@ -1,5 +1,7 @@
 
 <link rel="import" href="sn-tabela-mes.html">
+<link rel="import" href="sn-data-top.html">
+<link rel="import" href="sn-relatorios.html">
 
 <dom-module id="sn-receita-liquida">
 	<template>
@@ -17,6 +19,8 @@
 		<div id="filters">
 		</div>
 		<paper-material>
+
+			<sn-relatorios></sn-relatorios>
 
 			<sn-tabela-mes 
 	            id="tablePercentualFixo"
@@ -38,7 +42,7 @@
 	            meta
 	            meta-header="%"
 	            meta-editable></sn-tabela-mes>
-
+			
 		</paper-material>
 	</template>
 	<script>
