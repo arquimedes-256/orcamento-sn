@@ -147,6 +147,19 @@ render:function(renderOptions){
 	this._filterMap 		= renderOptions.filterMap;
 	this._getDataFromBase();
 },
+getValuesFromTR:function(thLabel){
+	var Y = {};
+	_.each(this.$.output.querySelectorAll('tr'),function(trElement){
+		if(trElement.innerText.match(thLabel)) 
+		{
+			_.each(trElement.querySelectorAll('td'),function(td,k){ 
+					var K = k+1 == 13 ? "Total" : k+1;
+					Y[K] = parseFloat(td.getAttribute('data-value'))
+			})
+		}
+	});
+	return Y;
+},
 _filterData:function(data){
 	var Fv = _.values(this._filterMap);
 

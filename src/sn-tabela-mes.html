@@ -439,7 +439,22 @@ Polymer({
 			this._save(M);
 		},1000)
 	},
+	put:function(mesesObject,options){
+		_.each(this.data,function(d){
 
+			if(_(options.ifDimIs).contains(d.dimension)) {
+				_.each([1,2,3,4,5,6,7,8,9,10,11,12],function(m){
+
+					d[m]  = mesesObject[m]  
+								* (options.Tax.useMeta ? 
+									parseFloat(d.meta)
+								: options.Tax[d.dimension])
+					d[m] = parseFloat(parseFloat(d[m]).toFixed(2));
+				})
+			}
+
+		},this)
+	},
 	filterByDimensionsList:function() {
 		this._removeFilters();
 		

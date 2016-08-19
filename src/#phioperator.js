@@ -1,52 +1,79 @@
 var jStat = require('jStat').jStat
 var _ = require('underscore');
-var L = prime(10,true)//["a","b","c",'d','e','f','g','h','i','j','k','l','m','n','o']//prime(100 ,true)
-var X = 1;
-var M = _.clone(L);
+var L = prime(100000,true)//[1,2,3,4,5,7]//["a","b","c",'d','e','f','g','h','i','j','k','l','m','n','o']//prime(100 ,true)
 
-var $M = function(l){
-    if (_.contains(L,l))
-        return [l]
-    if (M[l])
-        return M[l];
+var M = {};
 
-}
+L = _.filter(L,function(l){
+    return l <= X; 
+});
+
+var X = _.sample(L)*_.sample(L)//100;
+
+//console.log("Começando sobre:...",L)
+_.each(L,function(l){
+    M[l] = [l];
+})
+
 // X = phi(G<*,e>){ alpha * Betaphi *- M( X *- alpha )}
 
 var G_add = {
-    '-':function(a,b){return a-b },
-    '*':function(a,b){ return a+b },
-    'e':function(a,b){return 1},
-    'isComutative':true
+    '-':function(A){return _.max(A)-_.min(A)},
+    '*':function(A){return A[0]+A[1]},
+    'e':function(A){return 0}
 }
 
-phi(G_add,L,X);
+var G_mul = {
+    '-':function(A){return A[0] / A[1]},
+    '*':function(A){return A[0]*A[1]},
+    'e':function(A){return 1}
+}
 
-function phi(G,L,X) {
+G = G_mul
+while(true) { //não pode ser recursiva pois pode estourar o tamanho da pilha
     
-    $ = {};
-    var L_sample = _.sample(L,2);
-    $["Lk"]     = L_sample[0];
-    $["Lk+1"]   = L_sample[1];
+    var Lk =  _.sample(L,2);
+    var La  = Lk[0];
+    var Lb  = Lk[1];
 
-    var alpha = G["(+)"]($["Lk"] , $["Lk+1"])
+    var e = G.e();
+    var sum = G['*'];
+    var inv = G['-'];
 
-    var Xi = G["(-)"](X,alpha); 
+    var Le = inv([X,sum([La,Lb])]);
+    
+    madd([La,Lb]);
 
-    if(Xi == G["e"])
+    
+    if(M[Le])
+        madd(U([La,Lb],M[Le]));
+
+    //console.log(':',[La,Lb],Le)
+
+    //Garantir que sejam distintos
+    // Le \nin {La,Lb} & \exists M(Le) & {La,Lb} \notsubsetof M(Le)
+    // => M
+    //console.log(M)
+    if(M[X])
     {
-        return [ $["Lk"], $["Lk+1"] ]
+        console.log("|M|=",M.length,"X=",M[X]);
+        break;
     }
-
-    if( $M(Xi) ) {
-        return _.union($M(Xi),[ $["Lk"], $["Lk+1"] ])
-    }
-    M[alpha] = [$["Lk"], $["Lk+1"]]
+    
 
 }
 
-
-
+function comute(A,f){
+    return _.reduce(A,function(a,b){
+        return f([a,b]);
+    })
+}
+function madd(Set){
+    M[comute(Set,sum)] = Set;
+}
+function U(A,B){
+    return A.concat(B)
+}
 
 
 

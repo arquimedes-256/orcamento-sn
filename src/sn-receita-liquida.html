@@ -73,7 +73,26 @@
 			},
 			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(){
-				console.log('deducoes')
+				var ReceitaBrl = this.$.relatorio.getValuesFromTR('FATURA')
+				var ReceitaExt = this.$.relatorio.getValuesFromTR('INVOICE')
+				var ReceitaTtl = this.$.relatorio.getValuesFromTR('Totals')
+
+				this.$.tablePercentualFixo
+					.put(ReceitaBrl,
+						{ifDimIs:['PIS','Cofins'],Tax:{PIS:0.0165,Cofins:0.076}
+					});
+
+				this.$.tablePercentualFixo
+					.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{ISS:0.06}});
+
+				this.$.tablePercentualManual
+					.put(ReceitaBrl,
+						{ifDimIs:['PIS','Cofins'],Tax:{useMeta:true}
+					});
+
+				this.$.tablePercentualManual
+					.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{useMeta:true}});
+
 			},
 			//sn-relatorios
 			_getDataFromBaseHandler:function(e){
