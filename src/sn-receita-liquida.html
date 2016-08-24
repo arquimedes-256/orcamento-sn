@@ -15,18 +15,45 @@
 	         background:#FFF;
 	         padding:8px;
          }
+         * /deep/ .fill-arrow {
+         	display:none !important;
+         }
+         sn-relatorios /deep/ #filters {
+			display:none !important;
+         }
 		</style>
-		<div id="filters">
+		<div id="filters" class="layout horizontal">
+			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
+				Receita Líquida
+			</h5>
+			<paper-dropdown-menu label="Filial" id="filial" style="width:50px">
+	            <paper-listbox class="dropdown-content" 
+	            id="filial" 
+	            selected="{{_currentFilial}}" 
+		        attr-for-selected="name"
+	            id="filialListBox"
+	            on-iron-select="_onChangeFilter">
+	             <paper-item name="RGD">RGD</paper-item>
+	             <paper-item name="PNG">PNG</paper-item>
+	             <paper-item name="STR">STR</paper-item>
+	             <paper-item name="SEP">SEP</paper-item>
+	             <paper-item name="RJ1">RJ1</paper-item>
+	             <paper-item name="VIT">VIT</paper-item>
+	             <paper-item name="SDR">SDR</paper-item>
+	             <paper-item name="MAC">MAC</paper-item>
+	            </paper-listbox>
+          </paper-dropdown-menu>
 		</div>
 		<paper-material>
 
 			<sn-relatorios 
 				filial="{{_currentFilial}}" 
 				id="relatorio" 
-				not-ui
-				on-get-data-from-base="_getDataFromBaseHandler"></sn-relatorios>
+				on-get-data-from-base="_tabelaMesBuildHandler"></sn-relatorios>
 
 			<sn-tabela-mes 
+				total
+				total-bellow
 	            id="tablePercentualFixo"
 	            db="percentual-fixo" 
 	            on-tabela-mes-build="_tabelaMesBuildHandler"
@@ -37,6 +64,8 @@
 	            meta-header="%"></sn-tabela-mes>
 
 	        <sn-tabela-mes 
+	        	total
+	        	total-bellow
 	            id="tablePercentualManual"
 	            db="percentual-manual" 
 	            on-tabela-mes-build="_tabelaMesBuildHandler"
@@ -65,33 +94,51 @@
 				this._path = "receita-liquida/"+this._currentFilial;
 				this._dimensions = ['PIS','Cofins','ISS'];
 				this.$.relatorio.render(
-					{
-						aggList:['Filial','Tipo de Faturamento'],
-						aggregator:'receita-total',
-						filterMap:{Filial:'RJ1'}
-					});
+								{
+									aggList:['Filial','Tipo de Faturamento'],
+									aggregator:'receita-total',
+									filterMap:{Filial:this._currentFilial}
+								});
+		
 			},
 			//sn-tabela-mes
-			_tabelaMesBuildHandler:function(){
+			_tabelaMesBuildHandler:function(e){
 				var ReceitaBrl = this.$.relatorio.getValuesFromTR('FATURA')
 				var ReceitaExt = this.$.relatorio.getValuesFromTR('INVOICE')
 				var ReceitaTtl = this.$.relatorio.getValuesFromTR('Totals')
 
-				this.$.tablePercentualFixo
-					.put(ReceitaBrl,
-						{ifDimIs:['PIS','Cofins'],Tax:{PIS:0.0165,Cofins:0.076}
-					});
+				if(!_.size(ReceitaBrl) < 12)
+					this.$.tablePercentualFixo
+						.put(ReceitaBrl,
+							{ifDimIs:['PIS','Cofins'],Tax:{PIS:1.65,Cofins:7.6}});
+					
+				if(!_.size(ReceitaBrl) < 12)
+					this.$.tablePercentualManual
+						.put(ReceitaBrl,
+							{ifDimIs:['PIS','Cofins'],Tax:{useMeta:true}	});
 
-				this.$.tablePercentualFixo
-					.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{ISS:0.06}});
+				if(!_.size(ReceitaTtl) < 12)
+					this.$.tablePercentualFixo
+						.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{ISS:6}});
 
-				this.$.tablePercentualManual
-					.put(ReceitaBrl,
-						{ifDimIs:['PIS','Cofins'],Tax:{useMeta:true}
-					});
+				if(!_.size(ReceitaTtl) < 12)
+					this.$.tablePercentualManual
+						.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{useMeta:true}});
 
-				this.$.tablePercentualManual
-					.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{useMeta:true}});
+				if(e.type == "get-data-from-base") 
+				{	
+					if(_.size(ReceitaTtl) < 12) 
+					{
+						this.$.tablePercentualManual.hidden = true;
+						this.$.tablePercentualFixo.hidden = true;
+						alert("Não Existe faturamento lançado para: "+this._currentFilial)
+					}
+					else {
+						this.$.tablePercentualManual.hidden = false;
+						this.$.tablePercentualFixo.hidden = false;
+					}	
+				}
+				console.log(1)
 
 			},
 			//sn-relatorios

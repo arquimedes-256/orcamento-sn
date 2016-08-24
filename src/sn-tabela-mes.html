@@ -1,114 +1,56 @@
-
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 <dom-module id="sn-tabela-mes">
-	<template>
-		<style>
-		:host {
-			display: block;
-		}
-         h4 {
-		    margin: 0px;
-		    margin-top: 10px;
-		    position: relative;
-		    top: 4px;
-		    left: 22px;
-		    padding-top: 7px;
-		    font-size: 14px;
-		}
-		paper-datatable /deep/ td.bound-cell div span {
-		    flex: 1;
-		    font-size: 11px;
-		}
-		paper-datatable /deep/ tr td, 
-		paper-datatable /deep/ tr th {
-		    padding: 6px 14px 6px 19px !important
-		}
-		</style>
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            h4 {
+                margin: 0px;
+                margin-top: 10px;
+                position: relative;
+                top: 4px;
+                left: 22px;
+                padding-top: 7px;
+                font-size: 14px;
+            }
 
-			<h4>{{header}}</h4>
-			 <paper-datatable data="{{data}}" id="dataTable" percent='{{percent}}'>
+            paper-datatable /deep/ td.bound-cell span {
+                flex: 1;
+                font-size: 11px;
+                min-width: 30px!important;
+            }
 
-	          <paper-datatable-column 
-	            header="#" 
-	            property="dimension" 
-	            align="left" 
-	            tooltip=""></paper-datatable-column>
-
-	        <template is="dom-if" if="{{meta}}">
-				<paper-datatable-column 
-		            header="{{metaHeader}}" 
-		            property="meta" 
-		            align="right" 
-		            editable='{{metaEditable}}' dialog='{{metaEditable}}'
-		            default="0"
-		            tooltip=""></paper-datatable-column>
-		    </template>
-
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Jan" 
-	            property="1" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Fev" 
-	            property="2" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Mar" 
-	            property="3" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Abr" 
-	            property="4" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Mai" 
-	            property="5" 
-	            align="right" 
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Jun" 
-	            property="6" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Jul" 
-	            property="7" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Ago" 
-	            property="8" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Set" 
-	            property="9" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Out" 
-	            property="10" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Nov" 
-	            property="11" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	          <paper-datatable-column  editable='{{editable}}' dialog='{{editable}}' type="Number"
-	            header="Dez" 
-	            property="12" 
-	            align="right" default="0"
-	            tooltip=""></paper-datatable-column>
-	        </paper-datatable>
-	        <template is="dom-if" if="{{_dataIsEmpty(data)}}">
-	        	<paper-progress indeterminate style="width:100%"></paper-progress>  
-	        </template>
-	        <!--
+            paper-datatable /deep/ tr td, paper-datatable /deep/ tr th {
+                padding: 6px 14px 6px 19px !important
+            }
+        </style>
+        <h4>{{header}}</h4>
+        <paper-datatable data="{{data}}" id="dataTable" percent='{{percent}}'>
+            <paper-datatable-column header="#" property="dimension" align="left" tooltip=""></paper-datatable-column>
+            <template is="dom-if" if="{{meta}}">
+                <paper-datatable-column header="{{metaHeader}}" property="meta" align="right" editable='{{metaEditable}}' dialog='{{metaEditable}}' default="0" type="Number" tooltip=""></paper-datatable-column>
+            </template>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Jan" property="1" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Fev" property="2" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Mar" property="3" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Abr" property="4" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Mai" property="5" align="right" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Jun" property="6" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Jul" property="7" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Ago" property="8" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Set" property="9" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Out" property="10" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Nov" property="11" align="right" default="0" tooltip=""></paper-datatable-column>
+            <paper-datatable-column editable='{{editable}}' dialog='{{editable}}' type="Number" header="Dez" property="12" align="right" default="0" tooltip=""></paper-datatable-column>
+            <template is="dom-if" if="{{total}}">
+                <paper-datatable-column header="Total" property="total" align="right" default="0" type="Number" tooltip=""></paper-datatable-column>
+            </template>
+        </paper-datatable>
+        <template is="dom-if" if="{{_dataIsEmpty(data)}}">
+            <paper-progress indeterminate style="width:100%"></paper-progress>
+        </template>
+        <!--
 	        <style>
 	        paper-progress {
 	        	--paper-progress-secondary-color:#D50000;
@@ -116,366 +58,428 @@
 	        }
 	        </style>
 	    -->
-	</template>
-	<script>
-Polymer({
-	is: 'sn-tabela-mes',
-	properties:{
-		header:{type:String,value:"Header"},
-		data:{
-			value:[],
-			observer:'_dataChanged'
-		},
-		db:{
-			observers:'_buildDB',type:String
-		},
-		editable:{type:Boolean,value:false},
-		percent:{type:Boolean,value:false},
-		path:{type:String,observer:'_pathChanged'},
-		virtual:{type:Boolean},
-		meta:{type:Boolean},
-		metaHeader:{type:String},
-		metaEditable:{type:Boolean},
-		dimensions:{type:Array},
-		fillValue:{type:Number,value:0},
-		filter:{type:String}
-	},
-	observers:['_pathDBObserver(_path,db)','_dataDimensionsObserver(data,dimensions)'],
-	ready:function() {
-		this.addEventListener('data-changed',this._changeHandler);
-		this.addEventListener('fill-back'	,this._fireFillBack);
-		this.addEventListener('fill-forward',this._fireFillForward);
-	},
-	_fireFillBack:function(e){
-		var d = event.detail;
-		var D = this.data[d.row];
-		var v = this.data[d.row][d.col];
-		var k = d.col;
+    </template>
+    <script>
+        Polymer({
+            is: 'sn-tabela-mes',
+            properties: {
+                header: {
+                    type: String,
+                    value: "Header"
+                },
+                data: {
+                    value: [],
+                    observer: '_dataChanged'
+                },
+                db: {
+                    observers: '_buildDB',
+                    type: String
+                },
+                editable: {
+                    type: Boolean,
+                    value: false
+                },
+                percent: {
+                    type: Boolean,
+                    value: false
+                },
+                path: {
+                    type: String,
+                    observer: '_pathChanged'
+                },
+                virtual: {
+                    type: Boolean
+                },
+                total: {
+                    type: Boolean
+                },
+                totalBellow: {
+                    type: Boolean
+                },
+                meta: {
+                    type: Boolean
+                },
+                metaHeader: {
+                    type: String
+                },
+                metaEditable: {
+                    type: Boolean
+                },
+                notSave: {
+                    type: Boolean
+                },
+                dimensions: {
+                    type: Array
+                },
+                fillValue: {
+                    type: Number,
+                    value: 0
+                },
+                filter: {
+                    type: String
+                }
+            },
+            observers: ['_pathDBObserver(_path,db)', '_dataDimensionsObserver(data,dimensions)'],
+            ready: function() {
+                this.addEventListener('data-changed', this._changeHandler);
+                this.addEventListener('fill-back', this._fireFillBack);
+                this.addEventListener('fill-forward', this._fireFillForward);
+            },
+            _fireFillBack: function(e) {
+                var d = event.detail;
+                var D = this.data[d.row];
+                var v = this.data[d.row][d.col];
+                var k = d.col;
+                D['1'] = k > 1 ? v : D['1'];
+                D['2'] = k > 2 ? v : D['2'];
+                D['3'] = k > 3 ? v : D['3'];
+                D['4'] = k > 4 ? v : D['4'];
+                D['5'] = k > 5 ? v : D['5'];
+                D['6'] = k > 6 ? v : D['6'];
+                D['7'] = k > 7 ? v : D['7'];
+                D['8'] = k > 8 ? v : D['8'];
+                D['9'] = k > 9 ? v : D['9'];
+                D['10'] = k > 10 ? v : D['10'];
+                D['11'] = k > 11 ? v : D['11'];
+                D['12'] = k > 12 ? v : D['12'];
+                this.data[d.row] = _.clone(D)
+                this.data = _.clone(this.data);
+            },
+            _fireFillForward: function(e) {
+                var d = event.detail;
+                var D = this.data[d.row];
+                var v = this.data[d.row][d.col];
+                var k = d.col - 1;
+                D['1'] = k < 1 ? v : D['1'];
+                D['2'] = k < 2 ? v : D['2'];
+                D['3'] = k < 3 ? v : D['3'];
+                D['4'] = k < 4 ? v : D['4'];
+                D['5'] = k < 5 ? v : D['5'];
+                D['6'] = k < 6 ? v : D['6'];
+                D['7'] = k < 7 ? v : D['7'];
+                D['8'] = k < 8 ? v : D['8'];
+                D['9'] = k < 9 ? v : D['9'];
+                D['10'] = k < 10 ? v : D['10'];
+                D['11'] = k < 11 ? v : D['11'];
+                D['12'] = k < 12 ? v : D['12'];
+                this.data[d.row] = _.clone(D)
+                this.data = _.clone(this.data);
+            },
+            _dataChanged: function() {
+            	this._workTotals();
+            },
+            _workTotals:function()
+            {
+                if (this.total && this.data)
+                    _.each(this.data, function(D) {
+                        D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
+                    })
 
-		D['1']  = 	k > 1		? v : D['1'] 	;
-		D['2']  =	k > 2		? v : D['2'] 	;
-		D['3']  =	k > 3		? v : D['3'] 	;
-		D['4']  =	k > 4		? v : D['4'] 	;
-		D['5']  =	k > 5		? v : D['5'] 	;
-		D['6']  =	k > 6		? v : D['6'] 	;
-		D['7']  =	k > 7		? v : D['7'] 	;
-		D['8']  =	k > 8		? v : D['8'] 	;
-		D['9']  =	k > 9		? v : D['9'] 	;
-		D['10'] =	k > 10		? v : D['10']	;
-		D['11'] =	k > 11		? v : D['11']	;
-		D['12'] =	k > 12		? v : D['12']	;
 
-		this.data[d.row] = _.clone(D)
-		this.data = _.clone(this.data);
-	},
-	_fireFillForward:function(e){
+                if (this.totalBellow) 
+                {
 
-		var d = event.detail;
-		var D = this.data[d.row];
-		var v = this.data[d.row][d.col];
-		var k = d.col - 1;
+                	jQuery(this.$.dataTable.querySelector('* /deep/ table tr[total]')).remove();
 
-		D['1']  = 	k < 1		? v : D['1'] 	;
-		D['2']  =	k < 2		? v : D['2'] 	;
-		D['3']  =	k < 3		? v : D['3'] 	;
-		D['4']  =	k < 4		? v : D['4'] 	;
-		D['5']  =	k < 5		? v : D['5'] 	;
-		D['6']  =	k < 6		? v : D['6'] 	;
-		D['7']  =	k < 7		? v : D['7'] 	;
-		D['8']  =	k < 8		? v : D['8'] 	;
-		D['9']  =	k < 9		? v : D['9'] 	;
-		D['10'] =	k < 10		? v : D['10']	;
-		D['11'] =	k < 11		? v : D['11']	;
-		D['12'] =	k < 12		? v : D['12']	;
+                    var table = this.$.dataTable.querySelector('* /deep/ table')
 
-		this.data[d.row] = _.clone(D)
-		this.data = _.clone(this.data);
-		
-	},
-	_dataChanged:function(){
+                    var trTotal = document.createElement('tr'); trTotal.innerHTML += "<td style=\"    border-top: 1px dashed #dbdbdb;\"><span>-</span></td>";
+                    trTotal.setAttribute('total','')
+                    if(this.meta)
+                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb;\"><span>-</span></td>";
 
+                    table.appendChild(trTotal);
 
-	},
-	_dataIsEmpty:function(data){ return _.isEmpty(data) },
-	_changeHandler:function() {
-		this._buildDB();
+                    _.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(m){
+                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\" mes=\""+m+"\"><span>0</span></td>";
+                    })
 
-		this._activePercentIfIs();
-	},
-	_activePercentIfIs:function(){
-		if(this.percent)
-			this.async(function(){
+                    if(this.total)
+                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\"><span>0</span></td>";
+                	
+                	_.each(this.data, function(D) {
+                		var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
+                		_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
+                		{
+	                		trTotal.querySelector('td[mes="'+k+'"] span')
+	                			.innerText = D[k] + parseFloat(trTotal.querySelector('td[mes="'+k+'"] span').innerText);
+                		},this);
 
-				var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
-				_.each(TDs,function(td){
-					var s = td.innerText.trim();
-					if(s.match(/^-?\d+\.?\d*$/)) {
-						td.querySelector('span').innerHTML += '%';
-					}
-				})	
-
-			},333)
-	},
-	_dataDimensionsObserver:function(){
-		this.filterByDimensionsList();
-	},
-	_pathChanged:function(){
-		this.$.dataTable.progress = true;
-
-		this.dimensions = [];
-		this._path = this.path.replace(/\s+/g,'-');
-		this.async(this._removeFilters,1000)
-	},
-	_pathDBObserver:function(_path,db){
-		this.data = [];
-		var URL = FB_URL+"/"+this._path+"/"+this.db;
-
-		if(this.FBRef)
-			this.FBRef.off();
-
-		this.FBRef = new Firebase(URL);
-		this.FBRef.on('value',function(dataSnap){
-
-					var V = dataSnap.val();
-					var A = this.dimensions;
-					var B =  _.keys(V);
-					var DiffAB = _.difference(  A , B )
-					var isEmpty = _.isEmpty(DiffAB);
-
-					console.log(URL,V);
-
-					if(!isEmpty)
-					{
-						var ListData = this._getListedData(V);
-						_.each(DiffAB,function(d){
-							ListData.push({
-								dimension:d,
-								1	:this.fillValue,
-								2	:this.fillValue,
-								3	:this.fillValue,
-								4	:this.fillValue,
-								5	:this.fillValue,
-								6	:this.fillValue,
-								7	:this.fillValue,
-								8	:this.fillValue,
-								9	:this.fillValue,
-								10	:this.fillValue,
-								11	:this.fillValue,
-								12	:this.fillValue
-							})
-						}.bind(this))
-						this.data = ListData;
-					}
-					
-
-					if(!_.isEmpty(V)) {
-						this.data = this._getListedData(V);
-					}
-					if(_.isEmpty(this.data)) {
-						this._setSampleData();
-					}
-					console.log(URL,this.data);
-					this.$.dataTable.progress = false;
-
-			}.bind(this));
-	},
-	_buildDB:function(){
-		if(!this._path)
-			return;
-		var Obj = this._getStructuredData(this.data);
-		this._save(Obj);				
-	},
-	_save:function(Obj) {
-		new Firebase(FB_URL+"/"+this._path+"/"+this.db)
-			.update(Obj);
-		
-		this.fire('tabela-mes-build');
-		
-	},
-	_getStructuredData:function(D) {
-		return _.mapObject(_.groupBy(D,'dimension'),function(x){
-			f = _.first(x);
-			var F = parseFloat;
-			f['1']  = F(f['1'] ) && F(F(f['1'] ).toFixed(2));	
-			f['2']  = F(f['2'] ) && F(F(f['2'] ).toFixed(2));
-			f['3']  = F(f['3'] ) && F(F(f['3'] ).toFixed(2));
-			f['4']  = F(f['4'] ) && F(F(f['4'] ).toFixed(2));
-			f['5']  = F(f['5'] ) && F(F(f['5'] ).toFixed(2));
-			f['6']  = F(f['6'] ) && F(F(f['6'] ).toFixed(2));
-			f['7']  = F(f['7'] ) && F(F(f['7'] ).toFixed(2));
-			f['8']  = F(f['8'] ) && F(F(f['8'] ).toFixed(2));
-			f['9']  = F(f['9'] ) && F(F(f['9'] ).toFixed(2));
-			f['10'] = F(f['10']) && F(F(f['10']).toFixed(2));
-			f['11'] = F(f['11']) && F(F(f['11']).toFixed(2));
-			f['12'] = F(f['12']) && F(F(f['12']).toFixed(2));
-
-			return f;
-		});
-	},
-	getStructuredDataAsPercent:function() {
-		var D = JSON.parse(JSON.stringify(this.data) || '{}');
-		return _.mapObject(_.groupBy(D,'dimension'),function(x){
-			f = _.first(x);
-			var F = parseFloat;
-			f['1']  = 1 + F( F(f['1'] ) && F(F(f['1'] ).toFixed(2)) )/100;	
-			f['2']  = 1 + F( F(f['2'] ) && F(F(f['2'] ).toFixed(2)) )/100;
-			f['3']  = 1 + F( F(f['3'] ) && F(F(f['3'] ).toFixed(2)) )/100;
-			f['4']  = 1 + F( F(f['4'] ) && F(F(f['4'] ).toFixed(2)) )/100;
-			f['5']  = 1 + F( F(f['5'] ) && F(F(f['5'] ).toFixed(2)) )/100;
-			f['6']  = 1 + F( F(f['6'] ) && F(F(f['6'] ).toFixed(2)) )/100;
-			f['7']  = 1 + F( F(f['7'] ) && F(F(f['7'] ).toFixed(2)) )/100;
-			f['8']  = 1 + F( F(f['8'] ) && F(F(f['8'] ).toFixed(2)) )/100;
-			f['9']  = 1 + F( F(f['9'] ) && F(F(f['9'] ).toFixed(2)) )/100;
-			f['10'] = 1 + F( F(f['10']) && F(F(f['10']).toFixed(2)) )/100;
-			f['11'] = 1 + F( F(f['11']) && F(F(f['11']).toFixed(2)) )/100;
-			f['12'] = 1 + F( F(f['12']) && F(F(f['12']).toFixed(2)) )/100;
-
-			return f;
-		});
-	},
-	_getListedData:function(D){
-		return _.sortBy(_.values(D),function(d){ 
-			return d.dimension.indexOf('-') > 0 ? 
-				parseInt(d.dimension.split('-')[0])
-			: d.dimension;
-		}) 
-	},
-	_setSampleData:function(){
-		
-		var Interval = setInterval(function(){
-
-				if(_.isEmpty(this.dimensions))
-					return;
-				var D 	= this.getSampleData(this.fillValue);
-				this.data = D;
-				this._buildDB();
-				clearInterval(Interval);
-
-		}.bind(this),300)
-
-		
-	},
-	/* public */
-	getSampleData:function(value,options){
-		options = options || {};
-		var D 	= [];
-		_.each(this.dimensions,function(d){
-			D.push({
-					dimension:d,
-					1	:value,
-					2	:value,
-					3	:value,
-					4	:value,
-					5	:value,
-					6	:value,
-					7	:value,
-					8	:value,
-					9	:value,
-					10	:value,
-					11	:value,
-					12	:value
-				})
-		}.bind(this))
-		return options.isStructured ? this._getStructuredData(D) : D;
-	},
-	getStructuredData:function(options){
-		return this._getStructuredData(this.data,options);
-	},
-	productABC:function(A,B,C,D,options){
-		options = options || {tax:1}
-		var Y = {};
-      	_.each(A,function(vA,kA){
-      		_.each(B,function(vB,kB){
-      			_.each(C,function(vC,kC){
-	      			_.each(D,function(vD,kD){
-	      				if(kA == kB && kB == kC && kC == kD) {
-	      					Y[kA] = {
-	      						1 : 	vA['1'] 	*vB['1'] 	*vC['1']  *vD['1']  * options.tax,
-	      						2 : 	vA['2'] 	*vB['2'] 	*vC['2']  *vD['2']  * options.tax,
-	      						3 : 	vA['3'] 	*vB['3'] 	*vC['3']  *vD['3']  * options.tax,
-	      						4 : 	vA['4'] 	*vB['4'] 	*vC['4']  *vD['4']  * options.tax,
-	      						5 : 	vA['5'] 	*vB['5'] 	*vC['5']  *vD['5']  * options.tax,
-	      						6 : 	vA['6'] 	*vB['6'] 	*vC['6']  *vD['6']  * options.tax,
-	      						7 : 	vA['7'] 	*vB['7'] 	*vC['7']  *vD['7']  * options.tax,
-	      						8 : 	vA['8'] 	*vB['8'] 	*vC['8']  *vD['8']  * options.tax,
-	      						9 : 	vA['9'] 	*vB['9'] 	*vC['9']  *vD['9']  * options.tax,
-	      						10: 	vA['10'] 	*vB['10'] 	*vC['10'] *vD['10'] * options.tax,
-	      						11: 	vA['11'] 	*vB['11'] 	*vC['11'] *vD['11'] * options.tax,
-	      						12: 	vA['12'] 	*vB['12'] 	*vC['12'] *vD['12'] * options.tax, 
-	      						dimension: vA.dimension
-	      					}
-	      				}
-	      			});
-      			})
-      		})
-      	})
-      	this.data = this._getListedData(Y);
-      	this._buildDB();
-	},
-	fill:function(table,usingMensure){
-		this.dimensions = _.keys(table);
-		if(_.isEmpty(this.dimensions)) {
-			console.log('fill-failed')
-			return this.fire('fill-failed')
-		}
-		var M = _.mapObject(table,function(r,k){ 
-			return {
-						1 : 	r[usingMensure],
-						2 : 	r[usingMensure],
-						3 : 	r[usingMensure],
-						4 : 	r[usingMensure],
-						5 : 	r[usingMensure],
-						6 : 	r[usingMensure],
-						7 : 	r[usingMensure],
-						8 : 	r[usingMensure],
-						9 : 	r[usingMensure],
-						10: 	r[usingMensure],
-						11: 	r[usingMensure],
-						12: 	r[usingMensure],
-						dimension: k
-					}
-		});
-		this.async(function(){
-			this._save(M);
-		},1000)
-	},
-	put:function(mesesObject,options){
-		_.each(this.data,function(d){
-
-			if(_(options.ifDimIs).contains(d.dimension)) {
-				_.each([1,2,3,4,5,6,7,8,9,10,11,12],function(m){
-
-					d[m]  = mesesObject[m]  
-								* (options.Tax.useMeta ? 
-									parseFloat(d.meta)
-								: options.Tax[d.dimension])
-					d[m] = parseFloat(parseFloat(d[m]).toFixed(2));
-				})
-			}
-
-		},this)
-	},
-	filterByDimensionsList:function() {
-		this._removeFilters();
-		
-		var F = document.querySelector("* /deep/ #filterContainer /deep/ "+this.filter);
-		if(!F) return;
-		var f = F.value;
-		var D = f == "Todos" ? this.dimensions : [f];
-
-		_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
-			tr.style.display = "table-row";
-			var tdText = tr.querySelector('td').innerText.trim()
-			if(!_.contains(D,tdText))
-				tr.style.display = "none";
-		});
-	},
-	_removeFilters:function(){
-		_.each(this.querySelectorAll('* /deep/ [data-key]'),function(tr) {
-				tr.style.display = "table-row";
-			});
-	}
-
-});
-	</script>
+                        //D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
+                    },this)
+                }
+            },
+            _dataIsEmpty: function(data) {
+                return _.isEmpty(data)
+            },
+            _changeHandler: function() {
+                this._buildDB();
+                this._activePercentIfIs();
+            },
+            _activePercentIfIs: function() {
+                if (this.percent)
+                    this.async(function() {
+                        var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
+                        _.each(TDs, function(td) {
+                            var s = td.innerText.trim();
+                            if (s.match(/^-?\d+\.?\d*$/)) {
+                                td.querySelector('span').innerHTML += '%';
+                            }
+                        })
+                    }, 1)
+            },
+            _dataDimensionsObserver: function() {
+                this.filterByDimensionsList();
+            },
+            _pathChanged: function() {
+                this.$.dataTable.progress = true;
+                this.dimensions = [];
+                this._path = this.path.replace(/\s+/g, '-');
+                this.async(this._removeFilters, 1000)
+            },
+            _pathDBObserver: function(_path, db) {
+                this.data = [];
+                var URL = FB_URL + "/" + this._path + "/" + this.db;
+                if (this.FBRef)
+                    this.FBRef.off();
+                this.FBRef = new Firebase(URL);
+                this.FBRef.on('value', function(dataSnap) {
+                    var V = dataSnap.val();
+                    var A = this.dimensions;
+                    var B = _.keys(V);
+                    var DiffAB = _.difference(A, B)
+                    var isEmpty = _.isEmpty(DiffAB);
+                    console.log(URL, V);
+                    if (!isEmpty) {
+                        var ListData = this._getListedData(V);
+                        _.each(DiffAB, function(d) {
+                            ListData.push({
+                                dimension: d,
+                                1: this.fillValue,
+                                2: this.fillValue,
+                                3: this.fillValue,
+                                4: this.fillValue,
+                                5: this.fillValue,
+                                6: this.fillValue,
+                                7: this.fillValue,
+                                8: this.fillValue,
+                                9: this.fillValue,
+                                10: this.fillValue,
+                                11: this.fillValue,
+                                12: this.fillValue
+                            })
+                        }
+                        .bind(this))
+                        this.data = ListData;
+                    }
+                    if (!_.isEmpty(V)) {
+                        this.data = this._getListedData(V);
+                    }
+                    if (_.isEmpty(this.data)) {
+                        this._setSampleData();
+                    }
+                    console.log(URL, this.data);
+                    this.$.dataTable.progress = false;
+                }
+                .bind(this));
+            },
+            _buildDB: function() {
+                if (!this._path)
+                    return;
+                var Obj = this._getStructuredData(this.data);
+                if (this.meta && this.metaEditable)
+                    _.each(Obj, function(obj) {
+                        if (!obj.meta)
+                            obj.meta = 100;
+                    })
+                this._save(Obj);
+            },
+            _save: function(Obj) {
+                new Firebase(FB_URL + "/" + this._path + "/" + this.db).update(Obj);
+                this.fire('tabela-mes-build');
+            },
+            _getStructuredData: function(D) {
+                return _.mapObject(_.groupBy(D, 'dimension'), function(x) {
+                    f = _.first(x);
+                    var F = parseFloat;
+                    f['1'] = F(f['1']) && F(F(f['1']).toFixed(2));
+                    f['2'] = F(f['2']) && F(F(f['2']).toFixed(2));
+                    f['3'] = F(f['3']) && F(F(f['3']).toFixed(2));
+                    f['4'] = F(f['4']) && F(F(f['4']).toFixed(2));
+                    f['5'] = F(f['5']) && F(F(f['5']).toFixed(2));
+                    f['6'] = F(f['6']) && F(F(f['6']).toFixed(2));
+                    f['7'] = F(f['7']) && F(F(f['7']).toFixed(2));
+                    f['8'] = F(f['8']) && F(F(f['8']).toFixed(2));
+                    f['9'] = F(f['9']) && F(F(f['9']).toFixed(2));
+                    f['10'] = F(f['10']) && F(F(f['10']).toFixed(2));
+                    f['11'] = F(f['11']) && F(F(f['11']).toFixed(2));
+                    f['12'] = F(f['12']) && F(F(f['12']).toFixed(2));
+                    return f;
+                }
+                .bind(this));
+            },
+            getStructuredDataAsPercent: function() {
+                var D = JSON.parse(JSON.stringify(this.data) || '{}');
+                return _.mapObject(_.groupBy(D, 'dimension'), function(x) {
+                    f = _.first(x);
+                    var F = parseFloat;
+                    f['1'] = 1 + F(F(f['1']) && F(F(f['1']).toFixed(2))) / 100;
+                    f['2'] = 1 + F(F(f['2']) && F(F(f['2']).toFixed(2))) / 100;
+                    f['3'] = 1 + F(F(f['3']) && F(F(f['3']).toFixed(2))) / 100;
+                    f['4'] = 1 + F(F(f['4']) && F(F(f['4']).toFixed(2))) / 100;
+                    f['5'] = 1 + F(F(f['5']) && F(F(f['5']).toFixed(2))) / 100;
+                    f['6'] = 1 + F(F(f['6']) && F(F(f['6']).toFixed(2))) / 100;
+                    f['7'] = 1 + F(F(f['7']) && F(F(f['7']).toFixed(2))) / 100;
+                    f['8'] = 1 + F(F(f['8']) && F(F(f['8']).toFixed(2))) / 100;
+                    f['9'] = 1 + F(F(f['9']) && F(F(f['9']).toFixed(2))) / 100;
+                    f['10'] = 1 + F(F(f['10']) && F(F(f['10']).toFixed(2))) / 100;
+                    f['11'] = 1 + F(F(f['11']) && F(F(f['11']).toFixed(2))) / 100;
+                    f['12'] = 1 + F(F(f['12']) && F(F(f['12']).toFixed(2))) / 100;
+                    return f;
+                });
+            },
+            _getListedData: function(D) {
+                return _.sortBy(_.values(D), function(d) {
+                    return d.dimension.indexOf('-') > 0 ? parseInt(d.dimension.split('-')[0]) : d.dimension;
+                })
+            },
+            _setSampleData: function() {
+                var Interval = setInterval(function() {
+                    if (_.isEmpty(this.dimensions))
+                        return;
+                    var D = this.getSampleData(this.fillValue);
+                    this.data = D;
+                    this._buildDB();
+                    clearInterval(Interval);
+                }
+                .bind(this), 300)
+            },
+            /* public */
+            getSampleData: function(value, options) {
+                options = options || {};
+                var D = [];
+                _.each(this.dimensions, function(d) {
+                    var Obj = {
+                        dimension: d,
+                        1: value,
+                        2: value,
+                        3: value,
+                        4: value,
+                        5: value,
+                        6: value,
+                        7: value,
+                        8: value,
+                        9: value,
+                        10: value,
+                        11: value,
+                        12: value
+                    }
+                    D.push(Obj)
+                }
+                .bind(this))
+                return options.isStructured ? this._getStructuredData(D) : D;
+            },
+            getStructuredData: function(options) {
+                return this._getStructuredData(this.data, options);
+            },
+            productABC: function(A, B, C, D, options) {
+                options = options || {
+                    tax: 1
+                }
+                var Y = {};
+                _.each(A, function(vA, kA) {
+                    _.each(B, function(vB, kB) {
+                        _.each(C, function(vC, kC) {
+                            _.each(D, function(vD, kD) {
+                                if (kA == kB && kB == kC && kC == kD) {
+                                    Y[kA] = {
+                                        1: vA['1'] * vB['1'] * vC['1'] * vD['1'] * options.tax,
+                                        2: vA['2'] * vB['2'] * vC['2'] * vD['2'] * options.tax,
+                                        3: vA['3'] * vB['3'] * vC['3'] * vD['3'] * options.tax,
+                                        4: vA['4'] * vB['4'] * vC['4'] * vD['4'] * options.tax,
+                                        5: vA['5'] * vB['5'] * vC['5'] * vD['5'] * options.tax,
+                                        6: vA['6'] * vB['6'] * vC['6'] * vD['6'] * options.tax,
+                                        7: vA['7'] * vB['7'] * vC['7'] * vD['7'] * options.tax,
+                                        8: vA['8'] * vB['8'] * vC['8'] * vD['8'] * options.tax,
+                                        9: vA['9'] * vB['9'] * vC['9'] * vD['9'] * options.tax,
+                                        10: vA['10'] * vB['10'] * vC['10'] * vD['10'] * options.tax,
+                                        11: vA['11'] * vB['11'] * vC['11'] * vD['11'] * options.tax,
+                                        12: vA['12'] * vB['12'] * vC['12'] * vD['12'] * options.tax,
+                                        dimension: vA.dimension
+                                    }
+                                }
+                            });
+                        })
+                    })
+                })
+                this.data = this._getListedData(Y);
+                this._buildDB();
+            },
+            fill: function(table, usingMensure) {
+                this.dimensions = _.keys(table);
+                if (_.isEmpty(this.dimensions)) {
+                    console.log('fill-failed')
+                    return this.fire('fill-failed')
+                }
+                var M = _.mapObject(table, function(r, k) {
+                    return {
+                        1: r[usingMensure],
+                        2: r[usingMensure],
+                        3: r[usingMensure],
+                        4: r[usingMensure],
+                        5: r[usingMensure],
+                        6: r[usingMensure],
+                        7: r[usingMensure],
+                        8: r[usingMensure],
+                        9: r[usingMensure],
+                        10: r[usingMensure],
+                        11: r[usingMensure],
+                        12: r[usingMensure],
+                        dimension: k
+                    }
+                });
+                this.async(function() {
+                    this._save(M);
+                }, 1000)
+            },
+            put: function(mesesObject, options) {
+                if (_.size(mesesObject) < 12)
+                    return 1;
+                _.each(this.data, function(d) {
+                    if (_(options.ifDimIs).contains(d.dimension)) {
+                        _.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], function(m) {
+                            if (d.meta === undefined)
+                                d.meta = 100;
+                            if (!options.Tax.useMeta)
+                                d.meta = options.Tax[d.dimension]
+                            d.meta = parseFloat(d.meta);
+                            d[m] = mesesObject[m] * d.meta
+                            d[m] = parseInt(d[m] * (1 / 100))
+                            if (_.isNaN(d[m]))
+                                debugger ;
+                        })
+                    }
+                }, this)
+            },
+            filterByDimensionsList: function() {
+                this._removeFilters();
+                var F = document.querySelector("* /deep/ #filterContainer /deep/ " + this.filter);
+                if (!F)
+                    return;
+                var f = F.value;
+                var D = f == "Todos" ? this.dimensions : [f];
+                _.each(this.querySelectorAll('* /deep/ [data-key]'), function(tr) {
+                    tr.style.display = "table-row";
+                    var tdText = tr.querySelector('td').innerText.trim()
+                    if (!_.contains(D, tdText))
+                        tr.style.display = "none";
+                });
+            },
+            _removeFilters: function() {
+                _.each(this.querySelectorAll('* /deep/ [data-key]'), function(tr) {
+                    tr.style.display = "table-row";
+                });
+            }
+        });
+    </script>
 </dom-module>
