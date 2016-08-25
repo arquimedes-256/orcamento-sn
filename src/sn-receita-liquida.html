@@ -54,6 +54,7 @@
 			<sn-tabela-mes 
 				total
 				total-bellow
+				sort-map="{{_sortMap}}"
 	            id="tablePercentualFixo"
 	            db="percentual-fixo" 
 	            on-tabela-mes-build="_tabelaMesBuildHandler"
@@ -66,6 +67,7 @@
 	        <sn-tabela-mes 
 	        	total
 	        	total-bellow
+	        	sort-map="{{_sortMap}}"
 	            id="tablePercentualManual"
 	            db="percentual-manual" 
 	            on-tabela-mes-build="_tabelaMesBuildHandler"
@@ -82,9 +84,10 @@
 		Polymer({
 			is: 'sn-receita-liquida',
 			properties:{
-				_path:{type:String},
-				_dimensions:{type:String},
-				_currentFilial:{type:String}
+				_path: 			{type:String},
+				_dimensions: 	{type:String},
+				_currentFilial: {type:String},
+				_sortMap: 		{value:{PIS:1,Cofins:2,ISS:3}}
 			},
 			observers:['_buildPath(_currentFilial)'],
 			ready:function(){

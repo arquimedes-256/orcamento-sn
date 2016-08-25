@@ -87,6 +87,9 @@
                     type: String,
                     observer: '_pathChanged'
                 },
+                sortMap:{
+                	type:Boolean
+                },
                 virtual: {
                     type: Boolean
                 },
@@ -340,8 +343,10 @@
             },
             _getListedData: function(D) {
                 return _.sortBy(_.values(D), function(d) {
+                	if(this.sortMap && this.sortMap[d.dimension])
+                		return this.sortMap[d.dimension];
                     return d.dimension.indexOf('-') > 0 ? parseInt(d.dimension.split('-')[0]) : d.dimension;
-                })
+                },this)
             },
             _setSampleData: function() {
                 var Interval = setInterval(function() {
