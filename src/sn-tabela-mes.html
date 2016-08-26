@@ -183,10 +183,10 @@
                 {
 
                 	jQuery(this.$.dataTable.querySelector('* /deep/ table tr[total]')).remove();
-
+                	var Sigma = 0;
                     var table = this.$.dataTable.querySelector('* /deep/ table')
 
-                    var trTotal = document.createElement('tr'); trTotal.innerHTML += "<td style=\"    border-top: 1px dashed #dbdbdb;\"><span>-</span></td>";
+                    var trTotal = document.createElement('tr'); trTotal.innerHTML += "<td style=\"    border-top: 1px dashed #dbdbdb;\"><span>Total:</span></td>";
                     trTotal.setAttribute('total','')
                     if(this.meta)
                     	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb;\"><span>-</span></td>";
@@ -198,18 +198,21 @@
                     })
 
                     if(this.total)
-                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\"><span>0</span></td>";
+                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\" grand-total><span>0</span></td>";
                 	
                 	_.each(this.data, function(D) {
                 		var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
                 		_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
                 		{
+                			var x = parseFloat(trTotal.querySelector('td[mes="'+k+'"] span').innerText);
 	                		trTotal.querySelector('td[mes="'+k+'"] span')
-	                			.innerText = D[k] + parseFloat(trTotal.querySelector('td[mes="'+k+'"] span').innerText);
+	                			.innerText = D[k] + x;
+                				Sigma += x;
                 		},this);
 
                         //D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
                     },this)
+                    trTotal.querySelector('[grand-total]').innerText = Sigma;
                 }
             },
             _dataIsEmpty: function(data) {

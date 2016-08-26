@@ -14,7 +14,7 @@ Example:
 @demo demo/index.html
 -->
 
-<dom-module id="sn-mxm-data">
+<dom-module id="sn-data-mxm">
 	<template>
 		<style>
 			:host {
@@ -28,15 +28,25 @@ Example:
 	</template>
 	<script>
 		Polymer({
-			is: 'sn-mxm-data',
+			is: 'sn-data-mxm',
+			properties:{
+				_anoAtual:{value:2016}
+			},
 			orcadorealizado_responseHandler:function(e,d,s) {
 				this.fire('response-orcadorealizado',e.detail.response)
 			},
 			refresh:function(obj) {
 				this.$.ajax.url = 
 				"//sig.sulnorte.com.br/sn/bus?mes="+obj.mesInicio+"&mesFinal="+obj.mesFim
-				+"&ano="+2016+"&finder=orcadorealizado&filial="+obj.filial
+				+"&ano="+this._anoAtual+"&finder=orcadorealizado&filial="+obj.filial
 				+"&isKeepContaContabil=true";
+			},
+			getReceitaLiquidaAcumuladoAnoAnterior:function(filial)
+			{
+				this.$.ajax.url = 
+					"//sig.sulnorte.com.br/sn/bus?"+
+					"mes=1&ano="+(this._anoAtual)+"&mesFinal=12&finder=orcadorealizado_detalhado"+
+					"&idGrupoMaster=2&filial="+filial+"&isKeepContaContabil=true";
 			}
 		});
 	</script>

@@ -1,6 +1,6 @@
 
 <link rel="import" href="sn-tabela-mes.html">
-<link rel="import" href="sn-data-top.html">
+<link rel="import" href="sn-data-mxm.html">
 <link rel="import" href="sn-relatorios.html">
 
 <dom-module id="sn-receita-liquida">
@@ -8,7 +8,7 @@
 		<style>
 			:host {
 				display: block;
-         		padding: 10px;
+         		padding: 14px;
 			}
 			
          paper-material {
@@ -43,6 +43,12 @@
 	             <paper-item name="MAC">MAC</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
+      	  <div id="deducoes-ano-anterior" style="font-size: 15px;color: #FFCDD2;height: 30px;border-bottom: 1px solid #EF9A9A!important;position: relative;left: 60px;top: 28px;">
+
+      	  </div>
+      	  <div id="deducoes-ano-corrente-orcado" style="font-size: 15px;color: #FFCDD2;height: 30px;border-bottom: 1px solid #EF9A9A!important;position: relative;left: 60px;top: 28px;">
+      	  
+      	  </div>
 		</div>
 		<paper-material>
 
@@ -79,6 +85,8 @@
 	            meta-editable></sn-tabela-mes>
 			
 		</paper-material>
+		<sn-data-mxm id="dataMXM" 
+			on-response-orcadorealizado="_orcadoRealizadoResponseHandler"></sn-data-mxm>
 	</template>
 	<script>
 		Polymer({
@@ -102,7 +110,7 @@
 									aggregator:'receita-total',
 									filterMap:{Filial:this._currentFilial}
 								});
-		
+				this.$.dataMXM.getReceitaLiquidaAcumuladoAnoAnterior(this._currentFilial);
 			},
 			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(e){
@@ -141,12 +149,33 @@
 						this.$.tablePercentualFixo.hidden = false;
 					}	
 				}
-				console.log(1)
 
 			},
-			//sn-relatorios
-			_getDataFromBaseHandler:function(e){
-				var List = e.detail;
+			_orcadoRealizadoResponseHandler:function(e,response)
+			{
+				this._workRealAnoAnterior(response);
+			},
+			_workRealAnoAnterior:function(response){
+				var R = {
+					'Deduções s/ Receita Bruta':0,
+					'Receita Bruta':0
+				};
+				if(response)
+					_.each(response,function(r){
+						var k = r.nomeGrupo;
+						R[k] += r.vlrRealizado;
+					})
+
+				this.$['deducoes-ano-anterior'].innerHTML 
+					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Real ano anterior:</span>'
+					+'<span>'+Math.abs(R['Deduções s/ Receita Bruta']).formatMoney(0)+'</span>'
+					+ '<span style="margin: 0 5px;font-size: 22px;">/</span>'
+					+ '<span>'+R['Receita Bruta'].formatMoney(0)+'</span>'
+					+ '<span style="margin: 0 5px;font-size: 22px;">=</span>'
+					+ '<span>'+
+					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(1)+'%'
+					+'</span>'
+
 			}
 		});
 	</script>
