@@ -159,7 +159,6 @@ Polymer({
 		},
 		clientList: {
 			type: Array,
-			observer: '_clientListChanged',
 			value: CLIENT_LIST
 		}
 	},
@@ -172,6 +171,8 @@ Polymer({
     this.$.novoClienteElement.open(clienteObject);
   },
   _fetchCustomClients:function(){
+    this.async(function(){
+
       var ListBox = this.$.clienteListBox;
       new Firebase(FB_URL + "/clientes/" + this.currentFilial)
           .once("value", function(dataSnap) {
@@ -193,7 +194,8 @@ Polymer({
               +'<iron-icon  icon="social:person-add" style="position: relative;left: -5px;top: -1px;">'
               +'</iron-icon>Novo cliente</paper-item>';
           })
-					this.async(this._fetchCurrentCustomClient,333)
+          this.async(this._fetchCurrentCustomClient,333)
+    },1000)
   },
 	_selectedClienteChanged: function() {
 

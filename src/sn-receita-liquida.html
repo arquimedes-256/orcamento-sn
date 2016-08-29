@@ -46,7 +46,7 @@
       	  <div id="deducoes-ano-anterior" style="font-size: 15px;color: #FFCDD2;height: 30px;border-bottom: 1px solid #EF9A9A!important;position: relative;left: 60px;top: 28px;">
 
       	  </div>
-      	  <div id="deducoes-ano-corrente-orcado" style="font-size: 15px;color: #FFCDD2;height: 30px;border-bottom: 1px solid #EF9A9A!important;position: relative;left: 60px;top: 28px;">
+      	  <div id="deducoes-ano-corrente-orcado" style="margin-left: 14px;font-size: 15px;color: #FFCDD2;height: 30px;border-bottom: 1px solid #EF9A9A!important;position: relative;left: 60px;top: 28px;">
       	  
       	  </div>
 		</div>
@@ -147,13 +147,18 @@
 					else {
 						this.$.tablePercentualManual.hidden = false;
 						this.$.tablePercentualFixo.hidden = false;
+						
+						this.async(function(){
+							this.$.tablePercentualManual._buildDB()
+						},1000)
 					}	
 				}
-
+				this._workOrcadoAnoCorrente();
 			},
 			_orcadoRealizadoResponseHandler:function(e,response)
 			{
 				this._workRealAnoAnterior(response);
+				this._workOrcadoAnoCorrente();
 			},
 			_workRealAnoAnterior:function(response){
 				var R = {
@@ -175,7 +180,23 @@
 					+ '<span>'+
 					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(1)+'%'
 					+'</span>'
-
+			},
+			_workOrcadoAnoCorrente:function(){
+				var R = {
+					'Deduções s/ Receita Bruta':
+						parseInt(this.$.tablePercentualManual.querySelector('* /deep/ [grand-total]').getAttribute('data-value')),
+					'Receita Bruta':
+						parseInt(this.$.relatorio.querySelector('* /deep/ .pvtGrandTotal').getAttribute('data-value'))
+				};
+					this.$['deducoes-ano-corrente-orcado'].innerHTML 
+					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Orçado ano corrente:</span>'
+					+'<span>'+Math.abs(R['Deduções s/ Receita Bruta']).formatMoney(0)+'</span>'
+					+ '<span style="margin: 0 5px;font-size: 22px;">/</span>'
+					+ '<span>'+R['Receita Bruta'].formatMoney(0)+'</span>'
+					+ '<span style="margin: 0 5px;font-size: 22px;">=</span>'
+					+ '<span>'+
+					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(1)+'%'
+					+'</span>'
 			}
 		});
 	</script>
