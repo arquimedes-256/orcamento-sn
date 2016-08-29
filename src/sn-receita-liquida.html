@@ -147,13 +147,13 @@
 					else {
 						this.$.tablePercentualManual.hidden = false;
 						this.$.tablePercentualFixo.hidden = false;
-
-						this.async(function(){
-							this.$.tablePercentualManual._buildDB()
-						},1000)
 					}	
 				}
 				this._workOrcadoAnoCorrente();
+				
+				this.async(function(){
+					this.$.tablePercentualManual._buildDB()
+				},1000)
 			},
 			_orcadoRealizadoResponseHandler:function(e,response)
 			{
@@ -184,7 +184,7 @@
 			_workOrcadoAnoCorrente:function(){
 				var elDed = this.$.tablePercentualManual.querySelector('* /deep/ [grand-total]');
 				var elRct = this.$.relatorio.querySelector('* /deep/ .pvtGrandTotal');
-				
+
 				var deducao = elDed ?	parseInt(elDed.getAttribute('data-value')) : 0;
 
 				var receita = elRct ?	parseInt(elRct.getAttribute('data-value')) : 0;
