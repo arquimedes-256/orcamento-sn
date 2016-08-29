@@ -148,12 +148,12 @@
 						this.$.tablePercentualManual.hidden = false;
 						this.$.tablePercentualFixo.hidden = false;
 					}	
+					this.async(function(){
+						this.$.tablePercentualManual._buildDB()
+					},1000)
 				}
 				this._workOrcadoAnoCorrente();
-				
-				this.async(function(){
-					this.$.tablePercentualManual._buildDB()
-				},1000)
+
 			},
 			_orcadoRealizadoResponseHandler:function(e,response)
 			{
