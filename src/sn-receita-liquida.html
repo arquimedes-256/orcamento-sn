@@ -147,7 +147,7 @@
 					else {
 						this.$.tablePercentualManual.hidden = false;
 						this.$.tablePercentualFixo.hidden = false;
-						
+
 						this.async(function(){
 							this.$.tablePercentualManual._buildDB()
 						},1000)
@@ -182,11 +182,16 @@
 					+'</span>'
 			},
 			_workOrcadoAnoCorrente:function(){
+				var elDed = this.$.tablePercentualManual.querySelector('* /deep/ [grand-total]');
+				var elRct = this.$.relatorio.querySelector('* /deep/ .pvtGrandTotal');
+				
+				var deducao = elDed ?	parseInt(elDed.getAttribute('data-value')) : 0;
+
+				var receita = elRct ?	parseInt(elRct.getAttribute('data-value')) : 0;
+
 				var R = {
-					'Deduções s/ Receita Bruta':
-						parseInt(this.$.tablePercentualManual.querySelector('* /deep/ [grand-total]').getAttribute('data-value')),
-					'Receita Bruta':
-						parseInt(this.$.relatorio.querySelector('* /deep/ .pvtGrandTotal').getAttribute('data-value'))
+					'Deduções s/ Receita Bruta':deducao,
+					'Receita Bruta':receita
 				};
 					this.$['deducoes-ano-corrente-orcado'].innerHTML 
 					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Orçado ano corrente:</span>'
