@@ -1,0 +1,120 @@
+<!--
+A comment describing this element
+
+Example:
+
+    <my-elem></my-elem>
+
+Example:
+
+    <my-elem>
+      <h2>Hello my-elem</h2>
+    </my-elem>
+
+@demo demo/index.html
+-->
+
+<link rel="import" href="sn-tabela-mes.html">
+
+<dom-module id="sn-afretamento">
+	<template>
+		<style>
+			:host {
+				display: block;
+         		padding: 14px;
+			}
+			
+         paper-material {
+	         background:#FFF;
+	         padding:8px;
+         }
+		</style>
+		<div id="filters" class="layout horizontal">
+			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
+				Afretamento
+			</h5>
+			<paper-dropdown-menu label="Filial" id="filial">
+	            <paper-listbox class="dropdown-content" 
+	            selected="{{_currentFilial}}" 
+		        attr-for-selected="name">
+	             <paper-item name="RGD">RGD</paper-item>
+	             <paper-item name="PNG">PNG</paper-item>
+	             <paper-item name="STR">STR</paper-item>
+	             <paper-item name="SEP">SEP</paper-item>
+	             <paper-item name="RJ1">RJ1</paper-item>
+	             <paper-item name="VIT">VIT</paper-item>
+	             <paper-item name="SDR">SDR</paper-item>
+	             <paper-item name="MAC">MAC</paper-item>
+	            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-dropdown-menu label="Motivo">
+	            <paper-listbox class="dropdown-content" 
+	            selected="{{ _currentMotivo }}" 
+		        attr-for-selected="name">
+	             <paper-item name="2º Rebocador">						2º Rebocador</paper-item>
+				 <paper-item name="3º Rebocador">						3º Rebocador</paper-item>
+				 <paper-item name="4º Rebocador">						4º Rebocador</paper-item>
+				 <paper-item name="5º Rebocador">						5º Rebocador</paper-item>
+				 <paper-item name="6º Rebocador">						6º Rebocador</paper-item>
+				 <paper-item name="7º Rebocador">						7º Rebocador</paper-item>
+				 <paper-item name="Samarco">							Samarco		</paper-item>
+				 <paper-item name="Obrigatoriedade ASD">				Obrigatoriedade ASD			</paper-item>
+				 <paper-item name="Obrigatoriedade ASD > 60 T">			Obrigatoriedade ASD > 60 T	</paper-item>
+				 <paper-item name="Manutenção">							Manutenção					</paper-item>
+				 <paper-item name="Operaç. Especiais Compartilhadas">	Operaç. Especiais Compartilhadas</paper-item>
+				 <paper-item name="Recusa da Praticagem">				Recusa da Praticagem		</paper-item>
+				 <paper-item name="Repasse Operacional">				Repasse Operacional			</paper-item>
+				 <paper-item name="Viagem">								Viagem</paper-item>
+				 <paper-item name="Outros">								Outros</paper-item>
+	            </paper-listbox>
+          </paper-dropdown-menu>
+		</div>
+	<paper-material>
+ 		<sn-tabela-mes 
+	        	total
+	        	total-bellow
+	            db="qtd-rebocadores" 
+	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            path="{{_path}}"
+	            dimensions="{{ _dimensions }}"  
+	            editable
+	            header="Quantidade de Rebocadores">
+	     </sn-tabela-mes>
+		<sn-tabela-mes 
+	        	total
+	        	total-bellow
+	            db="tarifa" 
+	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            path="{{_path}}"
+	            dimensions="{{ _dimensions }}"  
+	            editable
+	            header="Tarifa">
+	     </sn-tabela-mes>
+		<sn-tabela-mes 
+	        	total
+	        	total-bellow
+	            db="total" 
+	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            path="{{_path}}"
+	            dimensions="{{ _dimensions }}"  
+	            header="Total R$">
+	     </sn-tabela-mes>
+	</paper-material>
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-afretamento',
+			observers:['_buildPath(_currentFilial,_currentMotivo)'],
+			ready:function() {
+				this._currentFilial = "RJ1";
+				this._currentMotivo = "2º Rebocador";
+			},
+			_buildPath:function(){
+				this._path = "afretamento/"+this._currentFilial + "/" + this._currentMotivo;
+				this._dimensions = ["0-10"]
+			}
+		});
+	</script>
+</dom-module>
+
+
