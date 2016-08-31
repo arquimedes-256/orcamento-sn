@@ -112,6 +112,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   var FILIAL_CLIENT_TO_TARIFA   = _.mapObject(_.groupBy(CLIENT_LIST,function(c){ return _.first(c.num_contrato,3).join("")+':'+c.nome }),function(C){ return _.first(C).tarifaFixa });
   var FILIAL_CLIENT_TO_CLIENTE  = _.mapObject(_.groupBy(CLIENT_LIST,function(c){ return _.first(c.num_contrato,3).join("")+':'+c.nome }),function(C){ return _.first(C) });
  
+ var CONTRATOS_INTERFATURAMENTO = {
+  VIT:'VIT000743',
+  SEP:'SEP000388',
+  STR:'STR000599',
+  SDR:'SDR001047',
+  RJ1:'RJ1000153',
+  RGD:'RGD000974',
+  PNG:'PNG000703',
+  MAC:'MAC000477',
+  MAC:'MAC000478'
+}
+
   </script>
   <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
 

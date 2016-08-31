@@ -15,6 +15,7 @@ Example:
 -->
 
 <link rel="import" href="sn-tabela-mes.html">
+<link rel="import" href="sn-data-top.html">
 
 <dom-module id="sn-afretamento">
 	<template>
@@ -68,6 +69,15 @@ Example:
 				 <paper-item name="Outros">								Outros</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
+           <paper-dropdown-menu label="Terminal">
+	            <paper-listbox class="dropdown-content" 
+	            selected="{{ _currentTerminal }}" 
+		        attr-for-selected="name">
+                    <template is="dom-repeat" items="{{_terminalList}}">
+                       <paper-item style="width: 172px;" name="[[item]]">[[item]]</paper-item>
+                    </template>
+		   		</paper-listbox>
+		    </paper-dropdown>
 		</div>
 	<paper-material>
  		<sn-tabela-mes 
@@ -81,6 +91,7 @@ Example:
 	            header="Quantidade de Rebocadores">
 	     </sn-tabela-mes>
 		<sn-tabela-mes 
+				id="tableTarifas"
 	        	total
 	        	total-bellow
 	            db="tarifa" 
@@ -100,18 +111,46 @@ Example:
 	            header="Total R$">
 	     </sn-tabela-mes>
 	</paper-material>
+	<sn-data-top 
+		id="dataTOP"
+		on-response-faixacontrato="_buildFaixas"></sn-data-top>
 	</template>
 	<script>
 		Polymer({
 			is: 'sn-afretamento',
-			observers:['_buildPath(_currentFilial,_currentMotivo)'],
+			observers:['_getFaixas(_currentFilial,_currentMotivo)','_fillFaixas(_currentTerminal)'],
 			ready:function() {
 				this._currentFilial = "RJ1";
 				this._currentMotivo = "2º Rebocador";
 			},
-			_buildPath:function(){
-				this._path = "afretamento/"+this._currentFilial + "/" + this._currentMotivo;
-				this._dimensions = ["0-10"]
+			_getFaixas:function()
+			{
+				var K = this._currentFilial;
+				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
+				console.log('_getFaixas',this._currentFilial)
+			},
+			_buildFaixas:function(){
+
+				this._terminalList 		= this.$.dataTOP.terminalList;
+				this._currentTerminal	= _.first(this._terminalList);
+
+				this._path = "afretamento/"+this._currentFilial + "/" + this._currentTerminal +'/' + this._currentMotivo;
+				
+				this._dimensions 		= this.$.dataTOP.faixaList;
+
+				console.log('_path',this._path);
+
+				console.log('_terminalList 	',this._terminalList 	);
+				console.log('_dimensions 	',this._dimensions 	);
+				console.log('_currentTerminal',this._currentTerminal);
+			},
+			_fillFaixas:function(){
+				var tarifaTerminal = this.$.dataTOP.getTarifaByTerminal(this._currentTerminal);
+				this.$.tableTarifas.fill(tarifaTerminal,'VLR_TRAMP');
+				console.log('faixasTerminal',tarifaTerminal)
+			},
+			_tabelaMesBuildHandler:function(){
+				// TODO
 			}
 		});
 	</script>

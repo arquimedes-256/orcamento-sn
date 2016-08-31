@@ -256,7 +256,7 @@
                     var B = _.keys(V);
                     var DiffAB = _.difference(A, B)
                     var isEmpty = _.isEmpty(DiffAB);
-                    console.log(URL, V);
+                    //console.log(URL, V);
                     if (!isEmpty) {
                         var ListData = this._getListedData(V);
                         _.each(DiffAB, function(d) {
@@ -285,7 +285,7 @@
                     if (_.isEmpty(this.data)) {
                         this._setSampleData();
                     }
-                    console.log(URL, this.data);
+                    //console.log(URL, this.data);
                     this.$.dataTable.progress = false;
                 }
                 .bind(this));
@@ -427,7 +427,7 @@
             fill: function(table, usingMensure) {
                 this.dimensions = _.keys(table);
                 if (_.isEmpty(this.dimensions)) {
-                    console.log('fill-failed')
+                   // console.log('fill-failed')
                     return this.fire('fill-failed')
                 }
                 var M = _.mapObject(table, function(r, k) {

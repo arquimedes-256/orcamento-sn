@@ -69,7 +69,10 @@ Example:
 				
 
 				this._buildTerminalFaixasTarifasIndex(V);
-				this.callBackFaixasContrato();
+				
+				if(this.callBackFaixasContrato)
+					this.callBackFaixasContrato();
+
 				this.fire('response-faixacontrato')
 			},
 			infocontrato_responseHandler:function(e,d,s){
@@ -110,9 +113,14 @@ Example:
 				this.$.ajaxInfoMultiple.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infomultiplecontrato&num_contrato="+num_contrato;
 			},
-			getFaixasByTerminal:function(terminal) {
+			getFaixasByTerminal:function(terminal) 
+			{
 				if(this._terminalFaixasTarifa && terminal)
 					return _.keys(this._terminalFaixasTarifa[terminal]);
+			},
+			getTarifaByTerminal:function(terminal)
+			{
+				return this._terminalFaixasTarifa[terminal];
 			}
 		});
 	</script>
