@@ -97,6 +97,8 @@ Example:
         
       },
       changeHandler:function(){
+        if(!this.$.mesInicio.selectedItem || !this.$.mesFim.selectedItem)
+          return;
         var mesList = 
         ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         var obj = {

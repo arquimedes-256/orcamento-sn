@@ -49,6 +49,7 @@
         </paper-datatable>
         <template is="dom-if" if="{{_dataIsEmpty(data)}}">
             <paper-progress indeterminate style="width:100%"></paper-progress>
+            Carregando...
         </template>
         <!--
 	        <style>
@@ -120,6 +121,10 @@
                 },
                 filter: {
                     type: String
+                },
+                observerIfIsZero:{
+                    type:Boolean,
+                    value:false
                 }
             },
             observers: ['_pathDBObserver(_path,db)', '_dataDimensionsObserver(data,dimensions)'],
@@ -127,6 +132,25 @@
                 this.addEventListener('data-changed', this._changeHandler);
                 this.addEventListener('fill-back', this._fireFillBack);
                 this.addEventListener('fill-forward', this._fireFillForward);
+                if(this.observerIfIsZero) {
+                    setInterval(function()
+                    {
+                        clearTimeout(this.observerIfIsZeroJob);
+
+                        this.observerIfIsZeroJob = 
+                        setTimeout(function(){
+
+                            var el = this.$.dataTable.querySelector("* /deep/ [grand-total]");
+                            if(!el)
+                                return;
+                            var v = el.innerHTML;  
+
+                            if(v=="0") { this.fire('is-zero') }
+
+                        }.bind(this),1000)
+                    }
+                    .bind(this),1000)
+                }
             },
             _fireFillBack: function(e) {
                 var d = event.detail;
@@ -169,7 +193,14 @@
                 this.data = _.clone(this.data);
             },
             _dataChanged: function() {
-            	this._workTotals();
+                clearTimeout(this._workTotalsJob)
+
+                this._workTotalsJob = 
+                    setTimeout(function()
+                    {
+                        this._workTotals();
+                    }
+                    .bind(this),200)
             },
             _workTotals:function()
             {
@@ -215,6 +246,7 @@
                     trTotal.querySelector('[grand-total]').innerText = Sigma;
                     trTotal.querySelector('[grand-total]').setAttribute('data-value',Sigma);
                 }
+                this._buildDB()
             },
             _dataIsEmpty: function(data) {
                 return _.isEmpty(data)
@@ -240,7 +272,7 @@
             },
             _pathChanged: function() {
                 this.$.dataTable.progress = true;
-                this.dimensions = [];
+                //this.dimensions = [];
                 this._path = this.path.replace(/\s+/g, '-');
                 this.async(this._removeFilters, 1000)
             },
@@ -279,12 +311,11 @@
                         .bind(this))
                         this.data = ListData;
                     }
+
                     if (!_.isEmpty(V)) {
                         this.data = this._getListedData(V);
                     }
-                    if (_.isEmpty(this.data)) {
-                        this._setSampleData();
-                    }
+                    
                     //console.log(URL, this.data);
                     this.$.dataTable.progress = false;
                 }
@@ -302,6 +333,8 @@
                 this._save(Obj);
             },
             _save: function(Obj) {
+                if(_.isEmpty(Obj))
+                    return;
                 new Firebase(FB_URL + "/" + this._path + "/" + this.db).update(Obj);
                 this.fire('tabela-mes-build');
             },
@@ -424,6 +457,36 @@
                 this.data = this._getListedData(Y);
                 this._buildDB();
             },
+            productAB:function(A,B,options){
+                options = options || {
+                    tax: 1
+                }
+                var Y = {};
+                _.each(A, function(vA, kA) {
+                    _.each(B, function(vB, kB) 
+                    {  
+                        if (kA == kB) {
+                            Y[kA] = {
+                                1: vA['1'] * vB['1']    * options.tax,
+                                2: vA['2'] * vB['2']    * options.tax,
+                                3: vA['3'] * vB['3']    * options.tax,
+                                4: vA['4'] * vB['4']    * options.tax,
+                                5: vA['5'] * vB['5']    * options.tax,
+                                6: vA['6'] * vB['6']    * options.tax,
+                                7: vA['7'] * vB['7']    * options.tax,
+                                8: vA['8'] * vB['8']    * options.tax,
+                                9: vA['9'] * vB['9']    * options.tax,
+                                10: vA['10'] * vB['10'] * options.tax,
+                                11: vA['11'] * vB['11'] * options.tax,
+                                12: vA['12'] * vB['12'] * options.tax,
+                                dimension: vA.dimension
+                            }
+                        }
+                    })
+                })
+                this.data = this._getListedData(Y);
+                this._buildDB();
+            },
             fill: function(table, usingMensure) {
                 this.dimensions = _.keys(table);
                 if (_.isEmpty(this.dimensions)) {
@@ -470,13 +533,19 @@
                     }
                 }, this)
             },
-            filterByDimensionsList: function() {
-                this._removeFilters();
-                var F = document.querySelector("* /deep/ #filterContainer /deep/ " + this.filter);
-                if (!F)
-                    return;
-                var f = F.value;
-                var D = f == "Todos" ? this.dimensions : [f];
+            filterByDimensionsList: function(currentFaixaDWT,dimensions) {
+                var f;
+                if(!currentFaixaDWT) 
+                {
+                    var F = document.querySelector("* /deep/ #filterContainer /deep/ " + this.filter);
+                    if (!F)
+                        return;
+                    f = F.value;
+                }
+                else {
+                    f = currentFaixaDWT;
+                }              
+                var D = f == "Todos" ? (dimensions || this.dimensions) : [f];
                 _.each(this.querySelectorAll('* /deep/ [data-key]'), function(tr) {
                     tr.style.display = "table-row";
                     var tdText = tr.querySelector('td').innerText.trim()

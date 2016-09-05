@@ -77,14 +77,30 @@ Example:
                        <paper-item style="width: 172px;" name="[[item]]">[[item]]</paper-item>
                     </template>
 		   		</paper-listbox>
-		    </paper-dropdown>
+		    </paper-dropdown-menu>
+           <paper-dropdown-menu label="Faixa DWT" id="faixaDWT">
+	            <paper-listbox class="dropdown-content" 
+	            selected="{{ _currentFaixaDWT }}" 
+		        attr-for-selected="name">
+		        	<paper-item style="width: 172px;" name="Todos">Todos</paper-item>
+                    <template is="dom-repeat" items="{{_faixaDWTList}}">
+                       <paper-item style="width: 172px;" name="[[item]]">[[item]]</paper-item>
+                    </template>
+		   		</paper-listbox>
+		    </paper-dropdown-menu>
+    		<paper-input 
+    			label="Tarifa U$" 
+    			id="inputCambio" 
+    			value="3.25" 
+    			readonly></paper-input>
 		</div>
-	<paper-material>
+	<paper-material id="material">
  		<sn-tabela-mes 
+ 				id="tableQTDRebocadores"
 	        	total
 	        	total-bellow
 	            db="qtd-rebocadores" 
-	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            on-tabela-mes-build="_productAB"
 	            path="{{_path}}"
 	            dimensions="{{ _dimensions }}"  
 	            editable
@@ -92,20 +108,19 @@ Example:
 	     </sn-tabela-mes>
 		<sn-tabela-mes 
 				id="tableTarifas"
-	        	total
-	        	total-bellow
 	            db="tarifa" 
-	            on-tabela-mes-build="_tabelaMesBuildHandler"
+	            on-tabela-mes-build="_productAB"
 	            path="{{_path}}"
 	            dimensions="{{ _dimensions }}"  
-	            editable
-	            header="Tarifa">
+	            header="Tarifa"
+	            observer-if-is-zero
+	            on-is-zero="_tarifaIsZeroHandler">
 	     </sn-tabela-mes>
 		<sn-tabela-mes 
+				id="tabelaTotal"
 	        	total
 	        	total-bellow
 	            db="total" 
-	            on-tabela-mes-build="_tabelaMesBuildHandler"
 	            path="{{_path}}"
 	            dimensions="{{ _dimensions }}"  
 	            header="Total R$">
@@ -118,10 +133,31 @@ Example:
 	<script>
 		Polymer({
 			is: 'sn-afretamento',
-			observers:['_getFaixas(_currentFilial,_currentMotivo)','_fillFaixas(_currentTerminal)'],
+			observers:[
+			'_currentMotivoChanged(_currentMotivo)',
+			'_currentFilialChanged(_currentFilial)',
+			'_currentTerminalChanged(_currentTerminal)',
+			'_getFaixas(_currentFilial)',
+			'_getFaixas(_currentMotivo)',
+			'_fillFaixas(_currentTerminal)',
+			'_filterFaixaDWT(_currentFaixaDWT)'],
 			ready:function() {
+				
 				this._currentFilial = "RJ1";
+			},
+			_currentMotivoChanged:function()
+			{
+				this._drawPath();
+				this._fillFaixas();
+			},
+			_currentFilialChanged:function()
+			{
 				this._currentMotivo = "2º Rebocador";
+			},
+			_currentTerminalChanged:function()
+			{
+				this._drawPath();
+				this._fillFaixas();
 			},
 			_getFaixas:function()
 			{
@@ -129,28 +165,63 @@ Example:
 				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
 				console.log('_getFaixas',this._currentFilial)
 			},
-			_buildFaixas:function(){
-
+			_buildFaixas:function()
+			{
 				this._terminalList 		= this.$.dataTOP.terminalList;
 				this._currentTerminal	= _.first(this._terminalList);
 
-				this._path = "afretamento/"+this._currentFilial + "/" + this._currentTerminal +'/' + this._currentMotivo;
+				this._drawPath();
 				
-				this._dimensions 		= this.$.dataTOP.faixaList;
-
 				console.log('_path',this._path);
-
 				console.log('_terminalList 	',this._terminalList 	);
 				console.log('_dimensions 	',this._dimensions 	);
 				console.log('_currentTerminal',this._currentTerminal);
+
+				jQuery(this.$.material).fadeIn();
 			},
-			_fillFaixas:function(){
+			_fillFaixas:function(_currentTerminal)
+			{
 				var tarifaTerminal = this.$.dataTOP.getTarifaByTerminal(this._currentTerminal);
+				if(!tarifaTerminal)
+					return;
 				this.$.tableTarifas.fill(tarifaTerminal,'VLR_TRAMP');
 				console.log('faixasTerminal',tarifaTerminal)
+				
+				jQuery(this.$.material).fadeIn();
 			},
-			_tabelaMesBuildHandler:function(){
-				// TODO
+			_productAB:function(){
+	 			this.async(function()
+	 			{
+	              var A = this.$.tableQTDRebocadores
+	                          	.getStructuredData();
+	              var B = this.$.tableTarifas
+	                			.getStructuredData();
+
+	              this.$.tabelaTotal.productAB(A,B,{tax:parseFloat(this.$.inputCambio.value)});
+	      
+	            },1000)
+			},
+			_tarifaIsZeroHandler:function(){
+				console.log('tarifa is zero!')
+				this._fillFaixas();
+			},
+			_filterFaixaDWT:function(_currentFaixaDWT){
+				this.$.tableQTDRebocadores
+					.filterByDimensionsList(_currentFaixaDWT,this._faixaDWTList);
+				this.$.tableTarifas
+					.filterByDimensionsList(_currentFaixaDWT,this._faixaDWTList);
+				this.$.tabelaTotal
+					.filterByDimensionsList(_currentFaixaDWT,this._faixaDWTList);
+			},
+			_drawPath:function(){
+
+				this._path = "afretamento"
+					+"/" +this._currentFilial 
+					+"/" +this._currentTerminal 
+					+'/' +this._currentMotivo;
+	
+				this._dimensions 		= this._faixaDWTList = this.$.dataTOP.faixaList;
+				this._currentFaixaDWT = "Todos";
 			}
 		});
 	</script>

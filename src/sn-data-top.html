@@ -120,7 +120,8 @@ Example:
 			},
 			getTarifaByTerminal:function(terminal)
 			{
-				return this._terminalFaixasTarifa[terminal];
+				if(terminal)
+					return this._terminalFaixasTarifa[terminal];
 			}
 		});
 	</script>
