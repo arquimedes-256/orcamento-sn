@@ -112,6 +112,9 @@
                 notSave: {
                     type: Boolean
                 },
+                commuteProduct:{
+                    type:Boolean
+                },
                 dimensions: {
                     type: Array
                 },
@@ -157,15 +160,15 @@
                 var D = this.data[d.row];
                 var v = this.data[d.row][d.col];
                 var k = d.col;
-                D['1'] = k > 1 ? v : D['1'];
-                D['2'] = k > 2 ? v : D['2'];
-                D['3'] = k > 3 ? v : D['3'];
-                D['4'] = k > 4 ? v : D['4'];
-                D['5'] = k > 5 ? v : D['5'];
-                D['6'] = k > 6 ? v : D['6'];
-                D['7'] = k > 7 ? v : D['7'];
-                D['8'] = k > 8 ? v : D['8'];
-                D['9'] = k > 9 ? v : D['9'];
+                D['1']  = k > 1 ? v : D['1'];
+                D['2']  = k > 2 ? v : D['2'];
+                D['3']  = k > 3 ? v : D['3'];
+                D['4']  = k > 4 ? v : D['4'];
+                D['5']  = k > 5 ? v : D['5'];
+                D['6']  = k > 6 ? v : D['6'];
+                D['7']  = k > 7 ? v : D['7'];
+                D['8']  = k > 8 ? v : D['8'];
+                D['9']  = k > 9 ? v : D['9'];
                 D['10'] = k > 10 ? v : D['10'];
                 D['11'] = k > 11 ? v : D['11'];
                 D['12'] = k > 12 ? v : D['12'];
@@ -177,15 +180,15 @@
                 var D = this.data[d.row];
                 var v = this.data[d.row][d.col];
                 var k = d.col - 1;
-                D['1'] = k < 1 ? v : D['1'];
-                D['2'] = k < 2 ? v : D['2'];
-                D['3'] = k < 3 ? v : D['3'];
-                D['4'] = k < 4 ? v : D['4'];
-                D['5'] = k < 5 ? v : D['5'];
-                D['6'] = k < 6 ? v : D['6'];
-                D['7'] = k < 7 ? v : D['7'];
-                D['8'] = k < 8 ? v : D['8'];
-                D['9'] = k < 9 ? v : D['9'];
+                D['1']  = k < 1 ? v : D['1'];
+                D['2']  = k < 2 ? v : D['2'];
+                D['3']  = k < 3 ? v : D['3'];
+                D['4']  = k < 4 ? v : D['4'];
+                D['5']  = k < 5 ? v : D['5'];
+                D['6']  = k < 6 ? v : D['6'];
+                D['7']  = k < 7 ? v : D['7'];
+                D['8']  = k < 8 ? v : D['8'];
+                D['9']  = k < 9 ? v : D['9'];
                 D['10'] = k < 10 ? v : D['10'];
                 D['11'] = k < 11 ? v : D['11'];
                 D['12'] = k < 12 ? v : D['12'];
@@ -212,22 +215,33 @@
 
                 if (this.totalBellow) 
                 {
-
                 	jQuery(this.$.dataTable.querySelector('* /deep/ table tr[total]')).remove();
-                	var Sigma = 0;
+                    //define
                     var table = this.$.dataTable.querySelector('* /deep/ table')
-
-                    var trTotal = document.createElement('tr'); trTotal.innerHTML += "<td style=\"    border-top: 1px dashed #dbdbdb;\"><span>Total:</span></td>";
+                    //Let trTotal:
+                    var trTotal = document.createElement('tr'); 
+                    trTotal.innerHTML += "<td style=\"border-top: 1px dashed #dbdbdb;\">"
+                                            +"<span style=\"font-size: 10px;text-transform: uppercase; font-weight: bold;color: rgba(0,0,0, .54);\">"
+                                            +"Total:</span></td>";
                     trTotal.setAttribute('total','')
-                    if(this.meta)
-                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb;\"><span>-</span></td>";
-
                     table.appendChild(trTotal);
 
-                    _.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(m){
-                    	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\" mes=\""+m+"\"><span>0</span></td>";
-                    })
+                    //se for meta preencha com informação vazia
+                    if(this.meta)
+                    {
+                        var css = "class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb;\""
+                        trTotal.innerHTML += "<td "+css+" ><span>-</span></td>";
+                    }
 
+                    //para cada mes inclua um total
+                    _.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(m)
+                    {
+                        var css = "class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\"";          
+                    	trTotal.innerHTML += "<td "+css+" mes=\""+m+"\"><span>"+(this.commuteProduct ? 1 : 0)+"</span></td>";
+                    }
+                    ,this)
+
+                    //crie grand-total
                     if(this.total)
                     	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\" grand-total><span>0</span></td>";
                 	
@@ -235,16 +249,34 @@
                 		var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
                 		_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
                 		{
-                			var x = parseFloat(trTotal.querySelector('td[mes="'+k+'"] span').innerText);
-	                		trTotal.querySelector('td[mes="'+k+'"] span')
-	                			.innerText = D[k] + x;
-                				Sigma += D[k];
-                		},this);
+	                		var tdSpanMes = trTotal.querySelector('td[mes="'+k+'"] span');
+                            var tdSpanMesText  = tdSpanMes.innerText;
+                            var previousTrValue = parseFloat(tdSpanMesText);
 
-                        //D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
-                    },this)
-                    trTotal.querySelector('[grand-total]').innerText = Sigma;
-                    trTotal.querySelector('[grand-total]').setAttribute('data-value',Sigma);
+                            //algumas tabelas utilizam produto como comutador
+                            if(this.commuteProduct)
+                                tdSpanMes.innerText = D[k] * previousTrValue;
+                            else
+                                tdSpanMes.innerText = D[k] + previousTrValue;
+                			
+
+                		}
+                        ,this); //D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
+                    }
+                    ,this);
+
+                    //trabalha grandTotal
+                    var GrandTotalSigma = 0;
+                    var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
+                    _.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
+                    {
+                        var tdSpanMesText = trTotal.querySelector('td[mes="'+k+'"] span').innerText;
+                        var tdSpanMesValue = parseFloat(tdSpanMesText);
+                        GrandTotalSigma += tdSpanMesValue;
+                    });
+
+                    trTotal.querySelector('[grand-total]').innerText = GrandTotalSigma;
+                    trTotal.querySelector('[grand-total]').setAttribute('data-value',GrandTotalSigma);
                 }
                 this._buildDB()
             },
@@ -342,18 +374,20 @@
                 return _.mapObject(_.groupBy(D, 'dimension'), function(x) {
                     f = _.first(x);
                     var F = parseFloat;
-                    f['1'] = F(f['1']) && F(F(f['1']).toFixed(2));
-                    f['2'] = F(f['2']) && F(F(f['2']).toFixed(2));
-                    f['3'] = F(f['3']) && F(F(f['3']).toFixed(2));
-                    f['4'] = F(f['4']) && F(F(f['4']).toFixed(2));
-                    f['5'] = F(f['5']) && F(F(f['5']).toFixed(2));
-                    f['6'] = F(f['6']) && F(F(f['6']).toFixed(2));
-                    f['7'] = F(f['7']) && F(F(f['7']).toFixed(2));
-                    f['8'] = F(f['8']) && F(F(f['8']).toFixed(2));
-                    f['9'] = F(f['9']) && F(F(f['9']).toFixed(2));
-                    f['10'] = F(f['10']) && F(F(f['10']).toFixed(2));
-                    f['11'] = F(f['11']) && F(F(f['11']).toFixed(2));
-                    f['12'] = F(f['12']) && F(F(f['12']).toFixed(2));
+                    f['1'] =    F(f['1'])   && F(F(f['1'])  .toFixed(2));
+                    f['2'] =    F(f['2'])   && F(F(f['2'])  .toFixed(2));
+                    f['3'] =    F(f['3'])   && F(F(f['3'])  .toFixed(2));
+                    f['4'] =    F(f['4'])   && F(F(f['4'])  .toFixed(2));
+                    f['5'] =    F(f['5'])   && F(F(f['5'])  .toFixed(2));
+                    f['6'] =    F(f['6'])   && F(F(f['6'])  .toFixed(2));
+                    f['7'] =    F(f['7'])   && F(F(f['7'])  .toFixed(2));
+                    f['8'] =    F(f['8'])   && F(F(f['8'])  .toFixed(2));
+                    f['9'] =    F(f['9'])   && F(F(f['9'])  .toFixed(2));
+                    f['10'] =   F(f['10'])  && F(F(f['10']) .toFixed(2));
+                    f['11'] =   F(f['11'])  && F(F(f['11']) .toFixed(2));
+                    f['12'] =   F(f['12'])  && F(F(f['12']) .toFixed(2));
+                    
+
                     return f;
                 }
                 .bind(this));
@@ -375,6 +409,8 @@
                     f['10'] = 1 + F(F(f['10']) && F(F(f['10']).toFixed(2))) / 100;
                     f['11'] = 1 + F(F(f['11']) && F(F(f['11']).toFixed(2))) / 100;
                     f['12'] = 1 + F(F(f['12']) && F(F(f['12']).toFixed(2))) / 100;
+
+
                     return f;
                 });
             },
@@ -384,6 +420,9 @@
                 		return this.sortMap[d.dimension];
                     return d.dimension.indexOf('-') > 0 ? parseInt(d.dimension.split('-')[0]) : d.dimension;
                 },this)
+            },
+            putStrucureData:function(D){
+                this.data = this._getListedData(D);
             },
             _setSampleData: function() {
                 var Interval = setInterval(function() {
@@ -403,15 +442,15 @@
                 _.each(this.dimensions, function(d) {
                     var Obj = {
                         dimension: d,
-                        1: value,
-                        2: value,
-                        3: value,
-                        4: value,
-                        5: value,
-                        6: value,
-                        7: value,
-                        8: value,
-                        9: value,
+                        1:  value,
+                        2:  value,
+                        3:  value,
+                        4:  value,
+                        5:  value,
+                        6:  value,
+                        7:  value,
+                        8:  value,
+                        9:  value,
                         10: value,
                         11: value,
                         12: value
@@ -435,15 +474,15 @@
                             _.each(D, function(vD, kD) {
                                 if (kA == kB && kB == kC && kC == kD) {
                                     Y[kA] = {
-                                        1: vA['1'] * vB['1'] * vC['1'] * vD['1'] * options.tax,
-                                        2: vA['2'] * vB['2'] * vC['2'] * vD['2'] * options.tax,
-                                        3: vA['3'] * vB['3'] * vC['3'] * vD['3'] * options.tax,
-                                        4: vA['4'] * vB['4'] * vC['4'] * vD['4'] * options.tax,
-                                        5: vA['5'] * vB['5'] * vC['5'] * vD['5'] * options.tax,
-                                        6: vA['6'] * vB['6'] * vC['6'] * vD['6'] * options.tax,
-                                        7: vA['7'] * vB['7'] * vC['7'] * vD['7'] * options.tax,
-                                        8: vA['8'] * vB['8'] * vC['8'] * vD['8'] * options.tax,
-                                        9: vA['9'] * vB['9'] * vC['9'] * vD['9'] * options.tax,
+                                        1:  vA['1'] * vB['1'] * vC['1'] * vD['1'] * options.tax,
+                                        2:  vA['2'] * vB['2'] * vC['2'] * vD['2'] * options.tax,
+                                        3:  vA['3'] * vB['3'] * vC['3'] * vD['3'] * options.tax,
+                                        4:  vA['4'] * vB['4'] * vC['4'] * vD['4'] * options.tax,
+                                        5:  vA['5'] * vB['5'] * vC['5'] * vD['5'] * options.tax,
+                                        6:  vA['6'] * vB['6'] * vC['6'] * vD['6'] * options.tax,
+                                        7:  vA['7'] * vB['7'] * vC['7'] * vD['7'] * options.tax,
+                                        8:  vA['8'] * vB['8'] * vC['8'] * vD['8'] * options.tax,
+                                        9:  vA['9'] * vB['9'] * vC['9'] * vD['9'] * options.tax,
                                         10: vA['10'] * vB['10'] * vC['10'] * vD['10'] * options.tax,
                                         11: vA['11'] * vB['11'] * vC['11'] * vD['11'] * options.tax,
                                         12: vA['12'] * vB['12'] * vC['12'] * vD['12'] * options.tax,
@@ -467,18 +506,18 @@
                     {  
                         if (kA == kB) {
                             Y[kA] = {
-                                1: vA['1'] * vB['1']    * options.tax,
-                                2: vA['2'] * vB['2']    * options.tax,
-                                3: vA['3'] * vB['3']    * options.tax,
-                                4: vA['4'] * vB['4']    * options.tax,
-                                5: vA['5'] * vB['5']    * options.tax,
-                                6: vA['6'] * vB['6']    * options.tax,
-                                7: vA['7'] * vB['7']    * options.tax,
-                                8: vA['8'] * vB['8']    * options.tax,
-                                9: vA['9'] * vB['9']    * options.tax,
-                                10: vA['10'] * vB['10'] * options.tax,
-                                11: vA['11'] * vB['11'] * options.tax,
-                                12: vA['12'] * vB['12'] * options.tax,
+                                1:  vA['1'] * vB['1']       * options.tax,
+                                2:  vA['2'] * vB['2']       * options.tax,
+                                3:  vA['3'] * vB['3']       * options.tax,
+                                4:  vA['4'] * vB['4']       * options.tax,
+                                5:  vA['5'] * vB['5']       * options.tax,
+                                6:  vA['6'] * vB['6']       * options.tax,
+                                7:  vA['7'] * vB['7']       * options.tax,
+                                8:  vA['8'] * vB['8']       * options.tax,
+                                9:  vA['9'] * vB['9']       * options.tax,
+                                10: vA['10'] * vB['10']     * options.tax,
+                                11: vA['11'] * vB['11']     * options.tax,
+                                12: vA['12'] * vB['12']     * options.tax,
                                 dimension: vA.dimension
                             }
                         }
@@ -495,15 +534,15 @@
                 }
                 var M = _.mapObject(table, function(r, k) {
                     return {
-                        1: r[usingMensure],
-                        2: r[usingMensure],
-                        3: r[usingMensure],
-                        4: r[usingMensure],
-                        5: r[usingMensure],
-                        6: r[usingMensure],
-                        7: r[usingMensure],
-                        8: r[usingMensure],
-                        9: r[usingMensure],
+                        1:  r[usingMensure],
+                        2:  r[usingMensure],
+                        3:  r[usingMensure],
+                        4:  r[usingMensure],
+                        5:  r[usingMensure],
+                        6:  r[usingMensure],
+                        7:  r[usingMensure],
+                        8:  r[usingMensure],
+                        9:  r[usingMensure],
                         10: r[usingMensure],
                         11: r[usingMensure],
                         12: r[usingMensure],

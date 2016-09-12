@@ -1,31 +1,147 @@
-<!--
-A comment describing this element
-
-Example:
-
-    <my-elem></my-elem>
-
-Example:
-
-    <my-elem>
-      <h2>Hello my-elem</h2>
-    </my-elem>
-
-@demo demo/index.html
--->
+<link rel="import" href="sn-tabela-mes.html">
 
 <dom-module id="sn-combustivel">
 	<template>
 		<style>
 			:host {
 				display: block;
+         		padding: 14px;
 			}
+			paper-material {
+				background:#FFF;
+				padding:8px;
+         	}
 		</style>
-		
+		<div id="filters" class="layout horizontal">
+
+			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
+				Combustível
+			</h5>
+
+			<paper-dropdown-menu label="Filial" id="filial">
+	            <paper-listbox class="dropdown-content" 
+	            selected="{{_currentFilial}}" 
+		        attr-for-selected="name">
+	             <paper-item name="RGD">RGD</paper-item>
+	             <paper-item name="PNG">PNG</paper-item>
+	             <paper-item name="STR">STR</paper-item>
+	             <paper-item name="SEP">SEP</paper-item>
+	             <paper-item name="RJ1">RJ1</paper-item>
+	             <paper-item name="VIT">VIT</paper-item>
+	             <paper-item name="SDR">SDR</paper-item>
+	             <paper-item name="MAC">MAC</paper-item>
+	            </paper-listbox>
+          </paper-dropdown-menu>
+
+		</div>
+		<paper-material>
+
+
+    <template is="dom-repeat" items="{{_rebocadorList}}">
+ 		<sn-tabela-mes
+ 				class="rebocTable"
+	        	total
+	        	total-bellow
+	            db="consumo-rebocador" 
+	            on-tabela-mes-build="_calcTotalTable"
+	            path="{{_getRebocadorPath(item)}}"
+	            dimensions="{{_dimensions}}"  
+	            editable
+	            commute-product
+	            header="[[item]]">
+	     </sn-tabela-mes>
+    </template>
+
+	<sn-tabela-mes
+			id="tableTotal"
+        	total
+        	total-bellow
+            db="consumo-rebocador" 
+            path="{{_getTotalPath(_currentFilial)}}"
+            dimensions="{{_dimensions}}"  
+            commute-product
+            header="Total">
+     </sn-tabela-mes>
+
+		</paper-material>
 	</template>
 	<script>
 		Polymer({
-			is: 'sn-combustivel'
+			is: 'sn-combustivel',
+			properties:{
+				_currentFilial:{
+					observer:'_render'
+				},
+				_rebocadorList:{
+					observer:'_rebocadorListChanged'
+				}
+			},
+			ready:function () {
+				this._currentFilial = "RJ1"
+				this._rebocadorList = ["Jatobá","Abrolhos","Marau"];
+			},
+			_rebocadorListChanged:function()
+			{
+				this._currentRebocador = _.first(this._rebocadorList);
+				this._dimensions = ['Preço do litro','Litros por hora','Hora empregada']
+			},
+			_getRebocadorPath:function(reb)
+			{
+				return ["combustivel",this._currentFilial,reb].join("/")
+			},
+			_getTotalPath:function(_currentFilial)
+			{
+				return ["combustivel",this._currentFilial,"total"].join("/")
+			},	
+			_render:function()
+			{
+				
+			},
+			_calcTotalTable:function()
+			{
+				var R 	= this.querySelectorAll('* /deep/ .rebocTable')
+				var Rx 	= _.invoke(R,'getStructuredData')
+				
+				/**
+				var Y = {
+					"Hora empregada":
+						{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,
+							"dimension":"Hora empregada","total":0},
+					"Litros por hora":
+						{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,
+							"dimension":"Litros por hora","total":0},
+					"Preço do litro":
+						{"1":0,"2":1,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,
+							"dimension":"Preço do litro","total":0}
+				}
+				_.each(Rx,function(Rk)
+				{
+					_.each(Rk,function(r,k)
+					{
+						console.log(k,r);
+
+						Y[k]['1'] 		+= r['1'] 
+						Y[k]['2'] 		+= r['2'] 
+						Y[k]['3'] 		+= r['3'] 
+						Y[k]['4'] 		+= r['4'] 
+						Y[k]['5'] 		+= r['5'] 
+						Y[k]['6'] 		+= r['6'] 
+						Y[k]['7'] 		+= r['7'] 
+						Y[k]['8'] 		+= r['8'] 
+						Y[k]['9'] 		+= r['9'] 
+						Y[k]['10']		+= r['10']
+						Y[k]['11']		+= r['11']
+						Y[k]['12']		+= r['12']
+						Y[k]['total']	+= r['total']
+
+					})
+				})
+				this.$.tableTotal.putStrucureData(Y);
+
+				*/
+
+
+			}
 		});
 	</script>
 </dom-module>
