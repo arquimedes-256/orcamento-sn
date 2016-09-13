@@ -1,4 +1,5 @@
 <link rel="import" href="sn-tabela-mes.html">
+<link rel="import" href="sn-data-top.html">
 
 <dom-module id="sn-combustivel">
 	<template>
@@ -13,64 +14,61 @@
          	}
 		</style>
 		<div id="filters" class="layout horizontal">
-
 			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
 				Combustível
 			</h5>
-
 			<paper-dropdown-menu label="Filial" id="filial">
 	            <paper-listbox class="dropdown-content" 
 	            selected="{{_currentFilial}}" 
 		        attr-for-selected="name">
-	             <paper-item name="RGD">RGD</paper-item>
-	             <paper-item name="PNG">PNG</paper-item>
-	             <paper-item name="STR">STR</paper-item>
-	             <paper-item name="SEP">SEP</paper-item>
-	             <paper-item name="RJ1">RJ1</paper-item>
-	             <paper-item name="VIT">VIT</paper-item>
-	             <paper-item name="SDR">SDR</paper-item>
-	             <paper-item name="MAC">MAC</paper-item>
+		             <paper-item name="RGD">RGD</paper-item>
+		             <paper-item name="PNG">PNG</paper-item>
+		             <paper-item name="STR">STR</paper-item>
+		             <paper-item name="SEP">SEP</paper-item>
+		             <paper-item name="RJ1">RJ1</paper-item>
+		             <paper-item name="VIT">VIT</paper-item>
+		             <paper-item name="SDR">SDR</paper-item>
+		             <paper-item name="MAC">MAC</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
-
 		</div>
 		<paper-material>
 
+	    <template is="dom-repeat" items="{{_rebocadorList}}">
+	 		<sn-tabela-mes
+	 				class="rebocTable"
+		        	total
+		        	total-bellow
+		            db="consumo-rebocador" 
+		            on-tabela-mes-build="_calcTotalTable"
+		            path="{{_getRebocadorPath(item)}}"
+		            dimensions="{{_dimensions}}"  
+		            editable
+		            commute-product
+		            header="[[item]]">
+		     </sn-tabela-mes>
+	    </template>
 
-    <template is="dom-repeat" items="{{_rebocadorList}}">
- 		<sn-tabela-mes
- 				class="rebocTable"
-	        	total
-	        	total-bellow
-	            db="consumo-rebocador" 
-	            on-tabela-mes-build="_calcTotalTable"
-	            path="{{_getRebocadorPath(item)}}"
-	            dimensions="{{_dimensions}}"  
-	            editable
-	            commute-product
-	            header="[[item]]">
-	     </sn-tabela-mes>
-    </template>
-
-	<sn-tabela-mes
+		<sn-tabela-mes
 			id="tableTotal"
-        	total
-        	total-bellow
+			total
+			one-line
             db="consumo-rebocador" 
             path="{{_getTotalPath(_currentFilial)}}"
-            dimensions="{{_dimensions}}"  
+            dimensions="{{_dimensionsTotal}}"  
             commute-product
             header="Total">
-     </sn-tabela-mes>
+	    </sn-tabela-mes>
 
 		</paper-material>
+		<sn-data-top id="dataTOP" on-response-infomultiplereb="_setRebocadores"></sn-data-top>
 	</template>
 	<script>
 		Polymer({
 			is: 'sn-combustivel',
 			properties:{
 				_currentFilial:{
-					observer:'_render'
+					observer:'_filialChanged'
 				},
 				_rebocadorList:{
 					observer:'_rebocadorListChanged'
@@ -78,12 +76,12 @@
 			},
 			ready:function () {
 				this._currentFilial = "RJ1"
-				this._rebocadorList = ["Jatobá","Abrolhos","Marau"];
+				// this._rebocadorList = ["Jatobá","Abrolhos","Marau"];
 			},
 			_rebocadorListChanged:function()
 			{
-				this._currentRebocador = _.first(this._rebocadorList);
-				this._dimensions = ['Preço do litro','Litros por hora','Hora empregada']
+				this._dimensions 		= ['Preço do litro','Litros por hora','Hora empregada'];
+				this._dimensionsTotal 	= ['Total'];
 			},
 			_getRebocadorPath:function(reb)
 			{
@@ -93,16 +91,36 @@
 			{
 				return ["combustivel",this._currentFilial,"total"].join("/")
 			},	
-			_render:function()
+			_filialChanged:function()
 			{
-				
+				this._setRebocadores();
+			},
+			_setRebocadores:function(){
+				if(this.$.dataTOP.filialRebocadores)
+					this._rebocadorList = this.$.dataTOP.filialRebocadores[this._currentFilial];
 			},
 			_calcTotalTable:function()
 			{
+				
+				var R 		= this.querySelectorAll('* /deep/ .rebocTable')
+				var Rx 		= _.pluck(R,'totalDataPorMes')
+				var Sigma 	= {dimension:"Total"};
+
+				if(_.isEmpty(Rx) || _.size(Rx) < _.size(this._rebocadorList))
+					return;
+
+				_.each(Rx,function(r){
+					_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k){
+						if(Sigma[k] === undefined)
+							Sigma[k] = 0;
+						Sigma[k] += r[k]
+					})
+				})
+				this.$.tableTotal.data = [Sigma];
+				/**
 				var R 	= this.querySelectorAll('* /deep/ .rebocTable')
 				var Rx 	= _.invoke(R,'getStructuredData')
 				
-				/**
 				var Y = {
 					"Hora empregada":
 						{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,

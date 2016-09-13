@@ -67,6 +67,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-drawer {
         --app-drawer-width:150px;
       }
+
+      #filterContainer /deep/ #checkbox {
+        border-color: #EEEEEE;
+      }
+			#filterContainer /deep/ #checkbox.checked {
+				background:#000;
+        border-color: #EEEEEE;
+			}
+      #filterContainer /deep/ #checkboxLabel{
+        color: #EEEEEE;
+      }
+      #filterContainer /deep/ label {
+        color: #EEEEEE;
+      }
+      #filterContainer /deep/ .unfocused-line {
+        background:  #EEEEEE;
+      }
+      * /deep/ .focused-line {
+        background:  #FF1744;
+        
+      }
+      #filterContainer /deep/ input {
+        color: #EEEEEE;
+      }
+/*
       #filterContainer /deep/ label {
         color: #EF9A9A;
       }
@@ -79,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       #filterContainer /deep/ input {
         color: #FFCDD2;
-      }
+      }*/
       #filterContainer /deep/ paper-input ,  
       #filterContainer /deep/ paper-dropdown-menu {
           width: 110px;
@@ -101,7 +126,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <!-- Drawer content -->
       <app-drawer>
-        <app-toolbar>Menu</app-toolbar>
+        <app-toolbar style="font-size: 16px;margin-left: -15px;">
+       			<img src="/logo.svg" style="width: 51px;"/>Orçamento
+      	</app-toolbar>
         <iron-selector selected="{{page}}" attr-for-selected="name" class="drawer-list" role="navigation">
           
           <a name="visao-geral" href="/#/Visao-Geral">Geral</a>
@@ -119,8 +146,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <!-- Main content -->
       <app-header-layout has-scrolling-region>
-
-        <app-header condenses style="background:#B71C1C" fixed>
+        <!--
+#B71C1C
+      -->
+        <app-header condenses style="background:#212121;box-shadow:1px 4px 7px rgba(0,0,0,.3)" fixed>
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
             <!--

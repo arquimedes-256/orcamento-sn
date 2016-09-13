@@ -47,10 +47,12 @@
                 <paper-datatable-column header="Total" property="total" align="right" default="0" type="Number" tooltip=""></paper-datatable-column>
             </template>
         </paper-datatable>
+        <!--
         <template is="dom-if" if="{{_dataIsEmpty(data)}}">
             <paper-progress indeterminate style="width:100%"></paper-progress>
             Carregando...
         </template>
+    -->
         <!--
 	        <style>
 	        paper-progress {
@@ -87,6 +89,9 @@
                 path: {
                     type: String,
                     observer: '_pathChanged'
+                },
+                oneLine:{
+                    type:Boolean
                 },
                 sortMap:{
                 	type:Boolean
@@ -209,7 +214,19 @@
             {
                 if (this.total && this.data)
                     _.each(this.data, function(D) {
-                        D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
+                        D.total = 
+                            (+D['1'] ) + 
+                            (+D['2'] ) + 
+                            (+D['3'] ) + 
+                            (+D['4'] ) + 
+                            (+D['5'] ) + 
+                            (+D['6'] ) + 
+                            (+D['7'] ) + 
+                            (+D['8'] ) + 
+                            (+D['9'] ) + 
+                            (+D['10']) + 
+                            (+D['11']) + 
+                            (+D['12']);
                     })
 
 
@@ -245,6 +262,7 @@
                     if(this.total)
                     	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\" grand-total><span>0</span></td>";
                 	
+               
                 	_.each(this.data, function(D) {
                 		var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
                 		_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
@@ -259,12 +277,12 @@
                             else
                                 tdSpanMes.innerText = D[k] + previousTrValue;
                 			
-
                 		}
                         ,this); //D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
                     }
                     ,this);
 
+                    this.totalDataPorMes = {};
                     //trabalha grandTotal
                     var GrandTotalSigma = 0;
                     var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
@@ -273,12 +291,21 @@
                         var tdSpanMesText = trTotal.querySelector('td[mes="'+k+'"] span').innerText;
                         var tdSpanMesValue = parseFloat(tdSpanMesText);
                         GrandTotalSigma += tdSpanMesValue;
-                    });
 
-                    trTotal.querySelector('[grand-total]').innerText = GrandTotalSigma;
+                        this.totalDataPorMes[k] = tdSpanMesValue
+                    },this);
+
+                    trTotal.querySelector('[grand-total]').innerHTML = '<span>'+GrandTotalSigma+'</span>';
                     trTotal.querySelector('[grand-total]').setAttribute('data-value',GrandTotalSigma);
                 }
                 this._buildDB()
+                this.$.dataTable.progress = false;
+
+                if(this.oneLine && _.size(this.data) > 1)
+                    this.data = [_.first(this.data)];
+
+                if(!this.percent)
+                    this._formatValues();
             },
             _dataIsEmpty: function(data) {
                 return _.isEmpty(data)
@@ -286,6 +313,15 @@
             _changeHandler: function() {
                 this._buildDB();
                 this._activePercentIfIs();
+            },
+            _formatValues:function(){
+               var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
+                    _.each(TDs, function(td) {
+                        var s = td.innerText.trim();
+                        if (s.match(/^-?\d+\.?\d*$/)) {
+                           td.querySelector('span').innerText = parseFloat( td.innerText).formatMoney(1);
+                        }
+                    })
             },
             _activePercentIfIs: function() {
                 if (this.percent)
@@ -326,15 +362,15 @@
                         _.each(DiffAB, function(d) {
                             ListData.push({
                                 dimension: d,
-                                1: this.fillValue,
-                                2: this.fillValue,
-                                3: this.fillValue,
-                                4: this.fillValue,
-                                5: this.fillValue,
-                                6: this.fillValue,
-                                7: this.fillValue,
-                                8: this.fillValue,
-                                9: this.fillValue,
+                                1:  this.fillValue,
+                                2:  this.fillValue,
+                                3:  this.fillValue,
+                                4:  this.fillValue,
+                                5:  this.fillValue,
+                                6:  this.fillValue,
+                                7:  this.fillValue,
+                                8:  this.fillValue,
+                                9:  this.fillValue,
                                 10: this.fillValue,
                                 11: this.fillValue,
                                 12: this.fillValue
@@ -415,10 +451,14 @@
                 });
             },
             _getListedData: function(D) {
-                return _.sortBy(_.values(D), function(d) {
+                return _.sortBy(_.values(D), function(d) 
+                {
                 	if(this.sortMap && this.sortMap[d.dimension])
                 		return this.sortMap[d.dimension];
-                    return d.dimension.indexOf('-') > 0 ? parseInt(d.dimension.split('-')[0]) : d.dimension;
+                    
+                    return _.indexOf(d.dimension,'-') > 0 ? 
+                            parseInt(d.dimension.split('-')[0]) 
+                            : d.dimension;
                 },this)
             },
             putStrucureData:function(D){
