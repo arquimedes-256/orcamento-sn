@@ -257,12 +257,15 @@ _BuildStar:function(path,Gn){
 		Yk.dimension = Gn.dimension;
 		Yk[Yk.$] = Gn[mes];
 		//atributos receita
-		Yk.Cambio = FILIAL_CLIENT_TO_TARIFA[Yk.Filial+':'+Yk.Cliente] || TARIFA_PADRAO
-		var Client = 
-				FILIAL_CLIENT_TO_CLIENTE[Yk.Filial+':'+Yk.Cliente] 
-			|| 	FILIAL_CLIENTE_TO_CUSTOM_CLIENTE[Yk.Filial+':'+Yk.Cliente]; 
+		if(Yk.Cliente) 
+		{
+			Yk.Cambio = FILIAL_CLIENT_TO_TARIFA[Yk.Filial+':'+Yk.Cliente] || TARIFA_PADRAO
+			var Client = 
+					FILIAL_CLIENT_TO_CLIENTE[Yk.Filial+':'+Yk.Cliente] 
+				|| 	FILIAL_CLIENTE_TO_CUSTOM_CLIENTE[Yk.Filial+':'+Yk.Cliente]; 
 
-		Yk["Tipo de Faturamento"] = Client ? Client.tipoFaturamento : null;
+			Yk["Tipo de Faturamento"] = Client ? Client.tipoFaturamento : null;
+		}
 		
 		if(Yk.$ == this._currentRelatorio && Gn[mes])
 			this._YList.push(Yk);

@@ -40,8 +40,8 @@ Example:
           </paper-dropdown-menu>
           
           <paper-dropdown-menu label="Mês Inicial" id="mesInicio" on-iron-select="changeHandler">
-            <paper-listbox class="dropdown-content" selected="0">
-             <paper-item>Todos</paper-item>
+            <paper-listbox class="dropdown-content" selected="{{_mesInicial}}">
+             <paper-item style="display:none">Todos</paper-item>
              <paper-item>Janeiro</paper-item>
              <paper-item>Fevereiro</paper-item>
              <paper-item>Março</paper-item>
@@ -58,8 +58,8 @@ Example:
           </paper-dropdown-menu>
 
           <paper-dropdown-menu label="Mês Final" id="mesFim" on-iron-select="changeHandler">
-            <paper-listbox class="dropdown-content" selected="0" id="mesFimListBox">
-             <paper-item>Todos</paper-item>
+            <paper-listbox class="dropdown-content" selected="{{_mesFinal}}" id="mesFimListBox">
+             <paper-item style="display:none">Todos</paper-item>
              <paper-item>Janeiro</paper-item>
              <paper-item>Fevereiro</paper-item>
              <paper-item>Março</paper-item>
@@ -91,6 +91,8 @@ Example:
       currentMesFinal:'Junho',
       currentFilial:'Total Empresa',
       ready:function () {
+        this._mesInicial = 1;
+        this._mesFinal = 12;
         this.render();
       },
       render:function(){
