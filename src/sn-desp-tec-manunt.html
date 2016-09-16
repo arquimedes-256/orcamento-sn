@@ -1,4 +1,4 @@
-
+<link rel="import" href="sn-tabela-contabil.html">
 
 <dom-module id="sn-desp-tec-manunt">
 	<template>
@@ -11,14 +11,37 @@
 			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
 				Desp.Téc/Manunt
 			</h5>
+			<paper-dropdown-menu label="Filial" id="filial">
+	            <paper-listbox 
+		            class="dropdown-content" 
+		            selected="{{_currentFilial}}" 
+			        attr-for-selected="name">
+		             <paper-item name="RGD">RGD</paper-item>
+		             <paper-item name="PNG">PNG</paper-item>
+		             <paper-item name="STR">STR</paper-item>
+		             <paper-item name="SEP">SEP</paper-item>
+		             <paper-item name="RJ1">RJ1</paper-item>
+		             <paper-item name="VIT">VIT</paper-item>
+		             <paper-item name="SDR">SDR</paper-item>
+		             <paper-item name="MAC">MAC</paper-item>
+		             <paper-item name="MTZ">MTZ</paper-item>
+	            </paper-listbox>
+          </paper-dropdown-menu>
 		</div>
 		<paper-material>
-			
+			<sn-tabela-contabil 
+				id-grupo-master="6" 
+				path-namespace="desp-tec-manunt"
+				filial="{{_currentFilial}}">
+			</sn-tabela-contabil>
 		</paper-material>
 	</template>
 	<script>
 		Polymer({
-			is: 'sn-desp-tec-manunt'
+			is: 'sn-desp-tec-manunt',
+			ready:function() {
+				this._currentFilial = "RJ1";
+			}
 		});
 	</script>
 </dom-module>

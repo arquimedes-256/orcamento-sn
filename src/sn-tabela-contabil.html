@@ -1,0 +1,40 @@
+<link rel="import" href="sn-tabela-mes.html">
+
+<dom-module id="sn-tabela-contabil">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+
+		<sn-tabela-mes
+        	total
+        	total-bellow
+            db="valor" 
+            on-tabela-mes-build="_calcTotalTable"
+            path="{{_getPath(item)}}"
+            dimensions="{{_dimensions}}"  
+            editable
+            commute-product
+            header="[[item]]">
+     	</sn-tabela-mes>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-tabela-contabil',
+			properties:{
+				filial:{
+					type:String
+				},
+				pathNamespace:{
+					type:String
+				},
+				idGrupoMaster:{
+					type:Number
+				}
+			}
+		});
+	</script>
+</dom-module>

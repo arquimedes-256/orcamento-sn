@@ -23,6 +23,12 @@
 
             paper-datatable /deep/ tr td, paper-datatable /deep/ tr th {
                 padding: 6px 14px 6px 19px !important
+            }  
+            paper-datatable /deep/ tr.progress{
+               display:none;
+            } 
+            paper-datatable /deep/ tr.progress[data-progress]{
+               display:table-row;
             }
         </style>
         <h4>{{header}}</h4>
@@ -314,14 +320,27 @@
                 this._buildDB();
                 this._activePercentIfIs();
             },
-            _formatValues:function(){
-               var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
-                    _.each(TDs, function(td) {
-                        var s = td.innerText.trim();
-                        if (s.match(/^-?\d+\.?\d*$/)) {
-                           td.querySelector('span').innerText = parseFloat( td.innerText).formatMoney(1);
-                        }
-                    })
+            _formatValues:function()
+            {
+                var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
+
+                _.each(TDs, function(td) {
+                    var number = +td.querySelector('span').innerText.replace(",","");
+                    if(number == 0 && !_.isNaN(number)) 
+                    {
+                        td.querySelector('span').style.opacity = .4;
+                    }
+                    else
+                        td.querySelector('span').style.opacity = 1;
+
+                })
+                _.each(TDs, function(td) {
+                    var s = td.innerText.trim();
+                    if (s.match(/^-?\d+\.?\d*$/)) {
+                       td.querySelector('span').innerText = parseFloat( td.innerText).formatMoney(1);
+                    }
+                })
+
             },
             _activePercentIfIs: function() {
                 if (this.percent)

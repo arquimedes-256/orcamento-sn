@@ -1,0 +1,1311 @@
+TEXT
+
+PROCEDURE     Prc_Integracao_Mxm
+
+IS
+
+   v_nrfatura                    INTEGER;
+
+   v_tot_manobra                 INTEGER;
+
+   v_forma                       VARCHAR2( 10 );
+
+   w_total_real                  FLOAT;
+
+   w_total                       FLOAT;
+
+   v_porto                       VARCHAR2( 50 );
+
+   v_pct_iss                     INTEGER;
+
+   v_cond_pagto                  VARCHAR2( 10 );
+
+   v_sequencial                  INTEGER := 1;
+
+   v_municipio                   VARCHAR2( 4 );
+
+   v_local                       INTEGER;
+
+   v_ccusto                      VARCHAR2( 9 );
+
+   v_dbg                         VARCHAR2( 80 );
+
+   v_body                        varchar(8000);
+
+   v_cidade_com                  varchar(800);
+
+   reglog                        TB_INTEGRACAO_MXM_LOG%ROWTYPE;
+
+BEGIN
+
+--   DBMS_OUTPUT.ENABLE( 1000000 );
+
+-- SELECIONANDO A OPERACAO A FATURAR
+
+   DBMS_OUTPUT.PUT_LINE( '____________________ÍNICIO_______________________' );
+   DBMS_OUTPUT.PUT_LINE( TO_CHAR( SYSDATE, 'DD/MM/YYYY - HH:MM' ) );
+
+   DBMS_OUTPUT.PUT_LINE( '' );
+
+   v_dbg := '01 operacao a faturar';
+
+   reglog.dt_inicio := SYSDATE;
+
+   reglog.ds_situacao := v_dbg;
+
+   
+
+   
+
+   FOR reg IN
+
+      ( SELECT t1.id_operacao
+
+           ,t1.nr_viagem
+
+           ,t1.ind_op_compartilhada
+
+           ,t1.descricao_navio
+
+           ,t1.imo
+
+           ,t1.dwt
+
+           ,t1.id_empresa
+
+           ,t1.cod_internacional              --t1.cnpj  ANIMUS 20100806 FASE3
+
+           ,t1.id_filial
+
+           ,t2.razao_social AS razao_filial
+
+           ,t2.nome_fantasia AS fantasia_filial
+
+           ,t2.sigla AS sigla_filial
+
+           ,t2.sigla_mxm
+
+           ,t3.cd_tipo_contrato
+
+           ,t3.id_moeda
+
+           ,t3.id_dom_forma_pagto
+
+           ,t3.ind_condicao_pagto
+
+           ,t3.vl_bruto_origem
+
+           ,t3.vl_desconto_origem
+
+           ,t3.vl_liquido_origem
+
+           ,t3.vl_iss_origem
+
+           ,t3.vl_bruto_real
+
+           ,t3.vl_desconto_real
+
+           ,t3.vl_liquido_real
+
+           ,t3.vl_iss_real
+
+           ,t3.qtd_rebocador
+
+           ,t3.vl_cambio
+
+           ,t3.obs_sup
+
+           ,t3.obs_inf
+
+           ,t3.dt_calculo
+
+           ,t3.ind_tp_faturamento
+
+       FROM vw_operacao t1
+
+           ,TB_FILIAL t2
+
+           ,TB_CALCULO_OPERACAO t3
+
+       WHERE t1.situacao = 'A'
+
+       -- Filtro para trazer somente as Operações com status "Aprovada"
+       AND t1.ind_op_compartilhada <> 4
+
+-- Filtro para não selecionar as Operações do tipo Estatística - VC_08-03-2010
+       AND t1.id_filial = t2.id_filial
+
+       AND t1.id_operacao = t3.id_operacao
+
+       ORDER BY t1.id_operacao )
+
+   LOOP
+
+-- GRAVANDO O REGISTRO NA TABELA DE FATURAS (FATURAS_FAT)
+
+      BEGIN
+
+-- GERANDO NOVO NÚMERO DA FATURA
+--
+
+-- ANIMUS 20100806 EH NECESSARIO "LOCKAR" O REGISTRO DEVIDO A POSSÍVEL CONCORRENCIA
+--
+
+         v_dbg := '02 gerando novo número da fatura';
+         reglog.id_operacao := reg.id_operacao;
+
+         reglog.ds_situacao := v_dbg;
+
+         reglog.ds_erro_bd  := NULL;
+
+         reglog.id_erro_bd  := NULL;
+
+
+
+         SELECT fat_cdfatura + 1
+
+         INTO v_nrfatura
+
+         FROM manager.faturas_fat
+
+         WHERE fat_cdempresa = '004'
+
+         AND fat_cdfatura = ( SELECT MAX( fat_cdfatura )
+
+                             FROM manager.faturas_fat
+
+                             WHERE fat_cdempresa = '004' )
+
+         FOR UPDATE OF fat_cdfatura;
+
+
+
+-- VERIFICANDO PORTO DAS MANOBRAS
+
+         v_dbg := '03 verificando porto das manobras';
+
+         reglog.ds_situacao := v_dbg;
+
+
+
+         FOR reg_local IN ( SELECT DISTINCT descricao_porto
+
+                               ,id_local
+
+                           FROM vw_manobra_operacao
+
+                           WHERE id_operacao = reg.id_operacao )
+
+         LOOP
+
+            v_porto := reg_local.descricao_porto;
+
+            v_local := reg_local.id_local;
+
+         END LOOP;
+
+
+
+-- VERIFICANDO QUANTIDADE DE MANOBRAS DA OPERACAO
+
+         v_dbg := '04 verificando quantidade de manobras da operacao';
+
+         reglog.ds_situacao := v_dbg;
+
+BEGIN
+
+         SELECT COUNT( * )
+
+         INTO v_tot_manobra
+
+         FROM TB_MANOBRA_OPERACAO
+
+         WHERE id_operacao = reg.id_operacao;
+
+EXCEPTION WHEN NO_DATA_FOUND THEN
+
+	DBMS_OUTPUT.PUT_LINE('TB_MANOBRA_OPERACAO');
+
+END;
+
+-- VERIFICANDO A CONDIÇÃO DE PAGAMENTO
+         v_dbg := '05 verificando condicao de pagamento';
+
+         reglog.ds_situacao := v_dbg;
+
+ BEGIN
+
+         SELECT cd_mxm
+
+         INTO v_cond_pagto
+
+         FROM TB_DOMINIO
+
+         WHERE id_dominio = reg.ind_condicao_pagto;
+
+EXCEPTION WHEN NO_DATA_FOUND THEN
+
+	DBMS_OUTPUT.PUT_LINE('TB_DOMINIO');
+
+END;
+
+
+
+-- ATRIBUINDO FORMA DE PAGAMENTO
+
+         v_dbg := '06 atribuindo forma de pagamento';
+
+         reglog.ds_situacao := v_dbg;
+
+BEGIN
+
+         SELECT cd_mxm
+
+         INTO v_forma
+
+         FROM TB_DOMINIO
+
+         WHERE id_dominio = reg.id_dom_forma_pagto;
+
+EXCEPTION WHEN NO_DATA_FOUND THEN
+
+	DBMS_OUTPUT.PUT_LINE('TB_DOMINIO - VFORMA');
+
+END;
+
+
+
+-- SELECIONANDO O COD_MXM DO MUNICIPIO
+
+         v_dbg := '06 selecionando o cod_mxm do municipio';
+
+         reglog.ds_situacao := v_dbg;
+
+BEGIN
+
+         SELECT m.cod_mxm
+
+         INTO v_municipio
+
+         FROM TB_LOCAL_MANOBRA l
+
+             ,TB_TERMINAL t
+
+             ,TB_PORTO p
+
+             ,TB_MUNICIPIO m
+
+         WHERE t.id_terminal = l.id_terminal
+
+         AND p.id_porto = t.id_porto
+
+         AND m.id_municipio = p.id_municipio
+
+         AND l.id_local_manobra = v_local;
+
+EXCEPTION WHEN NO_DATA_FOUND THEN
+
+	DBMS_OUTPUT.PUT_LINE('TB_LOCAL_MANOBRA,TB_TERMINAL,TB_PORTO,TB_MUNICIPIO');
+
+END;
+
+
+
+         v_dbg := '07 selecionando o ISS';
+
+         reglog.ds_situacao := v_dbg;
+
+BEGIN
+
+         SELECT MAX( pct_iss )
+
+         INTO v_pct_iss
+
+         FROM TB_CALCULO_MANOBRA
+
+         WHERE id_operacao = reg.id_operacao;
+
+EXCEPTION WHEN NO_DATA_FOUND THEN
+
+	DBMS_OUTPUT.PUT_LINE('TB_CALCULO_MANOBRA, V_PCT_ISS');
+
+END;
+
+
+
+         v_dbg := '08 inserindo manager.faturas_fat';
+
+         reglog.ds_situacao := v_dbg;
+
+
+
+select cidade_com into v_cidade_com from 
+
+tb_operacao , tb_filial
+
+where 
+
+TB_FILIAL.ID_FILIAL = tb_operacao.id_filial
+
+and
+
+id_operacao = REG.ID_OPERACAO;
+
+
+
+v_body := '';--'FILIAL: '|| v_cidade_com  || '' ||chr(13)||chr(10) ;
+
+
+
+v_body := v_body || 'NAVIO: '|| reg.descricao_navio || ' DWT: ' || REPLACE(TO_CHAR(reg.dwt, '99,999'),',','.')  ||' PTAX: '|| reg.vl_cambio||chr(13)||chr(10) ;
+
+
+
+
+
+   for k in (select (reg_item.data_inicio || ' ' || reg_item.hora_inicio
+
+                      
+
+                 || ' A ' 
+
+                 || reg_item.data_fim || ' '
+
+                 || reg_item.hora_fim || ' '
+
+                 || reg_item.descricao_monobra 
+
+                 --|| ' ' || '-' || ' '|| reg_item.descricao_terminal 
+
+                 || '/'|| reg_item.descricao_berco 
+
+                 || ' ' || '-' || ' '|| reg_item.descricao_rebocador|| ': R'||  TRIM(TO_CHAR(REG_ITEM.VL_TARIFA_REAL, '$999,999.00'))  ) TEXT
+
+                  FROM (select * from vw_operacao_rebocador t1
+
+                              ,TB_CALCULO_MANOBRA t2
+
+                          WHERE t1.id_operacao = REG.ID_OPERACAO
+
+                          AND t1.id_manobra_operacao = t2.id_manobra_operacao
+
+                          AND t1.id_rebocador = t2.id_rebocador
+
+                          order by data_inicio, hora_inicio) reg_item)
+
+   loop
+
+    v_body := v_body || chr(13)||chr(10) || tra(k.TEXT);
+
+   end loop;
+
+  
+
+--v_body := v_body  ||chr(13)||chr(10)||chr(13)||chr(10)|| 'PTAX: '|| reg.vl_cambio ||chr(13)||chr(10)||chr(13)||chr(10); 
+
+
+
+v_body := v_body ||chr(13)||chr(10)||chr(13)||chr(10)|| 'EM ENTENDIMENTO A LEI 12.741/2012 INFORMAMOS QUE O'
+
+||' VALOR APROXIMADO DOS TRIBUTOS INCIDENTE SOBRE AS OPERAÇÕES DESTE ESTABELECIMENTO É DE: '||(7.6+1.65+v_pct_iss)||'%' ||chr(13)||chr(10);
+
+
+v_body := v_body || 'PIS:   1,65% ' || 'Cofins: 7,60% ' ||  'ISS: '|| v_pct_iss || '%' || chr(13)||chr(10) ; 
+
+
+
+         INSERT INTO manager.faturas_fat (
+
+                      fat_cdempresa
+
+                     ,fat_cdfilial
+
+                     ,fat_cdfatura
+
+                     ,fat_dtfatura
+
+                     ,fat_dtsaida
+
+                     ,fat_cdclifor
+
+                     ,fat_clifor
+
+                     ,fat_condpagto
+
+                     ,fat_tpcobr
+
+                     ,fat_tpoper
+
+                     ,fat_cfo
+
+                     ,fat_natureza
+
+                     ,fat_viatransp
+
+                     ,fat_placaveic
+
+                     ,fat_uftransp
+
+                     ,fat_marca
+
+                     ,fat_numero
+
+                     ,fat_quantidade
+
+                     ,fat_especie
+
+                     ,fat_pesobruto
+
+                     ,fat_pesoliqui
+
+                     ,fat_redesp1
+
+                     ,fat_perccomis
+
+                     ,fat_obs
+
+                     ,fat_moeda
+
+                     ,fat_qtotprod
+
+                     ,fat_vtotprod
+
+                     ,fat_baseicm
+
+                     ,fat_percicm
+
+                     ,fat_vricms
+
+                     ,fat_baseipi
+
+                     ,fat_vripi
+
+                     ,fat_perciss
+
+                     ,fat_baseiss
+
+                     ,fat_vriss
+
+                     ,fat_percdesc
+
+                     ,fat_vrdesc
+
+                     ,fat_frete
+
+                     ,fat_seguro
+
+                     ,fat_ttacres
+
+                     ,fat_ttdecres
+
+                     ,fat_vrencargo
+
+                     ,fat_ttnota
+
+                     ,fat_vlrconfer
+
+                     ,fat_dtmov
+
+                     ,fat_status
+
+                     ,fat_adiantamento
+
+                     ,fat_vltotext1
+
+                     ,fat_vltotext2
+
+                     ,fat_taxa
+
+                     ,fat_vrii
+
+                     ,fat_percii
+
+                     ,fat_baseii
+
+                     ,fat_cdnatserv
+
+                     ,fat_descnatserv
+
+                     ,fat_devolucao
+
+                     ,fat_vrdevolucao
+
+                     ,fat_mensfat
+
+                     ,fat_vlrsubst
+
+                     ,fat_basesubst
+
+                     ,fat_vrir
+
+                     ,fat_percir
+
+                     ,fat_mensfat2
+
+                     ,fat_vrinss
+
+                     ,fat_descrserv
+
+                     ,fat_usoconsumo
+
+                     ,fat_ttnotam
+
+                     ,fat_custofrete
+
+                     ,fat_noatendpac
+
+                     ,fat_fatoricomp
+
+                     ,fat_asordens
+
+                     ,fat_obs2,FAT_TPFATURA )
+
+        VALUES (
+
+                     '004'
+
+                     ,reg.sigla_mxm
+
+                     ,v_nrfatura
+
+                     ,TRUNC( SYSDATE ) -- TO_DATE(SYSDATE,'DD/MM/YY'),
+
+                     ,NULL
+
+                     ,reg.cod_internacional
+
+                     ,'C'
+
+                     ,v_cond_pagto
+
+                     ,TRIM( v_forma )
+
+                     ,reg.sigla_mxm
+
+                     ,699
+
+                     ,'SERVIÇOS'
+                     ,0
+
+                     ,reg.vl_iss_real--decode( reg.ind_tp_faturamento, 2, ROUND(reg.vl_iss_origem, 2), ROUND(reg.vl_iss_real, 2) )
+
+                     ,v_pct_iss
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,reg.vl_cambio
+
+                     ,0
+
+                     ,0
+
+                     ,reg.nr_viagem
+
+                     ,0
+
+                     ,v_body--RPAD( reg.descricao_navio, 80 ) || reg.dwt
+
+                     ,decode( reg.ind_tp_faturamento, 2, 'DCV', 'R' )
+
+                     ,v_tot_manobra
+
+                     ,decode( reg.ind_tp_faturamento, 2, 0, reg.vl_bruto_real + ROUND(reg.vl_iss_real, 2) )
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,v_pct_iss
+
+                     ,0
+
+                     ,ROUND(reg.vl_iss_origem, 2)--decode( reg.ind_tp_faturamento, 2,  ROUND(reg.vl_iss_origem, 2), ROUND(reg.vl_iss_real, 2) )
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, reg.vl_desconto_origem, reg.vl_desconto_real )
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, reg.vl_desconto_origem, reg.vl_desconto_real )
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, 0, reg.vl_liquido_real )
+
+                     ,0 --FAT_TTNOTA -- Solicitado por Victor em 21/09/2009.
+
+                     ,TRUNC( SYSDATE ) -- TO_DATE(SYSDATE,'DD/MM/YY')
+
+                     ,'A'
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, SUBSTR( EXTENSO_PT( reg.vl_liquido_origem,'US$' ), 1, 50 ),SUBSTR( EXTENSO_PT( reg.vl_liquido_real,'R$' ), 1, 50 ) )
+
+                     ,decode( reg.ind_tp_faturamento, 2, SUBSTR( EXTENSO_PT( reg.vl_liquido_origem,'US$' ), 51, 50 ),SUBSTR( EXTENSO_PT( reg.vl_liquido_real,'R$' ), 51, 50 ) )
+
+                     ,NULL
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,'****'
+
+                     ,'SERVIÇOS'
+                     ,0
+
+                     ,0
+
+                     ,NULL
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,v_municipio
+
+                     ,0
+
+                     ,'MANOBRAS REALIZADA(S) NO PORTO DE ' || v_porto
+
+                     ,'N'
+
+                     ,decode( reg.ind_tp_faturamento, 2, reg.vl_liquido_origem, reg.vl_liquido_real )
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,reg.obs_sup
+
+                     ,reg.obs_inf,1 );
+
+
+
+--
+
+-- ANIMUS 20100806 RETIRANDO COMMIT PARA CONTROLE DE TRANSACAO
+
+--COMMIT;
+
+         -- SELECIONANDO AS MANOBRAS DA OPERACAO
+
+         v_dbg := '09 selecionando as manobras da operacao';
+
+         reglog.ds_situacao := v_dbg;
+
+
+
+         FOR reg_item IN ( SELECT DISTINCT t1.*
+
+                              ,t2.vl_total_manobra
+
+                              ,t2.vl_total_manobra_real
+
+                              ,t2.vl_iss_real
+
+                              ,t2.vl_iss
+
+                              ,t2.vl_cotacao
+
+                          FROM vw_operacao_rebocador t1
+
+                              ,TB_CALCULO_MANOBRA t2
+
+                          WHERE t1.id_operacao = reg.id_operacao
+
+                          AND t1.id_manobra_operacao = t2.id_manobra_operacao
+
+                          AND t1.id_rebocador = t2.id_rebocador
+
+                          order by data_inicio, hora_inicio )
+
+         LOOP
+
+-- CALCULANDO O CENTRO DE CUSTO DO REBOCADOR
+
+            v_dbg := '10 calculando centro de custo do rebocador';
+
+            reglog.ds_situacao := v_dbg;
+
+            v_ccusto :=
+
+                     Calcula_Ccusto( reg.id_operacao, reg_item.id_rebocador );
+
+-- CALCULANDO O VALOR DA MANOBRA EM REAL
+
+            w_total_real :=
+
+               ROUND(  ( reg_item.vl_total_manobra_real + reg_item.vl_iss_real )
+
+                     ,2 );
+
+            w_total :=
+
+               ROUND(  ( reg_item.vl_total_manobra + reg_item.vl_iss )
+
+                     ,2 );
+
+--
+
+            v_dbg := '11 inserindo itfatura_ifat';
+
+            reglog.ds_situacao := v_dbg;
+
+
+
+            INSERT INTO manager.itfatura_ifat (
+
+                      ifat_cdempresa
+
+                     ,ifat_cdfilial
+
+                     ,ifat_cdfatura
+
+                     ,ifat_item
+
+                     ,ifat_descricao
+
+                     ,ifat_unidade
+
+                     ,ifat_quantidade
+
+                     ,ifat_clfisc
+
+                     ,ifat_precoinf
+
+                     ,ifat_precotab
+
+                     ,ifat_percdesc
+
+                     ,ifat_incicm
+
+                     ,ifat_percicm
+
+                     ,ifat_percipi
+
+                     ,ifat_peso
+
+                     ,ifat_qtdped
+
+                     ,ifat_vlrdescon
+
+                     ,ifat_vlripi
+
+                     ,ifat_vlricms
+
+                     ,ifat_acrescimoi
+
+                     ,ifat_precoinfm
+
+                     ,ifat_percii
+
+                     ,ifat_vlrii
+
+                     ,ifat_bipi
+
+                     ,ifat_bicms
+
+                     ,ifat_tpoper
+
+                     ,ifat_custo
+
+                     ,ifat_sequencia
+
+                     ,ifat_coditem
+
+                     ,ifat_obs
+
+                     ,ifat_vlrcomissao
+
+                     ,ifat_vlriss
+
+                     ,ifat_vlrprod
+
+                     ,ifat_perccomis
+
+                     ,ifat_basesubst
+
+                     ,ifat_vlrsubst
+
+                     ,ifat_vlrcofins
+
+                     ,ifat_vlrpis
+
+                     ,ifat_vlrfti
+
+                     ,ifat_pedidosm
+
+                     ,ifat_nfsm
+
+                     ,ifat_seguro
+
+                     ,ifat_vlbaixa
+
+                     ,ifat_noccusto
+
+                     ,ifat_volume
+
+                     ,ifat_percinss
+
+                     ,ifat_vrinss
+
+                     ,ifat_percdep1
+
+                     ,ifat_percdep2
+
+                     ,ifat_custom
+
+                     ,ifat_vlrencargo
+
+                     ,ifat_acrescimon
+
+                     ,ifat_vlracres
+
+                     ,ifat_descclitab
+
+                     ,ifat_percpis
+
+                     ,ifat_perccofins
+
+                     ,ifat_vlrdecr
+
+                     ,ifat_basepis
+
+                     ,ifat_basecofins
+
+                     ,ifat_baseii
+
+                     ,ifat_baseiss
+
+                     ,ifat_perciss
+
+                     ,ifat_vlrir
+
+                     ,ifat_baseir
+
+                     ,ifat_percir
+
+                     ,ifat_vlrsuframa
+
+                     ,ifat_nuadicaodi
+
+                     ,ifat_tpcondtribicms
+
+                     ,ifat_percacres
+
+                     ,ifat_vlrcottabpreco
+
+                     ,ifat_vlrpmc )
+
+            VALUES (
+
+                     '004'
+
+                     ,reg.sigla_mxm
+
+                     ,v_nrfatura
+
+                     ,'1'
+
+                     ,reg_item.data_inicio || ' ' || reg_item.hora_inicio
+
+                      || ' A ' || reg_item.data_fim || ' '|| reg_item.hora_fim || ' '|| reg_item.descricao_monobra || ' ' || '-' || ' '|| reg_item.descricao_terminal || '/'|| reg_item.descricao_berco || ' ' || '-' || ' '|| reg_item.descricao_rebocador
+
+                     ,'SV'
+
+                     ,1
+
+                     ,NULL
+
+                     ,decode( reg.ind_tp_faturamento, 2, 0, w_total_real )
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, w_total, w_total_real )
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,reg.sigla_mxm
+
+                     ,0
+
+                     ,v_sequencial
+
+                     ,'1'
+
+                     ,NULL
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, ((w_total * reg_item.iss) / 100), ((w_total_real * reg_item.iss) / 100) )
+
+                     ,decode( reg.ind_tp_faturamento, 2, 0, w_total_real )
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0 -- REG_ITEM.CCUSTO,
+
+                     ,v_ccusto
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,decode( reg.ind_tp_faturamento, 2, ((w_total * reg_item.iss ) / 100), ((w_total_real * reg_item.iss ) / 100) )
+
+                     ,reg_item.iss
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0
+
+                     ,0 );
+
+
+
+--
+
+-- ANIMUS 20100806 RETIRANDO COMMIT PARA CONTROLE DE TRANSACAO
+
+--COMMIT;
+
+            v_sequencial := v_sequencial + 1;
+
+         END LOOP;
+
+
+
+-- GRAVANDO OS DESCONTOS
+
+         IF reg.vl_desconto_origem > 0
+
+         THEN
+
+            DBMS_OUTPUT.PUT_LINE( 'REG.SIGLA_MXM:' || reg.sigla_mxm );
+
+            DBMS_OUTPUT.PUT_LINE( 'V_NRFATURA:' || v_nrfatura );
+
+            DBMS_OUTPUT.PUT_LINE( 'REG.VL_DESCONTO_REAL:'
+
+                                  || reg.vl_desconto_real );
+
+            DBMS_OUTPUT.PUT_LINE( 'REG.COD_INTERNACIONAL:'
+
+                                  || reg.cod_internacional );
+
+--
+
+            v_dbg := '12 inserindo fatacrdec_fad';
+
+            reglog.ds_situacao := v_dbg;
+
+
+
+            INSERT INTO manager.fatacrdec_fad (
+
+                      fad_cdempresa
+
+                     ,fad_cdfilial
+
+                     ,fad_data
+
+                     ,fad_documento
+
+                     ,fad_cdclifor
+
+                     ,fad_codigo
+
+                     ,fad_valor
+
+                     ,fad_valorm
+
+                     ,fad_moeda
+
+                     ,fad_cotacao
+
+                     ,fat_cdfatura
+
+                     ,fad_cdfatura
+
+                     ,fad_gertit
+
+                     ,fad_percentual )
+
+            VALUES (
+
+                      '004'
+
+                     ,reg.sigla_mxm
+
+                     ,SYSDATE
+
+                     ,v_nrfatura
+
+                     ,reg.cod_internacional -- reg.cnpj ANIMUS 20100806 FASE3
+
+                     ,'DESCONTO'
+
+                     ,decode( reg.ind_tp_faturamento, 2, 0, reg.vl_desconto_real )
+
+                     ,decode( reg.ind_tp_faturamento, 2, reg.vl_desconto_origem, reg.vl_desconto_real )--decode( reg.ind_tp_faturamento, 2, 0, reg.vl_desconto_real )
+
+                     ,decode( reg.ind_tp_faturamento, 2, 'DCV', 'R' )
+
+                     ,0
+
+                     ,NULL
+
+                     ,NULL
+
+                     ,NULL
+
+                     ,0 );
+
+
+
+            -- ITENS DO DESCONTO
+
+            v_dbg := '13 inserindo fatacrdec_ifad';
+
+            reglog.ds_situacao := v_dbg;
+
+
+
+            INSERT INTO manager.itfatacrdec_ifad (
+
+                      ifad_cdempresa
+
+                     ,ifad_cdfilial
+
+                     ,ifad_cdfatura
+
+                     ,ifad_item
+
+                     ,ifad_sequencia
+
+                     ,ifad_cdacrdec
+
+                     ,ifad_valor
+
+                     ,ifad_valorm )
+
+            VALUES (
+
+                      '004'
+
+                     ,reg.sigla_mxm
+
+                     ,v_nrfatura
+
+                     ,1
+
+                     ,1
+
+                     ,'DESCONTO'
+
+                     ,decode( reg.ind_tp_faturamento, 2, 0, reg.vl_desconto_real )
+
+                     ,decode( reg.ind_tp_faturamento, 2, reg.vl_desconto_origem, reg.vl_desconto_real ));--decode( reg.ind_tp_faturamento, 2, 0, reg.vl_desconto_real ) );
+
+--
+
+-- ANIMUS 20100806 RETIRANDO COMMIT PARA CONTROLE DE TRANSACAO
+
+--    COMMIT;
+
+         END IF;
+
+
+
+-- ATUALIZANDO A OPERACAO
+
+         v_dbg := '14 atualizando a operacao';
+
+         reglog.ds_situacao := v_dbg;
+
+
+
+         UPDATE TB_OPERACAO
+
+            SET situacao = 'F'
+
+               ,nr_fatura = v_nrfatura
+
+          WHERE id_operacao = reg.id_operacao;
+
+
+
+--
+
+-- ANIMUS 20100806 RETIRANDO COMMIT PARA CONTROLE DE TRANSACAO
+
+--            COMMIT;
+
+         DBMS_OUTPUT.PUT_LINE( 'OPERAÇÃO INTEGRADA COM SUCESSO'
+                               || reg.id_operacao );
+
+         reglog.ds_situacao := 'OPERAÇÃO REALIZADA COM SUCESSO';
+         reglog.dt_fim := SYSDATE;
+
+         COMMIT;
+
+         Prc_Integracao_Mxm_Log( reglog );
+
+      EXCEPTION
+
+         WHEN OTHERS
+
+         THEN
+
+            DBMS_OUTPUT.PUT_LINE('S:::'|| SQLERRM || '		'||reg.ID_OPERACAO);
+
+            ROLLBACK;
+
+            reglog.ds_erro_bd := SQLERRM;
+
+            reglog.id_erro_bd := SQLCODE;
+
+            reglog.dt_fim := SYSDATE;
+
+            Prc_Integracao_Mxm_Log( reglog );
+
+      END;
+
+   END LOOP;
+
+   COMMIT;
+
+   DBMS_OUTPUT.PUT_LINE( '_____________________FIM_________________________' );
+
+   DBMS_OUTPUT.PUT_LINE( TO_CHAR( SYSDATE, 'DD/MM/YYYY - HH:MM' ) );
+
+   DBMS_OUTPUT.PUT_LINE( '' );
+
+EXCEPTION
+
+   WHEN OTHERS
+
+   THEN
+
+      DBMS_OUTPUT.PUT_LINE( SQLERRM );
+
+    --  ROLLBACK;
+
+      reglog.ds_erro_bd := SQLERRM;
+
+      reglog.id_erro_bd := SQLCODE;
+
+      reglog.dt_fim := SYSDATE;
+
+      Prc_Integracao_Mxm_Log( reglog );
+
+--      RAISE_APPLICATION_ERROR(-20001,v_dbg || ' ' || SQLERRM);
+
+END Prc_Integracao_Mxm; 
