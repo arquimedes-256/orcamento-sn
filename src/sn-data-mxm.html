@@ -51,6 +51,7 @@ Example:
 			getValuesSNAPP:function(filial,idGrupoMaster){
 				this.$.ajax.url = "http://www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?"+
 				"metodo=snapp_getOrcadoRealizadoGrupoMaster&idGrupoMaster="+idGrupoMaster+"&ano="+(this._anoAtual)
+				+'&filial='+filial
 			}
 		});
 	</script>

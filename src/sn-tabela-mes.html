@@ -360,7 +360,7 @@
             _pathChanged: function() {
                 this.$.dataTable.progress = true;
                 //this.dimensions = [];
-                this._path = this.path.replace(/\s+/g, '-');
+                this._path = this.path.replace(/(\s+|\.)/g, '-');
                 this.async(this._removeFilters, 1000)
             },
             _pathDBObserver: function(_path, db) {

@@ -52,10 +52,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       .drawer-list a {
         display: block;
-        padding: 0 16px;
-        line-height: 40px;
+        padding: 0 10px;
+        line-height: 39px;
         text-decoration: none;
-        color: var(--app-secondary-color);
+        color: #000;
+        font-size: 15px;
       }
       .drawer-list a.iron-selected {
         color: black;
@@ -109,6 +110,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       #filterContainer /deep/ paper-dropdown-menu {
           width: 110px;
           margin-right: 14px;
+      }
+      #filterContainer /deep/ paper-dropdown-menu[droplarger] /deep/ paper-input ,  
+      #filterContainer /deep/ paper-dropdown-menu[droplarger] {
+          width: 250px!important;
       }
       #filterContainer /deep/ iron-icon[icon="paper-dropdown-menu:arrow-drop-down"] {
         color: #FFF!important;
@@ -219,6 +224,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           //onComplete
           function(){
             var filtersElement = document.querySelector('* /deep/ sn-' + page).$.filters;
+            if(!filtersElement) 
+            {
+              filtersElement = 
+              document
+                .querySelector('* /deep/ sn-' + page+' /deep/ sn-tabela-contabil').$.filters;
+            }
             with(document.querySelector('* /deep/ #filterContainer')){
               innerHTML = ""
               appendChild(filtersElement);

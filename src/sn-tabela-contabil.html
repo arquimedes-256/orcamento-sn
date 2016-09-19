@@ -1,13 +1,19 @@
 <link rel="import" href="sn-tabela-mes.html">
+<link rel="import" href="sn-data-mxm.html">
 
 <dom-module id="sn-tabela-contabil">
 	<template>
 		<style>
 			:host {
 				display: block;
+         		padding: 14px;
 			}
+			paper-material {
+				background:#FFF;
+				padding:8px;
+         	}
 		</style>
-
+<!--
 		<sn-tabela-mes
         	total
         	total-bellow
@@ -19,21 +25,108 @@
             commute-product
             header="[[item]]">
      	</sn-tabela-mes>
+-->
+
+	<div id="filters" class="layout horizontal">
+		<h5 style="width: 181px;font-size: 14px;margin-right: 4px;color: #FFF;">
+			{{grupoMasterLabel}}
+		</h5>
+		<paper-dropdown-menu label="Filial" id="filial">
+	        <paper-listbox class="dropdown-content" 
+	        selected="{{_currentFilial}}" 
+	        attr-for-selected="name">
+	             <paper-item name="RGD">RGD</paper-item>
+	             <paper-item name="PNG">PNG</paper-item>
+	             <paper-item name="STR">STR</paper-item>
+	             <paper-item name="SEP">SEP</paper-item>
+	             <paper-item name="RJ1">RJ1</paper-item>
+	             <paper-item name="VIT">VIT</paper-item>
+	             <paper-item name="SDR">SDR</paper-item>
+	             <paper-item name="MAC">MAC</paper-item>
+	        </paper-listbox>
+	      </paper-dropdown-menu>
+
+		<paper-dropdown-menu label="Grupo" id="grupo" droplarger>
+	        <paper-listbox class="dropdown-content" 
+	        selected="{{_currentGrupo}}" 
+	        attr-for-selected="name">
+	            <paper-item name="Todos">Todos</paper-item>
+	    		<template is="dom-repeat" items="{{_grupoList}}">
+	            	<paper-item name="[[item]]">[[item]]</paper-item>
+	    		</template>
+	        </paper-listbox>
+	    </paper-dropdown-menu>
+
+	</div>
+
+
+		<paper-material>
+		
+	    <template is="dom-repeat" items="{{_contasList}}">
+	    	
+	    	<sn-tabela-mes
+	        	total
+	        	total-bellow
+	            db="valor" 
+	            on-tabela-mes-build="_calcTotalTable"
+	            path="{{_getPath(item)}}"
+	            dimensions="[[_defaultDimensions]]"  
+	            editable
+	            commute-product
+	            header="[[item]]">
+	     	</sn-tabela-mes>
+
+	    </template>
+	</paper-material>
+	<sn-data-mxm id="dataMXM" on-response-orcadorealizado="_onResponse">
+	</sn-data-mxm>
 
 	</template>
 	<script>
 		Polymer({
 			is: 'sn-tabela-contabil',
 			properties:{
-				filial:{
-					type:String
+				_currentFilial:{
+					type:String,
+					observer:'_render'
+				},
+				_currentGrupo:{
+					value:"Todos"
+				},
+				idGrupoMaster:{
+					type:Number,
+					observer:'_render'
+				},
+				grupoMasterLabel:{
+
 				},
 				pathNamespace:{
 					type:String
 				},
-				idGrupoMaster:{
-					type:Number
+				_defaultDimensions:{
+					value:['Total']
 				}
+			},
+			ready:function(){
+				this._currentFilial = "RJ1";
+				this._render();
+			},
+			_render:function(){
+
+				this.$.dataMXM.getValuesSNAPP(this._currentFilial,this.idGrupoMaster)
+			},
+			_onResponse:function(e,d)
+			{
+				var V = d;
+				this._contasList 	= _.uniq(_.map(V,function(v){ return v.idContaContabil + ': '+v.nomeContaContabil  }))
+				this._grupoList		= _.uniq(_.map(V,function(v){ return v.grupo  }))
+				console.log(this._contasList)
+			},
+			_getPath:function(item){
+				return [this.pathNamespace,item].join("/")
+			},
+			_calcTotalTable:function(){
+
 			}
 		});
 	</script>

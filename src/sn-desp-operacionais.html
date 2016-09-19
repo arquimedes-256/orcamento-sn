@@ -1,4 +1,4 @@
-
+<link rel="import" href="sn-tabela-contabil.html">
 
 <dom-module id="sn-desp-operacionais">
 	<template>
@@ -7,18 +7,19 @@
 				display: block;
 			}
 		</style>
-		<div id="filters" class="layout horizontal">
-			<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
-				Desp. Operacional
-			</h5>
-		</div>
-		<paper-material>
-			
-		</paper-material>
+		<sn-tabela-contabil 
+			id-grupo-master="12" 
+			grupo-master-label="Outras Desp. Operacionais"
+			path-namespace="desp-operacionais">
+		</sn-tabela-contabil>
 	</template>
 	<script>
 		Polymer({
-			is: 'sn-desp-operacionais'
+			is: 'sn-desp-operacionais',
+			properties:{
+			},
+			ready:function(){
+			}
 		});
 	</script>
 </dom-module>
