@@ -110,6 +110,8 @@
 					return;
 
 				_.each(Rx,function(r){
+					if(!r)
+						return;
 					_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k){
 						if(Sigma[k] === undefined)
 							Sigma[k] = 0;

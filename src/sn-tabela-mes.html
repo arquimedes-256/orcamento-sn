@@ -12,7 +12,7 @@
                 top: 4px;
                 left: 22px;
                 padding-top: 7px;
-                font-size: 14px;
+                font-size: [[headerFontSize]]px;
             }
 
             paper-datatable /deep/ td.bound-cell span {
@@ -83,6 +83,9 @@
                 db: {
                     observers: '_buildDB',
                     type: String
+                },
+                headerFontSize:{
+                    value:14
                 },
                 editable: {
                     type: Boolean,
@@ -218,6 +221,10 @@
             },
             _workTotals:function()
             {
+                if(_.size(this.data) == 1) {
+                    jQuery(this.$.dataTable.querySelector('* /deep/ table tr[total]')).remove();
+                    return;
+                }
                 if (this.total && this.data)
                     _.each(this.data, function(D) {
                         D.total = 

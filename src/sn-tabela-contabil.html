@@ -73,7 +73,8 @@
 	            dimensions="[[_defaultDimensions]]"  
 	            editable
 	            commute-product
-	            header="[[item]]">
+	            header="[[item]]" 
+	            header-font-size="12">
 	     	</sn-tabela-mes>
 
 	    </template>
@@ -91,7 +92,8 @@
 					observer:'_render'
 				},
 				_currentGrupo:{
-					value:"Todos"
+					value:"Todos",
+					observer:'_filterGrupos'
 				},
 				idGrupoMaster:{
 					type:Number,
@@ -118,9 +120,30 @@
 			_onResponse:function(e,d)
 			{
 				var V = d;
+				var BijectionMap = this.BijectionMap = {};
+
 				this._contasList 	= _.uniq(_.map(V,function(v){ return v.idContaContabil + ': '+v.nomeContaContabil  }))
 				this._grupoList		= _.uniq(_.map(V,function(v){ return v.grupo  }))
+
+				_.each(V,function(v){
+					BijectionMap[v.idContaContabil] = v.grupo
+				})
 				console.log(this._contasList)
+			},
+			_filterGrupos:function()
+			{
+				var M = this.BijectionMap;
+				var G = this._currentGrupo;
+				var T = this.querySelectorAll('* /deep/ sn-tabela-mes')
+
+				_.each(T,function(t){
+					var k = _.first(t.header.match(/\d+/))
+
+					if(G == "Todos" || M[k] == G)
+						t.style.display = "block"
+					else
+						t.style.display = "none"
+				})
 			},
 			_getPath:function(item){
 				return [this.pathNamespace,item].join("/")
