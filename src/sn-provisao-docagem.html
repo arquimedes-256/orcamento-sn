@@ -1,6 +1,6 @@
 <link rel="import" href="sn-tabela-contabil.html">
 
-<dom-module id="sn-desp-operacionais">
+<dom-module id="sn-provisao-docagem">
 	<template>
 		<style>
 			:host {
@@ -8,18 +8,20 @@
 			}
 		</style>
 		<sn-tabela-contabil 
+			id-grupo-master="9" 
 			dim-editor
-			id-grupo-master="12" 
-			grupo-master-label="Outras Desp. Operacionais"
-			path-namespace="desp-operacionais">
+			grupo-master-label="Provisão de Docagem"
+			path-namespace="[[name]]">
 		</sn-tabela-contabil>
 	</template>
 	<script>
 		Polymer({
-			is: 'sn-desp-operacionais',
+			is: 'sn-provisao-docagem',
 			properties:{
+				name:String
 			},
-			ready:function(){
+			ready:function() {
+				this._currentFilial = "RJ1";
 			}
 		});
 	</script>

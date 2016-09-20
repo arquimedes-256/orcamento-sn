@@ -66,7 +66,7 @@
             db="receita-qtd-navios" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}" 
+            dimensions="[[ _selectedFaixas ]]" 
             filter="#faixaDWT"
             header="Quantidade de Navios"></sn-tabela-mes>
 
@@ -76,7 +76,7 @@
             db="receita-qtd-rebocadores" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}"  
+            dimensions="[[ _selectedFaixas ]]"  
             filter="#faixaDWT"
             header="Quantidade de Rebocadores"></sn-tabela-mes>
 		
@@ -86,7 +86,7 @@
             db="receita-tarifa" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}"  
+            dimensions="[[ _selectedFaixas ]]"  
             filter="#faixaDWT"
             header="Tarifa"></sn-tabela-mes>
 
@@ -96,7 +96,7 @@
             db="receita-reajuste" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}"  
+            dimensions="[[ _selectedFaixas ]]"  
             filter="#faixaDWT"
             percent
             header="Reajuste"></sn-tabela-mes>
@@ -105,7 +105,7 @@
             id="tabelaTotal"
             db="receita-total" 
             path="{{_path}}"
-            dimensions="{{ _selectedFaixas }}"  
+            dimensions="[[ _selectedFaixas ]]"  
             filter="#faixaDWT"
             header="Total R$"></sn-tabela-mes>
 

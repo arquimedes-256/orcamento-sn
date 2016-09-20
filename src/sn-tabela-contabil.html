@@ -65,6 +65,7 @@
 	    <template is="dom-repeat" items="{{_contasList}}">
 	    	
 	    	<sn-tabela-mes
+	    		dim-editor='[[dimEditor]]'
 	        	total
 	        	total-bellow
 	            db="valor" 
@@ -72,7 +73,6 @@
 	            path="{{_getPath(item)}}"
 	            dimensions="[[_defaultDimensions]]"  
 	            editable
-	            commute-product
 	            header="[[item]]" 
 	            header-font-size="12">
 	     	</sn-tabela-mes>
@@ -98,6 +98,10 @@
 				idGrupoMaster:{
 					type:Number,
 					observer:'_render'
+				},
+				dimEditor:{
+					type:Boolean,
+					value:false
 				},
 				grupoMasterLabel:{
 
