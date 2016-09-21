@@ -23,7 +23,9 @@
     * /deep/ [cliente-json] {
         display:none!important;
     }
-
+    * /deep/ #dropdown {
+      left: inherit!important;
+    }
     </style>
       
       <sn-data-top id="dataTOP" 
@@ -206,7 +208,7 @@ Polymer({
 
         var cliente = FILIAL_CLIENT_TO_CLIENTE[this.currentFilial+':'+this.selectedCliente]
 		
-
+        console.log(cliente)
         if(cliente != null) 
         {
             var num_contrato = cliente.num_contrato;
@@ -227,6 +229,16 @@ Polymer({
 		var clienteElement = this.$.cliente.selectedItem;
 		if(!clienteElement)
 		  return;
+
+    if(
+      ! clienteElement
+        .querySelector('[moeda]')       || 
+      ! clienteElement
+        .querySelector('[tipo-tarifa]') ||
+      ! clienteElement
+        .querySelector('[faixa-json]')
+    ) return;
+
 		var moeda       = clienteElement
 		    .querySelector('[moeda]')
 		    .innerText;

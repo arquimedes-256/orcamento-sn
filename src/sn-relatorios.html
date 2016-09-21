@@ -121,6 +121,7 @@ properties:{
 	_YList:{value:[],type:Array},
 	_currentRelatorio:{value:"receita-total"},
 	_compileList:["Filial","Cliente","Terminal"],
+	relatorioName:{type:String,value:"receita"},
 	filial:{type:String}
 },
 ready:function () {
@@ -221,14 +222,16 @@ _getDataFromBase:function() {
 
 	jQuery(this.$.output).html("Compilando...");
 	
-	new Firebase(FB_URL).once('value',function(dataSnap){
+	new Firebase(FB_URL+"/"+this.relatorioName).once('value',function(dataSnap){
 		
-		var G = dataSnap.val();
-		
+		var G = {};
+		G[this.relatorioName] = dataSnap.val();
+			
 		this._YList = [];
 		this._Parse(G,[]) 
 		this._render(this._YList);
 		this.fire('get-data-from-base',this._YList);
+
 	}.bind(this));
 },
 _Parse:function(G,path){							
