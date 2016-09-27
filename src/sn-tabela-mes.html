@@ -271,7 +271,7 @@
 
                 if(_.size(this.data) == 1) {
                     jQuery(this.$.dataTable.querySelector('* /deep/ table tr[total]')).remove();
-                    
+                    this.totalDataPorMes = _.first(this.data)
                     this._buildDB()
                     return;
                 }
@@ -366,7 +366,6 @@
                 this.dimensions = _.pluck(this.data,'dimension');
                 if(this.dimEditor) {
                     var P = e.detail.path
-                    console.log(P)
                     if(P && !P.match("dimension"))
                         this._buildDB()
                     if(!P)
@@ -480,8 +479,22 @@
             _save: function(Obj) {
                 if(_.isEmpty(Obj))
                     return;
-                new Firebase(FB_URL + "/" + this._path + "/" + this.db).set(Obj);
-                this.fire('tabela-mes-build');
+                try {
+                    new Firebase(FB_URL + "/" + this._path + "/" + this.db).set(Obj);
+                    this.fire('tabela-mes-build');
+                }
+                catch(e){
+                    // var X = _.chain(Obj)
+                    // .values()
+                    // .map(function(x){return _.values(x)})
+                    // .flatten()
+                    // .filter(function(x){return _.isNumber(x) })
+                    // .uniq()
+                    // .first()
+                    // .value()
+                    // if(_.isNaN(X))
+                    //     console.log('NaN error')
+                }
             },
             _getStructuredData: function(D) {
                 return _.mapObject(_.groupBy(D, 'dimension'), function(x) {

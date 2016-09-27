@@ -177,7 +177,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div title>SN-X</div> 
            
             -->
-            <div id="filterContainer"></div>
+            <div class="layout vertical">
+              <div id="filterContainer"></div>
+              <div id="tabContainer"></div>
+            </div>
           </app-toolbar>
         </app-header>
 
@@ -239,19 +242,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.importHref(
           this.resolveUrl('sn-' + page + '.html'), 
           //onComplete
-          function(){
-            var filtersElement = document.querySelector('* /deep/ sn-' + page).$.filters;
+          function()
+          {
+            var currentElement 	= document.querySelector('* /deep/ sn-' + page)
+            var filtersElement 	= currentElement.$.filters;
+            var tabelaContabil  =  currentElement.querySelector('* /deep/ sn-tabela-contabil')
+						this.$.tabContainer.innerHTML = "";
+            
+            if(tabelaContabil) 
+            {
+							var tabContainer 		= tabelaContabil.$.tabContainer;
+							if(tabContainer)
+							this.$.tabContainer.appendChild( tabContainer );
+            }
+
             if(!filtersElement) 
             {
               filtersElement = 
               document
                 .querySelector('* /deep/ sn-' + page+' /deep/ sn-tabela-contabil').$.filters;
             }
-            with(document.querySelector('* /deep/ #filterContainer')){
+            with(document.querySelector('* /deep/ #filterContainer'))
+            {
               innerHTML = ""
               appendChild(filtersElement);
             }
-          }, null, true);
+          }.bind(this), null, true);
 
       },
       ready:function(){
