@@ -62,6 +62,12 @@
 
 		<paper-material>
 		
+
+        <template is="dom-if" if="{{hasList(_contasList)}}">
+            <paper-progress indeterminate style="width:100%"></paper-progress>
+            Carregando...
+        </template>
+
 	    <template is="dom-repeat" items="{{_contasList}}">
 	    	
 	    	<sn-tabela-mes
@@ -150,7 +156,11 @@
 				})
 			},
 			_getPath:function(item){
-				return [this.pathNamespace,item].join("/")
+				return [this.pathNamespace,this._currentFilial,item].join("/")
+			},
+			hasList:function(){
+
+				return this._contasList.length == 0;
 			},
 			_calcTotalTable:function(){
 

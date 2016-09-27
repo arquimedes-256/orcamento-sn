@@ -645,11 +645,15 @@
             },
             fill: function(table, usingMensure) {
                 this.dimensions = _.keys(table);
+                var S = 0;
                 if (_.isEmpty(this.dimensions)) {
                    // console.log('fill-failed')
                     return this.fire('fill-failed')
                 }
                 var M = _.mapObject(table, function(r, k) {
+                    
+                    S += r[usingMensure];
+
                     return {
                         1:  r[usingMensure],
                         2:  r[usingMensure],
@@ -669,6 +673,8 @@
                 this.async(function() {
                     this._save(M);
                 }, 1000)
+
+                return S;
             },
             put: function(mesesObject, options) {
                 if (_.size(mesesObject) < 12)

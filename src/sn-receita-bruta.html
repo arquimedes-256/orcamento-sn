@@ -141,8 +141,10 @@
             },1000)
         },
         _buildFaixasHandler:function(e,d){
-          console.log('fill-faixas',d.faixasTarifa)
-          this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
+
+          var S = this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
+          console.log(S);
+          
           this._selectedFaixas = _.keys(d.faixasTarifa);
         },
         _fillFailedHandler:function(){

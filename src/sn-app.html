@@ -254,6 +254,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }, null, true);
 
       },
+      ready:function(){
+        if(!window.Firebase) {
+
+          alert("Erro de conexão!")
+
+        }
+      }
     });
 
   </script>
