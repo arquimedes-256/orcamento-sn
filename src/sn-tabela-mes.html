@@ -247,7 +247,7 @@
                     {
                         this._workTotals();
                     }
-                    .bind(this),200)
+                    .bind(this),800)
             },
             _workTotals:function()
             {
@@ -365,7 +365,7 @@
                 var D = _.pluck(this.data,'dimension');;
                 if(!_.isEmpty(D))   
                     this.dimensions = D
-                
+
                 if(this.dimEditor) {
                     var P = e.detail.path
                     if(P && !P.match("dimension"))
