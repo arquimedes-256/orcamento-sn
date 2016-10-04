@@ -118,6 +118,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       #filterContainer /deep/ iron-icon[icon="paper-dropdown-menu:arrow-drop-down"] {
         color: #FFF!important;
       }
+      * /deep/ *::-webkit-scrollbar-thumb  {
+          background-color: rgba(0,0,0,0.2);
+          background-clip: padding-box;
+          border: solid transparent;
+          border-width: 1px 1px 1px 6px;
+          min-height: 28px;
+          padding: 100px 0 0;
+          -webkit-box-shadow: inset 1px 1px 0 rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.07);
+          box-shadow: inset 1px 1px 0 rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.07);
+      }
+      }
     </style>
 
     <app-location route="{{route}}"></app-location>
@@ -177,10 +188,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div title>SN-X</div> 
            
             -->
-            <div class="layout vertical">
-              <div id="filterContainer"></div>
-              <div id="tabContainer"></div>
-            </div>
+            <div id="filterContainer"></div>
           </app-toolbar>
         </app-header>
 
@@ -246,15 +254,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           {
             var currentElement 	= document.querySelector('* /deep/ sn-' + page)
             var filtersElement 	= currentElement.$.filters;
-            var tabelaContabil  =  currentElement.querySelector('* /deep/ sn-tabela-contabil')
-						this.$.tabContainer.innerHTML = "";
-            
-            if(tabelaContabil) 
-            {
-							var tabContainer 		= tabelaContabil.$.tabContainer;
-							if(tabContainer)
-							this.$.tabContainer.appendChild( tabContainer );
-            }
+           
 
             if(!filtersElement) 
             {

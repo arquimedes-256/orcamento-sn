@@ -51,45 +51,36 @@
 	            <paper-progress indeterminate style="width:100%"></paper-progress>
 	            Carregando...
 	        </template>
-	        <paper-tabs selected="{{selected}}" id="tabContainer">
-			  <paper-tab>Detalhado</paper-tab>
-			  <paper-tab>Consolidado</paper-tab>
-			</paper-tabs>
+	   
 
-			<iron-pages selected="{{selected}}">
-			  <div>
-			  	<template is="dom-repeat" items="{{_contasList}}">
-			    	<sn-tabela-mes
-			    		class="tabelaContaContabil"
-			    		dim-editor='[[dimEditor]]'
-			        	total
-			        	total-bellow
-			            db="valor" 
-			            on-tabela-mes-build="_calcTotalTable"
-			            path="{{_getPath(item)}}"
-			            dimensions="[[_defaultDimensions]]"  
-			            editable
-			            header="[[item]]" 
-			            header-font-size="12">
-			     	</sn-tabela-mes>
-			    </template>
-			  </div>
-			  <div>
-				<sn-tabela-mes
-					id="tableTotal"
-					total
-			        total-bellow
-		            db="total" 
-		            path="{{_getGroupPath(_currentFilial)}}"
-		            dimensions="{{_dimensionsTotal}}"
-		            header="Total">
-			    </sn-tabela-mes>
-			  </div>
-			</iron-pages>	
+			 <template is="dom-repeat" items="{{_contasList}}">
+		    	<sn-tabela-mes
+		    		class="tabelaContaContabil"
+		    		dim-editor='[[dimEditor]]'
+		        	total
+		        	total-bellow
+		            db="valor" 
+		            on-tabela-mes-build="_calcTotalTable"
+		            path="{{_getPath(item)}}"
+		            dimensions="[[_defaultDimensions]]"  
+		            editable
+		            header="[[item]]" 
+		            header-font-size="12">
+		     	</sn-tabela-mes>
+		    </template>
+		    
 
-		    
-		    
+			<sn-tabela-mes
+				id="tableTotal"
+				total
+			    total-bellow
+			    db="total" 
+			    path="{{_getGroupPath(_currentFilial)}}"
+			    dimensions="{{_dimensionsTotal}}"
+			    header="Total">
+			</sn-tabela-mes>
 		</paper-material>
+		    
 
 		<sn-data-mxm id="dataMXM" on-response-orcadorealizado="_onResponse"></sn-data-mxm>
 	</template>
@@ -148,7 +139,7 @@
 			_filterGrupos:function() {
 				var M = this.BijectionMap;
 				var G = this._currentGrupo;
-				var T = this.querySelectorAll('* /deep/ sn-tabela-mes')
+				var T = this.querySelectorAll('* /deep/ sn-tabela-mes:not(#tableTotal)')
 
 				_.each(T,function(t){
 					var k = _.first(t.header.match(/\d+/))
