@@ -362,8 +362,10 @@
             },
             _changeHandler: function(e) 
             {
+                var D = _.pluck(this.data,'dimension');;
+                if(!_.isEmpty(D))   
+                    this.dimensions = D
                 
-                this.dimensions = _.pluck(this.data,'dimension');
                 if(this.dimEditor) {
                     var P = e.detail.path
                     if(P && !P.match("dimension"))
