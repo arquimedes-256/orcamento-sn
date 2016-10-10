@@ -16,7 +16,7 @@
 		Polymer({
 			is: 'sn-data-mxm',
 			properties:{
-				_anoAtual:{value:2016}
+				_anoAtual:{value:CURRENT_ANO}
 			},
 			orcadorealizado_responseHandler:function(e,d,s) {
 				this.fire('response-orcadorealizado',e.detail.response)
@@ -27,14 +27,14 @@
 				+"&ano="+this._anoAtual+"&finder=orcadorealizado&filial="+obj.filial
 				+"&isKeepContaContabil=true";
 			},
-			getReceitaLiquidaAcumuladoAnoAnterior:function(filial)
+			getReceitaLiquidaAcumuladoAnoAnterior:function(filial,mesMax)
 			{
 				this.$.ajax.url = 
 					"//sig.sulnorte.com.br/sn/bus?"+
-					"mes=1&ano="+(this._anoAtual)+"&mesFinal=12&finder=orcadorealizado_detalhado"+
+					"mes=1&ano="+(this._anoAtual)+"&mesFinal="+mesMax+"&finder=orcadorealizado_detalhado"+
 					"&idGrupoMaster=2&filial="+filial+"&isKeepContaContabil=true";
 			},
-			getValuesSNAPP:function(filial,idGrupoMaster){
+			getValuesSNAPP:function(filial,idGrupoMaster,mesMax){
 				this.$.ajax.url = "http://www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?"+
 				"metodo=snapp_getOrcadoRealizadoGrupoMaster&idGrupoMaster="+idGrupoMaster+"&ano="+(this._anoAtual)
 				+'&filial='+filial

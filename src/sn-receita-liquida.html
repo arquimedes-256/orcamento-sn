@@ -110,7 +110,7 @@
 									aggregator:'receita-total',
 									filterMap:{Filial:this._currentFilial}
 								});
-				this.$.dataMXM.getReceitaLiquidaAcumuladoAnoAnterior(this._currentFilial);
+				this.$.dataMXM.getReceitaLiquidaAcumuladoAnoAnterior(this._currentFilial,9);
 			},
 			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(e){
@@ -172,13 +172,13 @@
 					})
 
 				this.$['deducoes-ano-anterior'].innerHTML 
-					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Real ano anterior:</span>'
+					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Real ano corrente ('+CURRENT_ANO+'):</span>'
 					+'<span>'+Math.abs(R['Deduções s/ Receita Bruta']).formatMoney(0)+'</span>'
 					+ '<span style="margin: 0 5px;font-size: 22px;">/</span>'
 					+ '<span>'+R['Receita Bruta'].formatMoney(0)+'</span>'
 					+ '<span style="margin: 0 5px;font-size: 22px;">=</span>'
 					+ '<span>'+
-					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(1)+'%'
+					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(2)+'%'
 					+'</span>'
 			},
 			_workOrcadoAnoCorrente:function(){
@@ -194,13 +194,13 @@
 					'Receita Bruta':receita
 				};
 					this.$['deducoes-ano-corrente-orcado'].innerHTML 
-					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Orçado ano corrente:</span>'
+					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Orçado ano seguinte ('+(CURRENT_ANO+1)+'):</span>'
 					+'<span>'+Math.abs(R['Deduções s/ Receita Bruta']).formatMoney(0)+'</span>'
 					+ '<span style="margin: 0 5px;font-size: 22px;">/</span>'
 					+ '<span>'+R['Receita Bruta'].formatMoney(0)+'</span>'
 					+ '<span style="margin: 0 5px;font-size: 22px;">=</span>'
 					+ '<span>'+
-					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(1)+'%'
+					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(2)+'%'
 					+'</span>'
 			}
 		});

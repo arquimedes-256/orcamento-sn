@@ -96,6 +96,7 @@
 	    -->
     </template>
     <script>
+        window.STRUCTURED_CACHE={};
         Polymer({
             is: 'sn-tabela-mes',
             properties: {
@@ -267,7 +268,7 @@
                     {
                         this._workTotals();
                     }
-                    .bind(this),800)
+                    .bind(this),1)
             },
             _workTotals:function()
             {
@@ -401,27 +402,38 @@
             },
             _formatValues:function()
             {
-                var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
-
-                _.each(TDs, function(td) {
-                    var number = +td.querySelector('span').innerText.replace(",","");
-                    if(number == 0 && !_.isNaN(number)) 
+                clearTimeout(this._formatValuesJob)
+                this._formatValuesJob = 
+                    setTimeout(function()
                     {
-                        td.querySelector('span').style.opacity = .4;
-                    }
-                    else
-                        td.querySelector('span').style.opacity = 1;
 
-                })
-                _.each(TDs, function(td) {
-                    var s = td.innerText.trim();
-                    if (s.match(/^-?\d+\.?\d*$/)) {
-                       td.querySelector('span').innerText = 
-                                                parseFloat( td.innerText)
-                                                .formatMoney(this.formatAsInteger ? 0 : 2);
-                    }
-                },this)
+                const TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
 
+                this.async(function(){
+                    _.each(TDs, function(td) {
+                        var number = +td.querySelector('span').innerText.replace(",","");
+                        if(number === 0) 
+                        {
+                            td.querySelector('span').style.opacity = .4;
+                        }
+                        else
+                            td.querySelector('span').style.opacity = 1;
+
+                    })
+                },1);
+                this.async(function(){
+                    _.each(TDs, function(td) {
+                        var s = td.innerText.trim();
+                        if (s.match(/^-?\d+\.?\d*$/)) {
+                           td.querySelector('span').innerText = 
+                                                    parseFloat( td.innerText)
+                                                    .formatMoney(this.formatAsInteger ? 0 : 2);
+                        }
+                    },this)
+                },1);
+
+                    }.bind(this),1)
+              
             },
             _activePercentIfIs: function() {
                 if (this.percent)
@@ -436,7 +448,8 @@
                     }, 1)
             },
             _dataDimensionsObserver: function() {
-                this.filterByDimensionsList();
+                if(this.filter)
+                    this.filterByDimensionsList();
             },
             _pathChanged: function() {
                 this.$.dataTable.progress = true;
@@ -490,15 +503,26 @@
                 .bind(this));
             },
             _buildDB: function() {
-                if (!this._path)
-                    return;
-                var Obj = this._getStructuredData(this.data);
-                if (this.meta && this.metaEditable)
-                    _.each(Obj, function(obj) {
-                        if (!obj.meta)
-                            obj.meta = 100;
-                    })
-                this._save(Obj);
+                
+                clearTimeout(this._buildDBJOB)
+                this._buildDBJOB = 
+                    setTimeout(function()
+                    {
+
+                       if (!this._path)
+                            return;
+                        var Obj = this._getStructuredData(this.data);
+                        if (this.meta && this.metaEditable)
+                            _.each(Obj, function(obj) {
+                                if (!obj.meta)
+                                    obj.meta = 100;
+                            })
+                        this._save(Obj);
+
+                    }
+                    .bind(this),1)
+
+                
             },
             _save: function(Obj) {
                 if(_.isEmpty(Obj))
@@ -521,7 +545,13 @@
                 }
             },
             _getStructuredData: function(D) {
-                return _.mapObject(_.groupBy(D, 'dimension'), function(x) {
+                
+                const K = JSON.stringify(D);
+                
+                if(STRUCTURED_CACHE[K])
+                    return STRUCTURED_CACHE[K];
+
+                const S = _.mapObject(_.groupBy(D, 'dimension'), function(x) {
                     f = _.first(x);
                     var F = parseFloat;
                     f['1'] =    F(f['1'])   && F(F(f['1'])  .toFixed(2));
@@ -541,6 +571,10 @@
                     return f;
                 }
                 .bind(this));
+
+                window.STRUCTURED_CACHE[ K ] = S;
+
+                return S;
             },
             getStructuredDataAsPercent: function() {
                 var D = JSON.parse(JSON.stringify(this.data) || '{}');
@@ -587,7 +621,7 @@
                     this._buildDB();
                     clearInterval(Interval);
                 }
-                .bind(this), 300)
+                .bind(this), 1)
             },
             /* public */
             getSampleData: function(value, options) {

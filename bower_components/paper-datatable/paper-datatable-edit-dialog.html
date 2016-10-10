@@ -132,6 +132,7 @@
 				var paperInput = Polymer.dom(this).querySelector('paper-input')
 				if (paperInput) {
 					paperInput.$.input.focus();
+					jQuery(paperInput.$.input).select();
 				}
 				var paperInput = Polymer.dom(this).querySelector('paper-textarea')
 				if (paperInput) {
@@ -142,6 +143,7 @@
 				var input = Polymer.dom(this).querySelector('input')
 				if (input) {
 					input.focus();
+					jQuery(input).select();
 				}
 			},
 

@@ -127,16 +127,19 @@
 				const V = d;
 				const BijectionMap = this.BijectionMap = {};
 
-				this._grupoList		= _.uniq(_.map(V,function(v){ return ST(v.grupo)  }))
+				this._grupoList		= _.difference(_.uniq(_.map(V,function(v){ return ST(v.grupo)  })),["(+) Outras Despesas Financeiras"]);
 
 				_.each(V,function(v){
 					if(!BijectionMap[v.idContaContabil])
 						BijectionMap[v.idContaContabil] = ST(v.grupo)
 				})
 
-				this._contasList 	= _.uniq(_.map(V,function(v){ 
+				this._contasList 	= _.difference(_.uniq(_.map(V,function(v){ 
+					if(BijectionMap[v.idContaContabil] == "(+) Outras Despesas Financeiras") {
+						return null
+					}
 					return v.idContaContabil + ': '+ST(v.nomeContaContabil)
-				}))
+				})),[null])
 
 			},
 			_filterGrupos:function() {
@@ -164,6 +167,18 @@
 				return this._contasList.length == 0;
 			},
 			_calcTotalTable:function() {
+
+				clearTimeout(this._workTotalsJob)
+                this._workTotalsJob = 
+                    setTimeout(function()
+                    {
+                        this._workTotals();
+                    }
+                    .bind(this),300)
+
+				
+			},
+			_workTotals:function(){
 				const M 			= this.BijectionMap;
 				const R 			= this.querySelectorAll('* /deep/ .tabelaContaContabil');
 				const Rx 			= _.pluck(R,'totalDataPorMes');
