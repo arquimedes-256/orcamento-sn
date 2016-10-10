@@ -44,7 +44,7 @@
                 color: #000;
             }
         </style>
-        <h4>{{header}}</h4>
+        <h4 on-click="_selectText">{{header}}</h4>
 
         <template is="dom-if" if="[[dimEditor]]">
             <paper-fab icon="av:playlist-add" mini on-click="addDimension"></paper-fab>
@@ -157,6 +157,9 @@
                 commuteProduct:{
                     type:Boolean
                 },
+                formatAsInteger:{
+                    type:Boolean
+                },
                 dimensions: {
                     type: Array
                 },
@@ -196,6 +199,23 @@
                         }.bind(this),1000)
                     }
                     .bind(this),1000)
+                }
+            },
+            _selectText:function(){
+                var doc = document
+                    , text = this.querySelector('* /deep/ table')
+                    , range, selection
+                ;    
+                if (doc.body.createTextRange) {
+                    range = document.body.createTextRange();
+                    range.moveToElementText(text);
+                    range.select();
+                } else if (window.getSelection) {
+                    selection = window.getSelection();        
+                    range = document.createRange();
+                    range.selectNodeContents(text);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
                 }
             },
             _fireFillBack: function(e) {
@@ -396,9 +416,11 @@
                 _.each(TDs, function(td) {
                     var s = td.innerText.trim();
                     if (s.match(/^-?\d+\.?\d*$/)) {
-                       td.querySelector('span').innerText = parseFloat( td.innerText).formatMoney(1);
+                       td.querySelector('span').innerText = 
+                                                parseFloat( td.innerText)
+                                                .formatMoney(this.formatAsInteger ? 0 : 2);
                     }
-                })
+                },this)
 
             },
             _activePercentIfIs: function() {

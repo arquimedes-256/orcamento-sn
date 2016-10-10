@@ -162,12 +162,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a name="receita-liquida" href="/#/Receita-Liquida">Receita Líquida</a>
           <a name="afretamento" href="/#/Afretamento">Afretamento</a>
           <a name="combustivel" href="/#/Combustível">Combustível</a>
-          <a name="desp-tec-manunt" href="/#/Desp.Operacional">Desp.Téc/Manunt</a>
-          <a name="seguros-pe">             Seguros P&I</a>
-          <a name="provisao-docagem">       Provisão Docagem</a>
+          <a name="desp-tec-manunt" href="/#/Desp.Téc/Manunt">Desp.Téc/Manunt</a>
+          <a name="seguros-pe" href="/#/Seguros">             Seguros P&I</a>
+          <a name="provisao-docagem" href="/#/Provisao">       Provisão Docagem</a>
           <a name="desp-operacionais" href="/#/Desp.Operacional">Desp.Operacional</a>
-          <a name="desp-administrativa">    Desp.Admin.</a>
-          <a name="comerciais">             Comerciais</a>
+          <a name="desp-administrativa" href="/#/Desp.Administrativas">    Desp.Administrativas.</a>
+          <a name="comerciais" href="/#/Comerciais">             Comerciais</a>
 
           <!---
           
@@ -254,7 +254,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           {
             var currentElement 	= document.querySelector('* /deep/ sn-' + page)
             var filtersElement 	= currentElement.$.filters;
-           
+            
+            if(currentElement.initComponent)
+              currentElement.initComponent();
 
             if(!filtersElement) 
             {

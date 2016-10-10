@@ -99,6 +99,7 @@ Example:
  				id="tableQTDRebocadores"
 	        	total
 	        	total-bellow
+	        	format-as-integer
 	            db="qtd-rebocadores" 
 	            on-tabela-mes-build="_productAB"
 	            path="{{_path}}"
@@ -109,6 +110,7 @@ Example:
 		<sn-tabela-mes 
 				id="tableTarifas"
 	            db="tarifa" 
+	        	format-as-integer
 	            on-tabela-mes-build="_productAB"
 	            path="{{_path}}"
 	            dimensions="{{ _dimensions }}"  
@@ -120,6 +122,7 @@ Example:
 				id="tabelaTotal"
 	        	total
 	        	total-bellow
+	        	format-as-integer
 	            db="total" 
 	            path="{{_path}}"
 	            dimensions="{{ _dimensions }}"  

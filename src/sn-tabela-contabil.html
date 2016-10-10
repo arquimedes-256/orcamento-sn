@@ -124,22 +124,25 @@
 				this.$.dataMXM.getValuesSNAPP(this._currentFilial,this.idGrupoMaster)
 			},
 			_onResponse:function(e,d) {
-				var V = d;
-				var BijectionMap = this.BijectionMap = {};
+				const V = d;
+				const BijectionMap = this.BijectionMap = {};
+
+				this._grupoList		= _.uniq(_.map(V,function(v){ return ST(v.grupo)  }))
+
+				_.each(V,function(v){
+					if(!BijectionMap[v.idContaContabil])
+						BijectionMap[v.idContaContabil] = ST(v.grupo)
+				})
 
 				this._contasList 	= _.uniq(_.map(V,function(v){ 
 					return v.idContaContabil + ': '+ST(v.nomeContaContabil)
 				}))
-				this._grupoList		= _.uniq(_.map(V,function(v){ return ST(v.grupo)  }))
 
-				_.each(V,function(v){
-					BijectionMap[v.idContaContabil] = ST(v.grupo)
-				})
 			},
 			_filterGrupos:function() {
-				var M = this.BijectionMap;
-				var G = this._currentGrupo;
-				var T = this.querySelectorAll('* /deep/ sn-tabela-mes:not(#tableTotal)')
+				const M = this.BijectionMap;
+				const G = this._currentGrupo;
+				const T = this.querySelectorAll('* /deep/ sn-tabela-mes:not(#tableTotal)')
 
 				_.each(T,function(t){
 					var k = _.first(t.header.match(/\d+/))
@@ -161,13 +164,15 @@
 				return this._contasList.length == 0;
 			},
 			_calcTotalTable:function() {
-				var M 			= this.BijectionMap;
-				var R 			= this.querySelectorAll('* /deep/ .tabelaContaContabil');
-				var Rx 			= _.pluck(R,'totalDataPorMes');
-				var Rh 			= _.map(_.pluck(R,'header'),function(x){return _.first(x.split(':'))});
+				const M 			= this.BijectionMap;
+				const R 			= this.querySelectorAll('* /deep/ .tabelaContaContabil');
+				const Rx 			= _.pluck(R,'totalDataPorMes');
+				const Rh 			= _.map(_.pluck(R,'header'),function(x){
+					return _.first(x.split(':'))
+				});
 
-				var G 			= this._grupoList;
-				var SigmaList 	= _.map(G,function(g){return {dimension:ST(g)}})
+				const G 			= this._grupoList;
+				const SigmaList 	= _.map(G,function(g){return {dimension:ST(g)}})
 				if(_.isEmpty(Rx))
 					return;
 

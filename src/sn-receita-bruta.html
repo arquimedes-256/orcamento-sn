@@ -61,7 +61,10 @@
          
 
     <sn-tabela-mes 
+            format-as-integer
             editable
+            total
+            total-bellow
             id="tableQTDNavios"
             db="receita-qtd-navios" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
@@ -71,7 +74,10 @@
             header="Quantidade de Navios"></sn-tabela-mes>
 
          <sn-tabela-mes 
+            format-as-integer
             editable
+            total
+            total-bellow
             id="tableQTDRebocadores"
             db="receita-qtd-rebocadores" 
             on-tabela-mes-build="_tabelaMesBuildHandler"
@@ -84,6 +90,7 @@
          <sn-tabela-mes 
             id="tableTarifas"
             db="receita-tarifa" 
+            format-as-integer
             on-tabela-mes-build="_tabelaMesBuildHandler"
             path="{{_path}}"
             dimensions="[[ _selectedFaixas ]]"  
@@ -102,6 +109,8 @@
             header="Reajuste"></sn-tabela-mes>
 
          <sn-tabela-mes 
+            total
+            total-bellow
             id="tabelaTotal"
             db="receita-total" 
             path="{{_path}}"
@@ -144,6 +153,10 @@
 
           var S = this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
           console.log(S);
+
+          if(_.isNaN(S)) {
+            this.$.tableTarifas.fill(d.faixasTarifa,'VLR_TRAMP');
+          }
           
           this._selectedFaixas = _.keys(d.faixasTarifa);
         },
