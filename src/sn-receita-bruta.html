@@ -154,7 +154,7 @@
           var S = this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
           console.log(S);
 
-          if(_.isNaN(S)) {
+          if(_.isNaN(S) || S == 0) {
             this.$.tableTarifas.fill(d.faixasTarifa,'VLR_TRAMP');
           }
           
