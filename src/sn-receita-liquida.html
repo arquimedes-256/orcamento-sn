@@ -101,15 +101,6 @@
 			ready:function(){
 				this._currentFilial = "RJ1";
 			},
-			initComponent:function(){
-				this.$.relatorio.render(
-					{
-						aggList:['Filial','Tipo de Faturamento'],
-						aggregator:'receita-total',
-						filterMap:{Filial:this._currentFilial}
-					});
-				this._tabelaMesBuildHandler({type:null});
-			},
 			_buildPath:function(){
 				this._path = "receita-liquida/"+this._currentFilial;
 				this._dimensions = ['PIS','Cofins','ISS'];
@@ -119,6 +110,7 @@
 									aggregator:'receita-total',
 									filterMap:{Filial:this._currentFilial}
 								});
+				this.$.dataMXM.getReceitaLiquidaAcumuladoAnoAnterior(this._currentFilial);
 			},
 			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(e){
