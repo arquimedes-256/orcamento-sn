@@ -260,15 +260,13 @@
                 this.data = _.clone(this.data);
             },
             _dataChanged: function() {
-                clearTimeout(this._workTotalsJob)
-
+                this.cancelAsync(this._workTotalsJob)
 
                 this._workTotalsJob = 
-                    setTimeout(function()
+                    this.async(function()
                     {
                         this._workTotals();
-                    }
-                    .bind(this),1)
+                    },1)
             },
             _workTotals:function()
             {
@@ -402,37 +400,36 @@
             },
             _formatValues:function()
             {
-                clearTimeout(this._formatValuesJob)
+                this.cancelAsync(this._formatValuesJob)
                 this._formatValuesJob = 
-                    setTimeout(function()
+                    this.async(function()
                     {
+                        const TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
 
-                const TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
+                        this.async(function(){
+                            _.each(TDs, function(td) {
+                                var number = +td.querySelector('span').innerText.replace(",","");
+                                if(number === 0) 
+                                {
+                                    td.querySelector('span').style.opacity = .4;
+                                }
+                                else
+                                    td.querySelector('span').style.opacity = 1;
 
-                this.async(function(){
-                    _.each(TDs, function(td) {
-                        var number = +td.querySelector('span').innerText.replace(",","");
-                        if(number === 0) 
-                        {
-                            td.querySelector('span').style.opacity = .4;
-                        }
-                        else
-                            td.querySelector('span').style.opacity = 1;
+                            })
+                        },100);
+                        this.async(function(){
+                            _.each(TDs, function(td) {
+                                var s = td.innerText.trim();
+                                if (s.match(/^-?\d+\.?\d*$/)) {
+                                   td.querySelector('span').innerText = 
+                                                            parseFloat( td.innerText)
+                                                            .formatMoney(this.formatAsInteger ? 0 : 2);
+                                }
+                            },this)
+                        },10);
 
-                    })
-                },1);
-                this.async(function(){
-                    _.each(TDs, function(td) {
-                        var s = td.innerText.trim();
-                        if (s.match(/^-?\d+\.?\d*$/)) {
-                           td.querySelector('span').innerText = 
-                                                    parseFloat( td.innerText)
-                                                    .formatMoney(this.formatAsInteger ? 0 : 2);
-                        }
-                    },this)
-                },1);
-
-                    }.bind(this),1)
+                    },1);
               
             },
             _activePercentIfIs: function() {
@@ -504,11 +501,10 @@
             },
             _buildDB: function() {
                 
-                clearTimeout(this._buildDBJOB)
+                this.cancelAsync(this._buildDBJOB)
                 this._buildDBJOB = 
-                    setTimeout(function()
+                    this.async(function()
                     {
-
                        if (!this._path)
                             return;
                         var Obj = this._getStructuredData(this.data);
@@ -519,8 +515,7 @@
                             })
                         this._save(Obj);
 
-                    }
-                    .bind(this),1)
+                    },1)
 
                 
             },

@@ -168,13 +168,12 @@
 			},
 			_calcTotalTable:function() {
 
-				clearTimeout(this._workTotalsJob)
+				this.cancelAsync(this._workTotalsJob)
                 this._workTotalsJob = 
-                    setTimeout(function()
+                    this.async(function()
                     {
                         this._workTotals();
-                    }
-                    .bind(this),300)
+                    },1)
 
 				
 			},
