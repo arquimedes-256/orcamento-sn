@@ -254,7 +254,8 @@ Polymer({
 
 		this.terminalList = ["*"];
 		this.selectedTerminal = "*";
-
+    this.$.terminal.querySelector('* /deep/ input').value = 'N/A';
+    
 		this.$.inputMoeda.value = moeda;
 		this.$.inputTipoTarifa.value = tipoTarifa;
 		var faixasObj = {};
