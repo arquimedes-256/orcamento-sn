@@ -299,6 +299,9 @@ _contratosTopResponseHandler:function(e,d){
 				c.tipoFaturamento = d.DESC_TP_FATURAMENTO
 		});
 	});
+	_.each(FILIAL_CLIENT_TO_CLIENTE,function(v,k){
+		FILIAL_CLIENT_TO_CLIENTE[k.replace(/(\s+|\.)/g, '-')] = v;
+	})
 }
 });
 </script>

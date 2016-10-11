@@ -544,10 +544,10 @@
             },
             _getStructuredData: function(D) {
                 
-                const K = JSON.stringify(D);
+                //const K = JSON.stringify(D);
                 
-                if(STRUCTURED_CACHE[K])
-                    return STRUCTURED_CACHE[K];
+                //if(STRUCTURED_CACHE[K])
+                    //return STRUCTURED_CACHE[K];
 
                 const S = _.mapObject(_.groupBy(D, 'dimension'), function(x) {
                     f = _.first(x);
@@ -570,7 +570,7 @@
                 }
                 .bind(this));
 
-                window.STRUCTURED_CACHE[ K ] = S;
+                //window.STRUCTURED_CACHE[ K ] = S;
 
                 return S;
             },
