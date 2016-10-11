@@ -259,6 +259,9 @@
                 this.data[d.row] = _.clone(D)
                 this.data = _.clone(this.data);
             },
+            applyClone:function(){
+                this.data = _.clone(this.data);
+            },
             _dataChanged: function() {
                 this.cancelAsync(this._workTotalsJob)
 
@@ -267,10 +270,10 @@
                     {
                         this._workTotals();
                     },1)
+                //console.log(this,'_dataChanged',this.path,this.db,JSON.stringify(this.data))
             },
             _workTotals:function()
             {
-                
                 if (this.total && this.data)
                     _.each(this.data, function(D) {
                         D.total = 
@@ -608,6 +611,7 @@
                 this.data = this._getListedData(D);
             },
             _setSampleData: function() {
+                console.log('_setSampleData')
                 var Interval = setInterval(function() {
                     if (_.isEmpty(this.dimensions))
                         return;
@@ -647,6 +651,7 @@
                 return this._getStructuredData(this.data, options);
             },
             productABC: function(A, B, C, D, options) {
+                console.log('productABC')
                 options = options || {
                     tax: 1
                 }

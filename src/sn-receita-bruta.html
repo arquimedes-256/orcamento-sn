@@ -125,10 +125,12 @@
       
         is: 'sn-receita-bruta',
         _tabelaMesBuildHandler:function(){
-            this.async(function(){
-              var tipoTarifa = this.$.filters.$.inputTipoTarifa.value
-              var moeda = this.$.filters.$.inputMoeda.value
-              var vlrCambio = parseFloat(this.$.filters.$.inputCambio.value);
+            this.cancelAsync(this._totalAsync)
+            this._totalAsync  = this.async(function(){
+
+              var tipoTarifa  = this.$.filters.$.inputTipoTarifa.value
+              var moeda       = this.$.filters.$.inputMoeda.value
+              var vlrCambio   = parseFloat(this.$.filters.$.inputCambio.value);
 
 
               var A = this.$.tableQTDNavios
@@ -146,8 +148,8 @@
               
               this.$.tabelaTotal.productABC(A,B,C,D,
                 {tax:moeda == "DOLAR" ? vlrCambio : 1});
-      
-            },1000)
+              this.$.tabelaTotal.applyClone();
+            },10)
         },
         _buildFaixasHandler:function(e,d){
 
