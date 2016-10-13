@@ -114,45 +114,61 @@
 			},
 			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(e){
-				var ReceitaBrl = this.$.relatorio.getValuesFromTR('FATURA')
-				var ReceitaExt = this.$.relatorio.getValuesFromTR('INVOICE')
-				var ReceitaTtl = this.$.relatorio.getValuesFromTR('Totals')
+				this.cancelAsync(this._buildAsync);
+				this._buildAsync = this.async(function(){
 
-				if(!_.size(ReceitaBrl) < 12)
-					this.$.tablePercentualFixo
-						.put(ReceitaBrl,
-							{ifDimIs:['PIS','Cofins'],Tax:{PIS:1.65,Cofins:7.6}});
-					
-				if(!_.size(ReceitaBrl) < 12)
-					this.$.tablePercentualManual
-						.put(ReceitaBrl,
-							{ifDimIs:['PIS','Cofins'],Tax:{useMeta:true}	});
+					var ReceitaBrl = this.$.relatorio.getValuesFromTR('FATURA')
+					var ReceitaExt = this.$.relatorio.getValuesFromTR('INVOICE')
+					var ReceitaTtl = this.$.relatorio.getValuesFromTR('Totals')
 
-				if(!_.size(ReceitaTtl) < 12)
-					this.$.tablePercentualFixo
-						.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{ISS:6}});
-
-				if(!_.size(ReceitaTtl) < 12)
-					this.$.tablePercentualManual
-						.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{useMeta:true}});
-
-				if(e.type == "get-data-from-base") 
-				{	
-					if(_.size(ReceitaTtl) < 12) 
-					{
-						this.$.tablePercentualManual.hidden = true;
-						this.$.tablePercentualFixo.hidden = true;
-						alert("Não Existe faturamento lançado para: "+this._currentFilial)
+					const ISS_MAP = {
+						'RGD':3,
+						'PNG':3,
+						'STR':3,
+						'SEP':5,
+						'RJ1':5,
+						'VIT':5,
+						'SDR':5,
+						'TMD':5,
+						'MAC':5
 					}
-					else {
-						this.$.tablePercentualManual.hidden = false;
-						this.$.tablePercentualFixo.hidden = false;
-					}	
-					this.async(function(){
-						this.$.tablePercentualManual._buildDB()
-					},1000)
-				}
-				this._workOrcadoAnoCorrente();
+
+					const FILIAL = this._currentFilial;
+					if(!_.size(ReceitaBrl) < 12)
+						this.$.tablePercentualFixo
+							.put(ReceitaBrl,
+								{ifDimIs:['PIS','Cofins'],Tax:{PIS:1.65,Cofins:7.6}});
+						
+					if(!_.size(ReceitaBrl) < 12)
+						this.$.tablePercentualManual
+							.put(ReceitaBrl,
+								{ifDimIs:['PIS','Cofins'],Tax:{useMeta:true}	});
+
+					if(!_.size(ReceitaTtl) < 12)
+						this.$.tablePercentualFixo
+							.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{ISS:ISS_MAP[FILIAL]}});
+
+					if(!_.size(ReceitaTtl) < 12)
+						this.$.tablePercentualManual
+							.put(ReceitaTtl,{ifDimIs:['ISS'],Tax:{useMeta:true}});
+
+					if(e.type == "get-data-from-base") 
+					{	
+						if(_.size(ReceitaTtl) < 12) 
+						{
+							this.$.tablePercentualManual.hidden = true;
+							this.$.tablePercentualFixo.hidden = true;
+							alert("Não Existe faturamento lançado para: "+this._currentFilial)
+						}
+						else {
+							this.$.tablePercentualManual.hidden = false;
+							this.$.tablePercentualFixo.hidden = false;
+						}	
+					}
+					this.$.tablePercentualFixo._buildDB()
+					this.$.tablePercentualManual._buildDB()
+					this._workOrcadoAnoCorrente();
+				},1)
 
 			},
 			_orcadoRealizadoResponseHandler:function(e,response)

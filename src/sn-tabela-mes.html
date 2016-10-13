@@ -76,9 +76,7 @@
             <paper-datatable-column editable='[[editable]]' dialog='[[editable]]' type="Number" header="Out" property="10" align="right" default="0" tooltip=""></paper-datatable-column>
             <paper-datatable-column editable='[[editable]]' dialog='[[editable]]' type="Number" header="Nov" property="11" align="right" default="0" tooltip=""></paper-datatable-column>
             <paper-datatable-column editable='[[editable]]' dialog='[[editable]]' type="Number" header="Dez" property="12" align="right" default="0" tooltip=""></paper-datatable-column>
-            <template is="dom-if" if="{{total}}">
-                <paper-datatable-column header="Total" property="total" align="right" default="0" type="Number" tooltip=""></paper-datatable-column>
-            </template>
+            <paper-datatable-column header="Total" property="total" align="right" default="0" type="Number" tooltip=""></paper-datatable-column>
         </paper-datatable>
         <!--
         <template is="dom-if" if="{{_dataIsEmpty(data)}}">
@@ -201,6 +199,19 @@
                     }
                     .bind(this),1000)
                 }
+                this._configFormat();
+            },
+            _configFormat:function(){
+
+                _.each(this.querySelectorAll('* /deep/ paper-datatable-column'),function(c){
+                    if(_.contains( ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez","Total"],c.header))
+                        c.formatValue = this._formatValue.bind(this);
+                },this);
+
+            },
+            _formatValue:function(x){
+                    
+                return x.formatMoney(this.formatAsInteger ? 0 : 2);
             },
             _selectText:function(){
                 var doc = document
@@ -269,7 +280,7 @@
                     this.async(function()
                     {
                         this._workTotals();
-                    },1)
+                    })
                 //console.log(this,'_dataChanged',this.path,this.db,JSON.stringify(this.data))
             },
             _workTotals:function()
@@ -356,14 +367,17 @@
                     var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
                     _.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
                     {
-                        var tdSpanMesText = trTotal.querySelector('td[mes="'+k+'"] span').innerText;
+                        var span = trTotal.querySelector('td[mes="'+k+'"] span');
+                        var tdSpanMesText = span.innerText;
                         var tdSpanMesValue = parseFloat(tdSpanMesText);
                         GrandTotalSigma += tdSpanMesValue;
+
+                        span.innerText = this._formatValue(tdSpanMesValue);
 
                         this.totalDataPorMes[k] = tdSpanMesValue
                     },this);
 
-                    trTotal.querySelector('[grand-total]').innerHTML = '<span>'+GrandTotalSigma+'</span>';
+                    trTotal.querySelector('[grand-total]').innerHTML = '<span>'+this._formatValue(GrandTotalSigma)+'</span>';
                     trTotal.querySelector('[grand-total]').setAttribute('data-value',GrandTotalSigma);
                 }
                 this._buildDB()
@@ -373,7 +387,7 @@
                     this.data = [_.first(this.data)];
 
                 if(!this.percent)
-                    this._formatValues();
+                    null;//this._formatValues();
             },
             _dataIsEmpty: function(data) {
                 return _.isEmpty(data)
@@ -421,6 +435,7 @@
 
                             })
                         },100);
+                        /*
                         this.async(function(){
                             _.each(TDs, function(td) {
                                 var s = td.innerText.trim();
@@ -431,6 +446,7 @@
                                 }
                             },this)
                         },10);
+                        */
 
                     },1);
               
@@ -761,7 +777,7 @@
                             d[m] = mesesObject[m] * d.meta
                             d[m] = parseInt(d[m] * (1 / 100))
                             if (_.isNaN(d[m]))
-                                debugger ;
+                                console.warn('d[m]='+d[m]) ;
                         })
                     }
                 }, this)
