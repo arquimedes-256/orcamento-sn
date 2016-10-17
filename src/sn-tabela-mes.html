@@ -76,7 +76,7 @@
             <paper-datatable-column editable='[[editable]]' dialog='[[editable]]' type="Number" header="Out" property="10" align="right" default="0" tooltip=""></paper-datatable-column>
             <paper-datatable-column editable='[[editable]]' dialog='[[editable]]' type="Number" header="Nov" property="11" align="right" default="0" tooltip=""></paper-datatable-column>
             <paper-datatable-column editable='[[editable]]' dialog='[[editable]]' type="Number" header="Dez" property="12" align="right" default="0" tooltip=""></paper-datatable-column>
-            <paper-datatable-column header="Total" property="total" align="right" default="0" type="Number" tooltip=""></paper-datatable-column>
+            <paper-datatable-column header="Total" property="total" align="right" default="0" type="Number" tooltip="" id="totalColumn"></paper-datatable-column>
         </paper-datatable>
         <!--
         <template is="dom-if" if="{{_dataIsEmpty(data)}}">
@@ -175,6 +175,7 @@
                 }
             },
             observers: ['_pathDBObserver(_path,db)', '_dataDimensionsObserver(data,dimensions)'],
+            _not:function(x){return !x},
             ready: function() {
                 this.addEventListener('data-changed', this._changeHandler);
                 this.addEventListener('keydown', this._keyPressHandler);
@@ -199,6 +200,8 @@
                     }
                     .bind(this),1000)
                 }
+                if(!this.total)
+                    this.$.totalColumn.inactive = true;
                 this._configFormat();
             },
             _configFormat:function(){
