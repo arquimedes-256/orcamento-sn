@@ -28,6 +28,7 @@
 		             <paper-item name="RJ1">RJ1</paper-item>
 		             <paper-item name="VIT">VIT</paper-item>
 		             <paper-item name="SDR">SDR</paper-item>
+		             <paper-item name="TMD">TMD</paper-item>
 		             <paper-item name="MAC">MAC</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
@@ -74,9 +75,8 @@
 					observer:'_rebocadorListChanged'
 				}
 			},
-			ready:function () {
-				this._currentFilial = "RJ1"
-				// this._rebocadorList = ["Jatobá","Abrolhos","Marau"];
+			onPageSelected:function () {
+				this._currentFilial = window.CURRENT_FILIAL
 			},
 			_rebocadorListChanged:function()
 			{

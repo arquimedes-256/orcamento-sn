@@ -40,6 +40,7 @@
 	             <paper-item name="RJ1">RJ1</paper-item>
 	             <paper-item name="VIT">VIT</paper-item>
 	             <paper-item name="SDR">SDR</paper-item>
+	             <paper-item name="TMD">TMD</paper-item>
 	             <paper-item name="MAC">MAC</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
@@ -56,7 +57,6 @@
 				filial="{{_currentFilial}}" 
 				id="relatorio" 
 				on-get-data-from-base="_tabelaMesBuildHandler"></sn-relatorios>
-
 			<sn-tabela-mes 
 				total
 				total-bellow
@@ -98,10 +98,12 @@
 				_sortMap: 		{value:{PIS:1,Cofins:2,ISS:3}}
 			},
 			observers:['_buildPath(_currentFilial)'],
-			ready:function(){
-				this._currentFilial = "RJ1";
+			onPageSelected:function(){
+				this._currentFilial = window.CURRENT_FILIAL;
+				this._buildPath();
 			},
 			_buildPath:function(){
+				window.CURRENT_FILIAL = this._currentFilial;
 				this._path = "receita-liquida/"+this._currentFilial;
 				this._dimensions = ['PIS','Cofins','ISS'];
 				this.$.relatorio.render(
@@ -173,8 +175,12 @@
 			},
 			_orcadoRealizadoResponseHandler:function(e,response)
 			{
-				this._workRealAnoAnterior(response);
-				this._workOrcadoAnoCorrente();
+				this.async(function(){
+					this._workRealAnoAnterior(response);
+				},100)
+				this.async(function(){
+					this._workOrcadoAnoCorrente();
+				},100)
 			},
 			_workRealAnoAnterior:function(response){
 				var R = {
@@ -186,7 +192,8 @@
 						var k = r.nomeGrupo;
 						R[k] += r.vlrRealizado;
 					})
-
+				if(R['Receita Bruta'] == 0 && R['Deduções s/ Receita Bruta'] == 0)
+					return;
 				this.$['deducoes-ano-anterior'].innerHTML 
 					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Real ano corrente ('+CURRENT_ANO+'):</span>'
 					+'<span>'+Math.abs(R['Deduções s/ Receita Bruta']).formatMoney(0)+'</span>'

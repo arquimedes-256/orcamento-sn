@@ -51,17 +51,18 @@
           <paper-dropdown-menu label="Filial" id="filial" style="width:50px">
             <paper-listbox class="dropdown-content" 
             id="filial" 
-            selected="4" 
             id="filialListBox"
-            on-iron-select="_onChangeFilter">
-             <paper-item>RGD</paper-item>
-             <paper-item>PNG</paper-item>
-             <paper-item>STR</paper-item>
-             <paper-item>SEP</paper-item>
-             <paper-item>RJ1</paper-item>
-             <paper-item>VIT</paper-item>
-             <paper-item>SDR</paper-item>
-             <paper-item>MAC</paper-item>
+            selected="{{currentFilial}}" 
+            attr-for-selected="name">
+             <paper-item name="RGD">RGD</paper-item>
+             <paper-item name="PNG">PNG</paper-item>
+             <paper-item name="STR">STR</paper-item>
+             <paper-item name="SEP">SEP</paper-item>
+             <paper-item name="RJ1">RJ1</paper-item>
+             <paper-item name="VIT">VIT</paper-item>
+             <paper-item name="SDR">SDR</paper-item>
+             <paper-item name="TMD">TMD</paper-item>
+             <paper-item name="MAC">MAC</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
           <div style="position:relative">
@@ -165,8 +166,9 @@ Polymer({
 		}
 	},
 	_currentFilialChanged: function() {
+    window.CURRENT_FILIAL = this.currentFilial;
 		this._filtraClientePorFilial();
-        this._fetchCustomClients();
+    this._fetchCustomClients();
 	},
   _editClientAction:function(){
     var clienteObject = JSON.parse(jQuery(this.$.cliente).find('[nome-cliente="'+this.selectedCliente+'"]').parent().find('[cliente-json]').text());
@@ -201,29 +203,29 @@ Polymer({
   },
 	_selectedClienteChanged: function() {
 
-		this.terminalList = [];
+    this.terminalList = [];
 		this.selectedFaixas = [];
 		this.faixaList = [];
 		this.selectedTerminal = undefined;
 
-        var cliente = FILIAL_CLIENT_TO_CLIENTE[this.currentFilial+':'+this.selectedCliente]
-		
-        console.log(cliente)
-        if(cliente != null) 
-        {
-            var num_contrato = cliente.num_contrato;
+    var cliente = FILIAL_CLIENT_TO_CLIENTE[this.currentFilial+':'+this.selectedCliente]
 
-            this.$.inputContrato.value = num_contrato;
-            //infos do TOP
-            this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
-            this.$.dataTOP.getInfoContrato(num_contrato);
-        		this._editClientButtonEnabled = false;
-        }
-        else //if custom cliente
-        {
-        	this._editClientButtonEnabled = true;
-        	this._fetchCurrentCustomClient();
-        }
+    console.log(cliente)
+    if(cliente != null) 
+    {
+        var num_contrato = cliente.num_contrato;
+
+        this.$.inputContrato.value = num_contrato;
+        //infos do TOP
+        this.$.dataTOP.getFaixasContrato(num_contrato, this._refreshFaixas);
+        this.$.dataTOP.getInfoContrato(num_contrato);
+    		this._editClientButtonEnabled = false;
+    }
+    else //if custom cliente
+    {
+    	this._editClientButtonEnabled = true;
+    	this._fetchCurrentCustomClient();
+    }
 	},
 	_fetchCurrentCustomClient:function(){
 		var clienteElement = this.$.cliente.selectedItem;
@@ -277,7 +279,6 @@ Polymer({
 			}
 		}.bind(this), 1000)
 
-		this.currentFilial = "RJ1";
 	},
 	_buildPath: function() {
 		if (this.selectedCliente && this.selectedTerminal)
@@ -326,10 +327,6 @@ Polymer({
 			terminal: function() {
 				this.selectedTerminal = d.item.textContent;
 				this._refreshFaixas();
-			},
-			filial: function() {
-				this.currentFilial = filterValue;
-				console.log('filtrando filial', this.currentFilial)
 			}
 		}
 

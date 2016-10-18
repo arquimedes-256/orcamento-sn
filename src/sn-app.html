@@ -259,6 +259,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               innerHTML = ""
               appendChild(filtersElement);
             }
+            if(currentElement.onPageSelected) {
+              currentElement.onPageSelected();
+              console.log('onPageSelected')
+            }
           }.bind(this), null, true);
 
       },

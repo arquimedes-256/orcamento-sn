@@ -175,7 +175,6 @@
                 }
             },
             observers: ['_pathDBObserver(_path,db)', '_dataDimensionsObserver(data,dimensions)'],
-            _not:function(x){return !x},
             ready: function() {
                 this.addEventListener('data-changed', this._changeHandler);
                 this.addEventListener('keydown', this._keyPressHandler);
