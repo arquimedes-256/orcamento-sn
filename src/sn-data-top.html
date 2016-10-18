@@ -92,9 +92,11 @@ Example:
 				this.$.toastDone.opened = true;
 				
 				this.async(function(){
+					this.fire('contrato-faixas-ready')
+				},500)
+				this.async(function(){
 					this.$.toastDone.opened = false;
 				},2000)
-				this.fire('contrato-faixas-ready')
 			},
 			faixacontrato_responseHandler:function(e,d,s){
 				var V = e.detail.response;

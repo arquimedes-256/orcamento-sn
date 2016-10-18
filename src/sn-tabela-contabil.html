@@ -46,6 +46,19 @@
 		    		</template>
 		        </paper-listbox>
 		    </paper-dropdown-menu>
+
+			<template is="dom-if" if="{{ useRebocador }}">
+			    <paper-dropdown-menu label="Rebocador" id="rebocador" droplarger>
+			        <paper-listbox class="dropdown-content" 
+			        selected="{{_currentRebocador}}" 
+			        attr-for-selected="name">
+			    		<template is="dom-repeat" items="{{_rebocadorList}}">
+			            	<paper-item name="[[item]]">[[item]]</paper-item>
+			    		</template>
+			        </paper-listbox>
+			    </paper-dropdown-menu>
+			</template>
+
 		</div>
 		<paper-material>
 	        <template is="dom-if" if="{{hasList(_contasList)}}">
@@ -54,34 +67,66 @@
 	        </template>
 	   
 
-			 <template is="dom-repeat" items="{{_contasList}}">
-		    	<sn-tabela-mes
-		    		class="tabelaContaContabil"
-		    		dim-editor='[[dimEditor]]'
-		        	total
-		        	total-bellow
-		            db="valor" 
-		            on-tabela-mes-build="_calcTotalTable"
-		            path="{{_getPath(item)}}"
-		            dimensions="[[_defaultDimensions]]"  
-		            editable
-		            header="[[item]]" 
-		            header-font-size="12">
-		     	</sn-tabela-mes>
-		    </template>
+
+			<template is="dom-if" if="{{ useRebocador }}">
+				<template is="dom-repeat" items="{{_contasList}}">
+			    	<sn-tabela-mes
+			    		class="tabelaContaContabil"
+			    		dim-editor='[[dimEditor]]'
+			        	total
+			        	total-bellow
+			            db="valor" 
+			            on-tabela-mes-build="_calcTotalTable"
+			            path="{{_getPathRebocador(_currentRebocador,item)}}"
+			            dimensions="[[_defaultDimensions]]"  
+			            editable
+			            header="[[item]]" 
+			            header-font-size="12">
+			     	</sn-tabela-mes>
+		    	</template>
 		    
 
-			<sn-tabela-mes
-				id="tableTotal"
-				total
-			    total-bellow
-			    db="total" 
-			    path="{{_getGroupPath(_currentFilial)}}"
-			    dimensions="{{_dimensionsTotal}}"
-			    header="Total">
-			</sn-tabela-mes>
+				<sn-tabela-mes
+					id="tableTotal"
+					total
+				    total-bellow
+				    db="total" 
+				    path="{{_getGroupPathRebocador(_currentRebocador)}}"
+				    dimensions="{{_dimensionsTotal}}"
+				    header="Total">
+				</sn-tabela-mes>
+			</template>
+			<template is="dom-if" if="{{ _not(useRebocador) }}">
+				<template is="dom-repeat" items="{{_contasList}}">
+			    	<sn-tabela-mes
+			    		class="tabelaContaContabil"
+			    		dim-editor='[[dimEditor]]'
+			        	total
+			        	total-bellow
+			            db="valor" 
+			            on-tabela-mes-build="_calcTotalTable"
+			            path="{{_getPath(item)}}"
+			            dimensions="[[_defaultDimensions]]"  
+			            editable
+			            header="[[item]]" 
+			            header-font-size="12">
+			     	</sn-tabela-mes>
+		    	</template>
+		    
+
+				<sn-tabela-mes
+					id="tableTotal"
+					total
+				    total-bellow
+				    db="total" 
+				    path="{{_getGroupPath(_currentFilial)}}"
+				    dimensions="{{_dimensionsTotal}}"
+				    header="Total">
+				</sn-tabela-mes>
+			</template>
 		</paper-material>
 		    
+			 
 
 		<sn-data-mxm id="dataMXM" on-response-orcadorealizado="_onResponse"></sn-data-mxm>
 	</template>
@@ -96,6 +141,9 @@
 				_currentGrupo:{
 					value:"Todos",
 					observer:'_filterGrupos'
+				},
+				_rebocadorList:{
+					observer:'_rebocadorListChanged'
 				},
 				idGrupoMaster:{
 					type:Number,
@@ -113,16 +161,49 @@
 				},
 				_defaultDimensions:{
 					value:['Total']
+				},
+				useRebocador:{
+					type:Boolean,
+					value:false
+				},
+				_currentFilial:{
+					observer:'_setRebocadorList'
 				}
 			},
 			ready:function(){
-				this._currentFilial = "RJ1";
+				this._currentFilial = window.CURRENT_FILIAL;
 				this._render();
+				this._listenRebocadores();				
 			},
-			_render:function(){
+			_not:function(x){return !x},
+			_render:function()
+			{
 				this._contasList 	= [];
 				this._grupoList		= [];
 				this.$.dataMXM.getValuesSNAPP(this._currentFilial,this.idGrupoMaster)
+			},
+			_setRebocadorList:function(){
+				if(!this._currentFilial)
+					return;
+				if(!this.useRebocador)
+					return;
+				if(!this._filialRebocadores)
+					return;
+				this._rebocadorList = this._filialRebocadores[this._currentFilial]
+			},
+			_listenRebocadores:function(){
+				if(!this.useRebocador)
+					return;
+				new Firebase(FB_URL+"/filial-rebocador").on("value",function(snap){
+					this._filialRebocadores = snap.val();
+					this._setRebocadorList();
+				},this)
+
+			},
+			_rebocadorListChanged:function(){
+				if(!this.useRebocador)
+					return;
+				this._currentRebocador = _.first(this._rebocadorList)
 			},
 			_onResponse:function(e,d) {
 				const V = d;
@@ -157,11 +238,17 @@
 						t.style.display = "none"
 				})
 			},
-			_getGroupPath:function(){
+			_getGroupPath:function(_currentFilial){
 				return [this.pathNamespace,this._currentFilial].join("/")
 			},
 			_getPath:function(item){
 				return [this.pathNamespace,this._currentFilial,item].join("/")
+			},
+			_getGroupPathRebocador:function(_currentRebocador){
+				return [this.pathNamespace,this._currentRebocador].join("/")
+			},
+			_getPathRebocador:function(_currentRebocador,item){
+				return [this.pathNamespace,this._currentRebocador,item].join("/")
 			},
 			hasList:function(){
 
@@ -203,7 +290,7 @@
 						})
 					})
 				})
-				this.$.tableTotal.data = SigmaList;
+				this.querySelector('* /deep/ #tableTotal').data = SigmaList;
 			}
 		});
 		function ST(x){ return x.replace(/(\.|#\[|\])/g,'').replace(/\//g,"\\") }

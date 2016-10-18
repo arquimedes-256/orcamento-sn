@@ -254,11 +254,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               document
                 .querySelector('* /deep/ sn-' + page+' /deep/ sn-tabela-contabil').$.filters;
             }
+            jQuery(filtersElement).hide();
             with(document.querySelector('* /deep/ #filterContainer'))
             {
               innerHTML = ""
               appendChild(filtersElement);
             }
+            jQuery(filtersElement).fadeIn();
             if(currentElement.onPageSelected) {
               currentElement.onPageSelected();
               console.log('onPageSelected')

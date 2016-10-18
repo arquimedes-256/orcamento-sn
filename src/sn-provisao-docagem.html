@@ -11,7 +11,8 @@
 			id-grupo-master="9" 
 			dim-editor
 			grupo-master-label="Provisão de Docagem"
-			path-namespace="[[name]]">
+			path-namespace="[[name]]"
+			use-rebocador>
 		</sn-tabela-contabil>
 	</template>
 	<script>
@@ -21,7 +22,6 @@
 				name:String
 			},
 			ready:function() {
-				this._currentFilial = "RJ1";
 			}
 		});
 	</script>

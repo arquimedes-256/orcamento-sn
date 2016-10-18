@@ -75,6 +75,12 @@
 					observer:'_rebocadorListChanged'
 				}
 			},
+			ready:function(){
+				new Firebase(FB_URL+"/filial-rebocador").on("value",function(snap){
+					this._filialRebocadores = snap.val();
+					this._setRebocadores();
+				},this)
+			},
 			onPageSelected:function () {
 				this._currentFilial = window.CURRENT_FILIAL
 			},
@@ -85,7 +91,7 @@
 			},
 			_getRebocadorPath:function(reb)
 			{
-				return ["combustivel",this._currentFilial,reb].join("/")
+				return ["combustivel",reb].join("/")
 			},
 			_getTotalPath:function(_currentFilial)
 			{
@@ -96,8 +102,8 @@
 				this._setRebocadores();
 			},
 			_setRebocadores:function(){
-				if(this.$.dataTOP.filialRebocadores)
-					this._rebocadorList = this.$.dataTOP.filialRebocadores[this._currentFilial];
+				if(this._filialRebocadores)
+					this._rebocadorList = _.values(this._filialRebocadores[this._currentFilial]).sort();
 			},
 			_calcTotalTable:function()
 			{

@@ -206,14 +206,20 @@
             _configFormat:function(){
 
                 _.each(this.querySelectorAll('* /deep/ paper-datatable-column'),function(c){
-                    if(_.contains( ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez","Total"],c.header))
-                        c.formatValue = this._formatValue.bind(this);
+                    if(_.contains( ["%","Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez","Total"],c.header))
+                        if(this.percent)
+                            c.formatValue = this._formatValuePercent.bind(this)
+                        else
+                            c.formatValue = this._formatValue.bind(this);
                 },this);
 
             },
             _formatValue:function(x){
                     
                 return x.formatMoney(this.formatAsInteger ? 0 : 2);
+            },
+            _formatValuePercent:function(x){
+                return x.formatMoney(this.formatAsInteger ? 0 : 2) + "%";
             },
             _selectText:function(){
                 var doc = document
@@ -388,8 +394,7 @@
                 if(this.oneLine && _.size(this.data) > 1)
                     this.data = [_.first(this.data)];
 
-                if(!this.percent)
-                    null;//this._formatValues();
+                this._formatValues();
             },
             _dataIsEmpty: function(data) {
                 return _.isEmpty(data)
@@ -414,8 +419,6 @@
                 else
                     this._buildDB()
 
-
-                this._activePercentIfIs();
             },
             _formatValues:function()
             {
@@ -427,7 +430,10 @@
 
                         this.async(function(){
                             _.each(TDs, function(td) {
-                                var number = +td.querySelector('span').innerText.replace(",","");
+                                var number = +(td.querySelector('span')
+                                    .innerText
+                                    .replace(",","")
+                                    .replace('%',''));
                                 if(number === 0) 
                                 {
                                     td.querySelector('span').style.opacity = .4;
@@ -452,18 +458,6 @@
 
                     },1);
               
-            },
-            _activePercentIfIs: function() {
-                if (this.percent)
-                    this.async(function() {
-                        var TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
-                        _.each(TDs, function(td) {
-                            var s = td.innerText.trim();
-                            if (s.match(/^-?\d+\.?\d*$/)) {
-                                td.querySelector('span').innerHTML += '%';
-                            }
-                        })
-                    }, 1)
             },
             _dataDimensionsObserver: function() {
                 if(this.filter)
