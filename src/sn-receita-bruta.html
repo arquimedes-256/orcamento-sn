@@ -47,7 +47,9 @@
           id="filters"
           on-faixas-changed="_faixasChangedHandler"
           on-build-faixas="_buildFaixasHandler"
-          on-path-changed="_pathChangedHandler">
+          on-path-changed="_pathChangedHandler"
+          on-contrato-faixas-init="_onInitContratoFaixas"
+          on-contrato-faixas-ready="_onReadyContratoFaixas">
         </sn-receita-bruta-filters>
 
          
@@ -117,7 +119,29 @@
       
         is: 'sn-receita-bruta',
         onPageSelected:function(){
-          this.$.filters.currentFilial = window.CURRENT_FILIAL;
+            this.$.filters.currentFilial = window.CURRENT_FILIAL;
+        },
+        _onInitContratoFaixas:function(){
+          console.log('_onInitContratoFaixas')
+          jQuery([
+            this.$.tableQTDNavios,
+            this.$.tableQTDRebocadores,
+            this.$.tableTarifas,
+            this.$.tableReajuste,
+            this.$.tabelaTotal])
+            .css('pointer-events','none')
+            .css('opacity','.4')
+        },
+        _onReadyContratoFaixas:function(){
+          console.log('_onReadyContratoFaixas')
+          jQuery([
+            this.$.tableQTDNavios,
+            this.$.tableQTDRebocadores,
+            this.$.tableTarifas,
+            this.$.tableReajuste,
+            this.$.tabelaTotal])
+            .css('pointer-events','all')
+            .css('opacity','1')
         },
         _tabelaMesBuildHandler:function(){
             this.cancelAsync(this._totalAsync)

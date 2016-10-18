@@ -777,7 +777,7 @@
                                 d.meta = options.Tax[d.dimension]
                             d.meta = parseFloat(d.meta);
                             d[m] = mesesObject[m] * d.meta
-                            d[m] = parseInt(d[m] * (1 / 100))
+                            d[m] = parseFloat(d[m] * (1 / 100))
                             if (_.isNaN(d[m]))
                                 console.warn('d[m]='+d[m]) ;
                         })

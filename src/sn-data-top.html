@@ -13,13 +13,33 @@ Example:
 
 @demo demo/index.html
 -->
-
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <dom-module id="sn-data-top">
 	<template>
 		<style>
 			:host {
 				display: block;
 			}
+			#toast {
+		    	--paper-toast-color: #FFD600;
+		  	}
+		  	#toastDone {
+				--paper-toast-color:#00E676;
+				text-align:center;
+		  	}
+		  	#toast /deep/ #label {
+		  		position: relative;
+			    top: -5px;
+			    margin-right: 12px;
+		  	}
+		  paper-spinner.multi {
+		    --paper-spinner-layer-1-color: var(--paper-purple-500);
+		    --paper-spinner-layer-2-color: var(--paper-cyan-500);
+		    --paper-spinner-layer-3-color: var(--paper-blue-grey-500);
+		    --paper-spinner-layer-4-color: var(--paper-amber-500);
+		    top: 2px;
+		  }
 		</style>
 		<iron-ajax
 		    auto
@@ -39,6 +59,14 @@ Example:
 		    auto
 		    on-response="infomultiplereb_responseHandler" id="ajaxRebInfoMultiple" 
 		    handle-as="json"></iron-ajax>
+		<paper-toast id="toast" duration="Infinity" no-cancel-on-esc-key horizontal-offset="250" vertical-offset="100">
+			<paper-spinner active class="multi" id="spinner"></paper-spinner>
+		</paper-toast>
+
+		<paper-toast id="toastDone" duration="Infinity" 
+			horizontal-offset="250" vertical-offset="100">
+			<iron-icon icon="icons:done" id="doneIcon"></iron-icon>
+		<paper-toast>
 	</template>
 	<script>
 		Polymer({
@@ -51,6 +79,22 @@ Example:
 			ready:function(){
 				this._getInfoContratoMultiple();
 				this._getInfoRebocadoresMultiple();
+			},
+			_log:function(text){
+				this.$.toast.text = text;
+				this.$.toast.opened = true
+				this.$.toastDone.opened = false;
+				this.fire('contrato-faixas-init')
+			},
+			_closeLog:function(){
+				this.$.toast.opened = false
+				this.$.toastDone.text = "Download de tarifas concluído!";
+				this.$.toastDone.opened = true;
+				
+				this.async(function(){
+					this.$.toastDone.opened = false;
+				},2000)
+				this.fire('contrato-faixas-ready')
 			},
 			faixacontrato_responseHandler:function(e,d,s){
 				var V = e.detail.response;
@@ -79,6 +123,7 @@ Example:
 					this.callBackFaixasContrato();
 
 				this.fire('response-faixacontrato')
+				this._closeLog();
 			},
 			infomultiplereb_responseHandler:function(e){
 				var R = e.detail.response
@@ -118,7 +163,7 @@ Example:
 			getFaixasContrato:function(num_contrato,callBackFaixasContrato) {
 				this.$.ajaxFaixas.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_faixacontrato&num_contrato="+num_contrato;
-
+				this._log("Baixando tarifas de contrato ...")
 				this.callBackFaixasContrato = callBackFaixasContrato;
 			},
 			getInfoContrato:function(num_contrato){

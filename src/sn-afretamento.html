@@ -115,7 +115,9 @@
 	</paper-material>
 	<sn-data-top 
 		id="dataTOP"
-		on-response-faixacontrato="_buildFaixas"></sn-data-top>
+		on-response-faixacontrato="_buildFaixas" 
+		 on-contrato-faixas-init="_onInitContratoFaixas"
+         on-contrato-faixas-ready="_onReadyContratoFaixas"></sn-data-top>
 	</template>
 	<script>
 		Polymer({
@@ -133,6 +135,28 @@
 				this._currentFilial = "RJ1";
 				this.$.inputCambio.value = TARIFA_PADRAO
 			},
+	        _onInitContratoFaixas:function(){
+	          console.log('_onInitContratoFaixas')
+	          jQuery([
+	            this.$.tableQTDNavios,
+	            this.$.tableQTDRebocadores,
+	            this.$.tableTarifas,
+	            this.$.tableReajuste,
+	            this.$.tabelaTotal])
+	            .css('pointer-events','none')
+	            .css('opacity','.4')
+	        },
+	        _onReadyContratoFaixas:function(){
+	          console.log('_onReadyContratoFaixas')
+	          jQuery([
+	            this.$.tableQTDNavios,
+	            this.$.tableQTDRebocadores,
+	            this.$.tableTarifas,
+	            this.$.tableReajuste,
+	            this.$.tabelaTotal])
+	            .css('pointer-events','all')
+	            .css('opacity','1')
+	        },
 			_currentMotivoChanged:function()
 			{
 				this._drawPath();
