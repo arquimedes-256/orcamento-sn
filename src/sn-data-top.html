@@ -1,18 +1,4 @@
-<!--
-A comment describing this element
 
-Example:
-
-    <my-elem></my-elem>
-
-Example:
-
-    <my-elem>
-      <h2>Hello my-elem</h2>
-    </my-elem>
-
-@demo demo/index.html
--->
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <dom-module id="sn-data-top">
@@ -59,6 +45,7 @@ Example:
 		    auto
 		    on-response="infomultiplereb_responseHandler" id="ajaxRebInfoMultiple" 
 		    handle-as="json"></iron-ajax>
+		
 		<paper-toast id="toast" duration="Infinity" no-cancel-on-esc-key horizontal-offset="250" vertical-offset="100">
 			<paper-spinner active class="multi" id="spinner"></paper-spinner>
 		</paper-toast>
@@ -87,16 +74,17 @@ Example:
 				this.fire('contrato-faixas-init')
 			},
 			_closeLog:function(){
-				this.$.toast.opened = false
-				this.$.toastDone.text = "Download de tarifas concluído!";
 				this.$.toastDone.opened = true;
+				this.$.toastDone.text = "Download de tarifas concluído!";
 				
 				this.async(function(){
+					this.$.toast.opened = false
+					this.$.toastDone.opened = false;
 					this.fire('contrato-faixas-ready')
 				},500)
-				this.async(function(){
-					this.$.toastDone.opened = false;
-				},2000)
+			},
+			closeLog:function(){
+				this._closeLog();
 			},
 			faixacontrato_responseHandler:function(e,d,s){
 				var V = e.detail.response;
@@ -125,6 +113,7 @@ Example:
 					this.callBackFaixasContrato();
 
 				this.fire('response-faixacontrato')
+
 				this._closeLog();
 			},
 			infomultiplereb_responseHandler:function(e){
@@ -173,7 +162,8 @@ Example:
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
 			},
 			_getInfoContratoMultiple:function(){
-				var num_contrato = _(CLIENT_LIST).pluck('num_contrato').map(function(c){return "'"+c+"'"}).join(',');
+				var num_contrato = _(CLIENT_LIST).pluck('num_contrato')
+					.map(function(c){return "'"+c+"'"}).join(',');
 				this.$.ajaxInfoMultiple.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infomultiplecontrato&num_contrato="+num_contrato;
 			},

@@ -33,6 +33,15 @@
 	             <paper-item name="MAC">MAC</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
+           <paper-dropdown-menu label="Terminal">
+	            <paper-listbox class="dropdown-content" 
+	            selected="{{ _currentTerminal }}" 
+		        attr-for-selected="name">
+                    <template is="dom-repeat" items="{{_terminalList}}">
+                       <paper-item style="width: 172px;" name="[[item]]">[[item]]</paper-item>
+                    </template>
+		   		</paper-listbox>
+		    </paper-dropdown-menu>
           <paper-dropdown-menu label="Motivo">
 	            <paper-listbox class="dropdown-content" 
 	            selected="{{ _currentMotivo }}" 
@@ -54,15 +63,16 @@
 				 <paper-item name="Outros">								Outros</paper-item>
 	            </paper-listbox>
           </paper-dropdown-menu>
-           <paper-dropdown-menu label="Terminal">
+
+           <paper-dropdown-menu label="Tarifação" id="tarifacao">
 	            <paper-listbox class="dropdown-content" 
-	            selected="{{ _currentTerminal }}" 
+	            selected="{{ _currentTarifacao }}" 
 		        attr-for-selected="name">
-                    <template is="dom-repeat" items="{{_terminalList}}">
-                       <paper-item style="width: 172px;" name="[[item]]">[[item]]</paper-item>
-                    </template>
+		        	<paper-item name="Liner">Liner</paper-item>
+		        	<paper-item name="Tramp">Tramp</paper-item>
 		   		</paper-listbox>
-		    </paper-dropdown-menu>
+		   </paper-dropdown-menu>		
+
            <paper-dropdown-menu label="Faixa DWT" id="faixaDWT">
 	            <paper-listbox class="dropdown-content" 
 	            selected="{{ _currentFaixaDWT }}" 
@@ -122,9 +132,13 @@
 	<script>
 		Polymer({
 			is: 'sn-afretamento',
+			properties:{
+				_currentTarifacao:{value:"Liner"}
+			},
 			observers:[
 			'_currentMotivoChanged(_currentMotivo)',
 			'_currentFilialChanged(_currentFilial)',
+			'_currentTarifacaoChanged(_currentTarifacao)',
 			'_currentTerminalChanged(_currentTerminal)',
 			'_getFaixas(_currentFilial)',
 			'_getFaixas(_currentMotivo)',
@@ -171,11 +185,19 @@
 				this._drawPath();
 				this._fillFaixas();
 			},
+			_currentTarifacaoChanged:function(){
+				this._drawPath();
+				this._fillFaixas();
+			},
 			_getFaixas:function()
 			{
 				var K = this._currentFilial;
 				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
 				console.log('_getFaixas',this._currentFilial)
+				this.async(function(){
+
+					this.$.dataTOP.closeLog();
+				},1000)
 			},
 			_buildFaixas:function()
 			{
@@ -189,17 +211,15 @@
 				console.log('_dimensions 	',this._dimensions 	);
 				console.log('_currentTerminal',this._currentTerminal);
 
-				jQuery(this.$.material).fadeIn();
 			},
 			_fillFaixas:function(_currentTerminal)
 			{
 				var tarifaTerminal = this.$.dataTOP.getTarifaByTerminal(this._currentTerminal);
 				if(!tarifaTerminal)
 					return;
-				this.$.tableTarifas.fill(tarifaTerminal,'VLR_TRAMP');
+				this.$.tableTarifas.fill(tarifaTerminal, 
+					this._currentTarifacao == 'Tramp' ? 'VLR_TRAMP' : 'VLR_LINER');
 				console.log('faixasTerminal',tarifaTerminal)
-				
-				jQuery(this.$.material).fadeIn();
 			},
 			_productAB:function(){
 	 			this.async(function()
@@ -230,7 +250,8 @@
 				this._path = "afretamento"
 					+"/" +this._currentFilial 
 					+"/" +this._currentTerminal 
-					+'/' +this._currentMotivo;
+					+'/' +this._currentMotivo
+					+'/' +this._currentTarifacao;
 	
 				this._dimensions 		= this._faixaDWTList = this.$.dataTOP.faixaList;
 				this._currentFaixaDWT = "Todos";
