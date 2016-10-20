@@ -200,8 +200,8 @@
 				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
 				console.log('_getFaixas',this._currentFilial)
 				this.async(function(){
-
-					this.$.dataTOP.closeLog();
+					if(!_.isEmpty(this._dimensions))
+						this.$.dataTOP.closeLog();
 				},1000)
 			},
 			_buildFaixas:function()
