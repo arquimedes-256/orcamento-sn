@@ -43,8 +43,13 @@
                 background: #CFD8DC;
                 color: #000;
             }
+            #errorLabel {
+                color:#D50000;margin-top: -7px;
+            }
         </style>
         <h4 on-click="_selectText">{{header}}</h4>
+
+        <h4 id="errorLabel">{{_errorLabel}}</h4>
 
         <template is="dom-if" if="[[dimEditor]]">
             <paper-fab icon="av:playlist-add" mini on-click="addDimension"></paper-fab>
@@ -349,7 +354,10 @@
                     if(this.total)
                     	trTotal.innerHTML += "<td class=\"bound-cell\" style=\"text-align:right;border-top: 1px dashed #dbdbdb\" grand-total><span>0</span></td>";
                 	
-               
+                    this._errorLabel = "";
+                    
+                    const PreçoAloneMap = {};
+
                 	_.each(this.data, function(D) {
                 		var trTotal = this.$.dataTable.querySelector('* /deep/ table tr[total]');
                 		_.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],function(k)
@@ -361,13 +369,48 @@
                             //algumas tabelas utilizam produto como comutador
                             if(this.commuteProduct)
                                 tdSpanMes.innerText = D[k] * previousTrValue;
-                            else
-                                tdSpanMes.innerText = D[k] + previousTrValue;
+                            else {
+                                const isPQ  = D.dimension.match(/(Qntd:|Preço:)/)
+                                const isP   = D.dimension.match(/(Preço:)/)
+
+                                if(isPQ) {
+                                    if(isP)
+                                        return PreçoAloneMap[D.dimension] = true ;
+                                    else {
+                                        const Dpreco = 
+                                        _.chain(this.data)
+                                            .filter(function(Dx){
+                                                const dim = Dx.dimension
+                                                return  dim.match(/Preço/) && 
+                                                        dim.replace("Preço:","Qntd:") == D.dimension;
+                                            })
+                                            .first()
+                                            .value();
+
+                                        if(!Dpreco) {
+                                            this._errorLabel = 
+                                            ["Não foi possível encontrar a linha de [Preço] para: [",  
+                                                D.dimension ,"] !"].join("")
+                                        }
+                                        else{
+                                            delete PreçoAloneMap[Dpreco.dimension]
+                                            tdSpanMes.innerText = (Dpreco[k]*D[k]) + previousTrValue;
+                                        }
+                                    }
+
+                                }
+                                else
+                                    tdSpanMes.innerText = D[k] + previousTrValue;
+                            }
                 			
                 		}
-                        ,this); //D.total = D['1'] + D['2'] + D['3'] + D['4'] + D['5'] + D['6'] + D['7'] + D['8'] + D['9'] + D['10'] + D['11'] + D['12'];
+                        ,this); 
                     }
                     ,this);
+                    if(_.size(PreçoAloneMap)>0)
+                        this._errorLabel += 
+                        ["Não foi possível encontrar a linha de [Quantidade] para: [",  
+                            _.keys(PreçoAloneMap) ,"] !"].join("")
 
                     this.totalDataPorMes = {};
                     //trabalha grandTotal
@@ -540,6 +583,8 @@
                 try {
                     new Firebase(FB_URL + "/" + this._path + "/" + this.db).set(Obj);
                     this.fire('tabela-mes-build');
+
+                    this._formatValues();
                 }
                 catch(e){
                     // var X = _.chain(Obj)
@@ -577,6 +622,10 @@
                     f['11'] =   F(f['11'])  && F(F(f['11']) .toFixed(2));
                     f['12'] =   F(f['12'])  && F(F(f['12']) .toFixed(2));
                     
+                    f['dimension'] = f['dimension']
+                        .replace(/^(quantidade|quatidade|qtd|qntd)/,"Qntd")
+                        .replace(/^(preço|pre|price|pr)/,"Preço")
+                        .replace(/:(\w+)/,": $1")
 
                     return f;
                 }
@@ -612,11 +661,11 @@
                 return _.sortBy(_.values(D), function(d) 
                 {
                 	if(this.sortMap && this.sortMap[d.dimension])
-                		return this.sortMap[d.dimension];
+                		return this.sortMap[d.dimension].replace(/(Preço:|Qntd:)/,"");
                     
-                    return _.indexOf(d.dimension,'-') > 0 ? 
+                    return (_.indexOf(d.dimension,'-') > 0 ? 
                             parseInt(d.dimension.split('-')[0]) 
-                            : d.dimension;
+                            : d.dimension).replace(/(Preço:|Qntd:)/,"");
                 },this)
             },
             putStrucureData:function(D){
