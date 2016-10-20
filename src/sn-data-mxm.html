@@ -6,11 +6,38 @@
 			:host {
 				display: block;
 			}
+			#toast {
+		    	--paper-toast-color: #FFD600;
+		  	}
+		  	#toastDone {
+				--paper-toast-color:#00E676;
+				text-align:center;
+		  	}
+		  	#toast /deep/ #label {
+		  		position: relative;
+			    top: -5px;
+			    margin-right: 12px;
+		  	}
+		  paper-spinner.multi {
+		    --paper-spinner-layer-1-color: var(--paper-purple-500);
+		    --paper-spinner-layer-2-color: var(--paper-cyan-500);
+		    --paper-spinner-layer-3-color: var(--paper-blue-grey-500);
+		    --paper-spinner-layer-4-color: var(--paper-amber-500);
+		    top: 2px;
+		  }
 		</style>
 		<iron-ajax
 		    auto
 		    url="//sig.sulnorte.com.br/sn/bus?mes=6&ano=2016&finder=orcadorealizado&filial=Total%20Empresa&isKeepContaContabil=true"
 		    on-response="orcadorealizado_responseHandler" id="ajax" handle-as="json"></iron-ajax>
+		<paper-toast id="toast" duration="Infinity" no-cancel-on-esc-key horizontal-offset="250" vertical-offset="100">
+			<paper-spinner active class="multi" id="spinner"></paper-spinner>
+		</paper-toast>
+
+		<paper-toast id="toastDone" duration="Infinity" 
+			horizontal-offset="250" vertical-offset="100">
+			<iron-icon icon="icons:done" id="doneIcon"></iron-icon>
+		<paper-toast>
 	</template>
 	<script>
 		Polymer({
@@ -20,6 +47,7 @@
 			},
 			orcadorealizado_responseHandler:function(e,d,s) {
 				this.fire('response-orcadorealizado',e.detail.response)
+				this._closeLog();
 			},
 			refresh:function(obj) {
 				this.$.ajax.url = 
@@ -27,8 +55,25 @@
 				+"&ano="+this._anoAtual+"&finder=orcadorealizado&filial="+obj.filial
 				+"&isKeepContaContabil=true";
 			},
+			_log:function(text){
+				this.$.toast.text = text;
+				this.$.toast.opened = true
+				this.$.toastDone.opened = false;
+				this.fire('contrato-faixas-init')
+			},
+			_closeLog:function(){
+				this.$.toastDone.opened = true;
+				this.$.toastDone.text = "Download de contas concluído!";
+				
+				this.async(function(){
+					this.$.toast.opened = false
+					this.$.toastDone.opened = false;
+					this.fire('contrato-faixas-ready')
+				},500)
+			},
 			getReceitaLiquidaAcumuladoAnoAnterior:function(filial,mesMax)
 			{
+				this._log("Carregando contas do SNAPP...");
 				this.$.ajax.url = 
 					"//sig.sulnorte.com.br/sn/bus?"+
 					"mes=1&ano="+(this._anoAtual)+"&mesFinal="+mesMax+"&finder=orcadorealizado_detalhado"+

@@ -178,6 +178,8 @@
 			},
 			getTarifaByTerminal:function(terminal)
 			{
+				if(!this._terminalFaixasTarifa)
+					return null;
 				if(terminal)
 					return this._terminalFaixasTarifa[terminal];
 			},

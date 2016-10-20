@@ -113,7 +113,7 @@
 	            on-tabela-mes-build="_productAB"
 	            path="{{_path}}"
 	            dimensions="{{ _dimensions }}"  
-	            header="Tarifa"
+	            header="[[_tarifaHeader]]"
 	            observer-if-is-zero
 	            on-is-zero="_tarifaIsZeroHandler">
 	     </sn-tabela-mes>
@@ -193,16 +193,29 @@
 			_currentTarifacaoChanged:function(){
 				this._drawPath();
 				this._fillFaixas();
+				this._updateTarifaHeader();
 			},
 			_getFaixas:function()
 			{
 				var K = this._currentFilial;
+
+				this._updateTarifaHeader();
+
 				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
 				console.log('_getFaixas',this._currentFilial)
 				this.async(function(){
 					if(!_.isEmpty(this._dimensions))
 						this.$.dataTOP.closeLog();
 				},1000)
+			},
+			_updateTarifaHeader:function(){
+				var K = this._currentFilial;
+				this._tarifaHeader  = 
+					["Tarifa ("
+						,CONTRATOS_INTERFATURAMENTO[K],','
+						,this._currentTarifacao
+						,')']
+					.join("");
 			},
 			_buildFaixas:function()
 			{
@@ -226,15 +239,16 @@
 					this._currentTarifacao == 'Tramp' ? 'VLR_TRAMP' : 'VLR_LINER');
 				console.log('faixasTerminal',tarifaTerminal)
 			},
-			_productAB:function(){
+			_productAB:function()
+			{
 	 			this.async(function()
 	 			{
-	              var A = this.$.tableQTDRebocadores
-	                          	.getStructuredData();
-	              var B = this.$.tableTarifas
-	                			.getStructuredData();
+	            	var A = this.$.tableQTDRebocadores
+							.getStructuredData();
+	            	var B = this.$.tableTarifas
+							.getStructuredData();
 
-	              this.$.tabelaTotal.productAB(A,B,{tax:parseFloat(this.$.inputCambio.value)});
+					this.$.tabelaTotal.productAB(A,B,{tax:parseFloat(this.$.inputCambio.value)});
 	      
 	            },1000)
 			},
@@ -242,7 +256,8 @@
 				console.log('tarifa is zero!')
 				this._fillFaixas();
 			},
-			_filterFaixaDWT:function(_currentFaixaDWT){
+			_filterFaixaDWT:function(_currentFaixaDWT)
+			{
 				this.$.tableQTDRebocadores
 					.filterByDimensionsList(_currentFaixaDWT,this._faixaDWTList);
 				this.$.tableTarifas
@@ -258,7 +273,8 @@
 					+'/' +this._currentMotivo
 					+'/' +this._currentTarifacao;
 	
-				this._dimensions 		= this._faixaDWTList = this.$.dataTOP.faixaList;
+				this._dimensions 		= this._faixaDWTList = _.keys(this.$.dataTOP.getTarifaByTerminal(this._currentTerminal));
+				console.log('dim',this._dimensions)
 				this._currentFaixaDWT = "Todos";
 			}
 		});
