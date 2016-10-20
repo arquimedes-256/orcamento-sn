@@ -623,7 +623,7 @@
                     f['12'] =   F(f['12'])  && F(F(f['12']) .toFixed(2));
                     
                     f['dimension'] = f['dimension']
-                        .replace(/^(quantidade|quatidade|qtd|qntd)/,"Qntd")
+                        .replace(/^([qQ]uantidade|[qQ]uatidade|[qQ]td|qntd)/,"Qntd")
                         .replace(/^(preço|pre|price|pr)/,"Preço")
                         .replace(/:(\w+)/,": $1")
 
