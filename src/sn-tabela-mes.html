@@ -53,7 +53,7 @@
         <h4 id="errorLabel">{{_errorLabel}}</h4>
 
         <template is="dom-if" if="[[dimEditor]]">
-            <paper-fab icon="av:playlist-add" mini on-click="addDimension"></paper-fab>
+            <paper-fab icon="av:playlist-add" mini on-click="_openDialog"></paper-fab>
         </template>
 
         <paper-datatable data="{{data}}" id="dataTable" percent='{{percent}}'>
@@ -98,10 +98,27 @@
 	        }
 	        </style>
 	    -->
-        <paper-dialog id="dialog">
-          <h2>Dialog Title</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-            irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <paper-dialog id="dialog" style="width:400px">
+          <h4 style="margin: 0;padding: 0;">Inserir linha: {{header}}</h4>
+          <paper-input label="Dimensão:" 
+            style="width: 96%;
+                margin: 9px;
+                padding: 0;"  
+                always-float-label 
+                value="{{_dimensionLabel}}"
+                placeholder="exemplo: Uniformes"></paper-input>
+          <paper-button style="
+            font-weight: bold;
+            background: #CFD8DC;
+            margin: 0;
+            padding: 10px;
+            width: 100%;" raised on-click="_addDim1">Inserir 1 linha</paper-button>
+          <paper-button style="
+            font-weight: bold;
+            background: #CFD8DC;
+            margin: 0;
+            padding: 10px;
+            width: 100%;" raised on-click="_addDim2">Inserir par(preço/quantidade)</paper-button>
         </paper-dialog>
     </template>
     <script>
@@ -213,6 +230,9 @@
                 if(!this.total)
                     this.$.totalColumn.inactive = true;
                 this._configFormat();
+            },
+            _openDialog:function(){
+                this.$.dialog.open();
             },
             _configFormat:function(){
 
@@ -615,18 +635,18 @@
                 const S = _.mapObject(_.groupBy(D, 'dimension'), function(x) {
                     f = _.first(x);
                     var F = parseFloat;
-                    f['1'] =    F(f['1'])   && F(F(f['1'])  .toFixed(2));
-                    f['2'] =    F(f['2'])   && F(F(f['2'])  .toFixed(2));
-                    f['3'] =    F(f['3'])   && F(F(f['3'])  .toFixed(2));
-                    f['4'] =    F(f['4'])   && F(F(f['4'])  .toFixed(2));
-                    f['5'] =    F(f['5'])   && F(F(f['5'])  .toFixed(2));
-                    f['6'] =    F(f['6'])   && F(F(f['6'])  .toFixed(2));
-                    f['7'] =    F(f['7'])   && F(F(f['7'])  .toFixed(2));
-                    f['8'] =    F(f['8'])   && F(F(f['8'])  .toFixed(2));
-                    f['9'] =    F(f['9'])   && F(F(f['9'])  .toFixed(2));
-                    f['10'] =   F(f['10'])  && F(F(f['10']) .toFixed(2));
-                    f['11'] =   F(f['11'])  && F(F(f['11']) .toFixed(2));
-                    f['12'] =   F(f['12'])  && F(F(f['12']) .toFixed(2));
+                    f['1'] =    F(f['1'])   && F(F(f['1'])  .toFixed(10));
+                    f['2'] =    F(f['2'])   && F(F(f['2'])  .toFixed(10));
+                    f['3'] =    F(f['3'])   && F(F(f['3'])  .toFixed(10));
+                    f['4'] =    F(f['4'])   && F(F(f['4'])  .toFixed(10));
+                    f['5'] =    F(f['5'])   && F(F(f['5'])  .toFixed(10));
+                    f['6'] =    F(f['6'])   && F(F(f['6'])  .toFixed(10));
+                    f['7'] =    F(f['7'])   && F(F(f['7'])  .toFixed(10));
+                    f['8'] =    F(f['8'])   && F(F(f['8'])  .toFixed(10));
+                    f['9'] =    F(f['9'])   && F(F(f['9'])  .toFixed(10));
+                    f['10'] =   F(f['10'])  && F(F(f['10']) .toFixed(10));
+                    f['11'] =   F(f['11'])  && F(F(f['11']) .toFixed(10));
+                    f['12'] =   F(f['12'])  && F(F(f['12']) .toFixed(10));
                     
                     f['dimension'] = f['dimension']
                         .replace(/^([qQ]uantidade|[qQ]uatidade|[qQ]td|qntd)/,"Qntd")
@@ -666,8 +686,10 @@
             _getListedData: function(D) {
                 return _.sortBy(_.values(D), function(d) 
                 {
-                	if(this.sortMap && this.sortMap[d.dimension])
-                		return this.sortMap[d.dimension].replace(/(Preço:|Qntd:)/,"");
+                	if(this.sortMap && this.sortMap[d.dimension]){
+                        const X = this.sortMap[d.dimension];
+                		return X.replace ? X.replace(/(Preço:|Qntd:)/,"") : X;
+                    }
                     S = ((_.indexOf(d.dimension,'-') > 0 ? 
                             parseInt(d.dimension.split('-')[0]) 
                             : d.dimension))
@@ -853,9 +875,8 @@
                         tr.style.display = "none";
                 });
             },
-            addDimension:function()
+            _addDimension:function(d)
             {
-                const d = "?";
                 if(!_.contains(this.dimensions,d)) 
                 {
                     this.dimensions.push(d);
@@ -876,6 +897,15 @@
                         })
                     this._dataChanged();
                 }
+            },
+            _addDim1:function(){
+                this._addDimension(this._dimensionLabel)
+                this._dimensionLabel = "";
+            },
+            _addDim2:function(){
+                this._addDimension('Preço: '+this._dimensionLabel);
+                this._addDimension('Qntd: '+this._dimensionLabel);
+                this._dimensionLabel = "";
             },
             _removeFilters: function() {
                 _.each(this.querySelectorAll('* /deep/ [data-key]'), function(tr) {
