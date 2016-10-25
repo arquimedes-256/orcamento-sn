@@ -204,11 +204,7 @@
 				this._updateTarifaHeader();
 
 				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
-				
-				this.async(function(){
-					if(!_.isEmpty(this._dimensions))
-						this.$.dataTOP.closeLog();
-				},1000)
+			
 			},
 			_updateTarifaHeader:function(){
 				if(!this._contratoToInfo)
@@ -237,6 +233,13 @@
 				console.log('_dimensions 	',this._dimensions 	);
 				console.log('_currentTerminal',this._currentTerminal);
 
+				jQuery(this.$.material).fadeOut();
+				this.async(function(){
+					if(!_.isEmpty(this._dimensions))
+						this.$.dataTOP.closeLog();
+					jQuery(this.$.material).fadeIn();
+				},1000)
+
 			},
 			_fillFaixas:function(_currentTerminal)
 			{
@@ -249,20 +252,16 @@
 			},
 			_productAB:function()
 			{
-	 			this.async(function()
-	 			{
-	            	var A = this.$.tableQTDRebocadores
+				var A = this.$.tableQTDRebocadores
 							.getStructuredData();
-	            	var B = this.$.tableTarifas
-							.getStructuredData();
+            	var B = this.$.tableTarifas
+						.getStructuredData();
 
-					this.$.tabelaTotal.productAB(A,B,{tax:
-						(this._currentMoeda == 'DOLAR' ?
-							parseFloat(this.$.inputCambio.value)
-						: 1)
-					});
-	      
-	            },1000)
+				this.$.tabelaTotal.productAB(A,B,{tax:
+					(this._currentMoeda == 'DOLAR' ?
+						parseFloat(this.$.inputCambio.value)
+					: 1)
+				});
 			},
 			_tarifaIsZeroHandler:function(){
 				console.log('tarifa is zero!')
@@ -300,6 +299,7 @@
 				this._contratoToInfo = Y;
 
 				this._updateTarifaHeader();
+				this._productAB();
 			}
 		});
 	</script>
