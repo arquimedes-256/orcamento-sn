@@ -64,7 +64,8 @@
 				this._terminalFaixasTarifa	= null;
 			},
 			ready:function(){
-				this._getInfoContratoMultiple();
+				this._getInfoContratoMultiple(_(CLIENT_LIST).pluck('num_contrato'));
+				this._getInfoContratoMultiple(_.values(CONTRATOS_INTERFATURAMENTO));
 				this._getInfoRebocadoresMultiple();
 			},
 			_log:function(text){
@@ -161,8 +162,8 @@
 				this.$.ajaxInfo.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infocontrato&num_contrato="+num_contrato;
 			},
-			_getInfoContratoMultiple:function(){
-				var num_contrato = _(CLIENT_LIST).pluck('num_contrato')
+			_getInfoContratoMultiple:function(contratoList){
+				var num_contrato = contratoList
 					.map(function(c){return "'"+c+"'"}).join(',');
 				this.$.ajaxInfoMultiple.url = 
 				"//www.topweb.sulnorte.com.br/top/xml/action/PRDAction.php?metodo=snorc_infomultiplecontrato&num_contrato="+num_contrato;

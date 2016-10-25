@@ -131,6 +131,7 @@
 	<sn-data-top 
 		id="dataTOP"
 		on-response-faixacontrato="_buildFaixas" 
+		on-response-infomultiplecontratos="_infoMultipleContratosInterfaturamento"
 		 on-contrato-faixas-init="_onInitContratoFaixas"
          on-contrato-faixas-ready="_onReadyContratoFaixas"></sn-data-top>
 	</template>
@@ -175,6 +176,7 @@
 	            this.$.tabelaTotal])
 	            .css('pointer-events','all')
 	            .css('opacity','1')
+
 	        },
 			_currentMotivoChanged:function()
 			{
@@ -202,18 +204,24 @@
 				this._updateTarifaHeader();
 
 				this.$.dataTOP.getFaixasContrato(CONTRATOS_INTERFATURAMENTO[K]);
-				console.log('_getFaixas',this._currentFilial)
+				
 				this.async(function(){
 					if(!_.isEmpty(this._dimensions))
 						this.$.dataTOP.closeLog();
 				},1000)
 			},
 			_updateTarifaHeader:function(){
+				if(!this._contratoToInfo)
+					return;
 				var K = this._currentFilial;
+				var M = this._currentMoeda = 
+					this._contratoToInfo[CONTRATOS_INTERFATURAMENTO[K]].DESCRICAO_MOEDA
+
 				this._tarifaHeader  = 
 					["Tarifa ("
 						,CONTRATOS_INTERFATURAMENTO[K],','
-						,this._currentTarifacao
+						,this._currentTarifacao,','
+						,M
 						,')']
 					.join("");
 			},
@@ -248,7 +256,11 @@
 	            	var B = this.$.tableTarifas
 							.getStructuredData();
 
-					this.$.tabelaTotal.productAB(A,B,{tax:parseFloat(this.$.inputCambio.value)});
+					this.$.tabelaTotal.productAB(A,B,{tax:
+						(this._currentMoeda == 'DOLAR' ?
+							parseFloat(this.$.inputCambio.value)
+						: 1)
+					});
 	      
 	            },1000)
 			},
@@ -276,6 +288,18 @@
 				this._dimensions 		= this._faixaDWTList = _.keys(this.$.dataTOP.getTarifaByTerminal(this._currentTerminal));
 				console.log('dim',this._dimensions)
 				this._currentFaixaDWT = "Todos";
+			},
+			_infoMultipleContratosInterfaturamento:function(e){
+				const C = e.detail;
+				const Y = {}
+
+				_.each(C,function(c){
+					Y[c.NUM_CONTRATO] = c
+				})
+
+				this._contratoToInfo = Y;
+
+				this._updateTarifaHeader();
 			}
 		});
 	</script>
