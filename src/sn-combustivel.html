@@ -38,7 +38,6 @@
 	    <template is="dom-repeat" items="{{_rebocadorList}}">
 	 		<sn-tabela-mes
 	 				class="rebocTable"
-		        	total
 		        	total-bellow
 		            db="consumo-rebocador" 
 		            on-tabela-mes-build="_calcTotalTable"
@@ -105,9 +104,35 @@
 				if(this._filialRebocadores)
 					this._rebocadorList = _.values(this._filialRebocadores[this._currentFilial]).sort();
 			},
+			_calcGrandTotalForEachTable:function(){
+
+				var R 		= this.querySelectorAll('* /deep/ .rebocTable')
+				var Rx 		= _.pluck(R,'totalDataPorMes')
+				_.each(Rx,function(r,k){
+
+
+
+					const otherTr = jQuery(R[k]
+							.querySelectorAll('* /deep/ tbody tr:not([total])'))
+
+					_.each(otherTr,function(o){
+						jQuery(o).find('[ot-grand-total]').remove();
+						jQuery(o)
+							.append('<td ot-grand-total style="font-size: 13px;text-align: center;"><span>-</span></td>')
+					})
+					const otherTrTh = 
+						jQuery(R[k].querySelector('* /deep/ thead tr'))
+
+					jQuery(otherTrTh).find('[ot-grand-total]').remove();
+					jQuery(otherTrTh)
+						.append('<th ot-grand-total class="column"><span>Total</span></th>')
+
+					console.log(k,r)
+				})
+			},
 			_calcTotalTable:function()
 			{
-				
+				this._calcGrandTotalForEachTable();
 				var R 		= this.querySelectorAll('* /deep/ .rebocTable')
 				var Rx 		= _.pluck(R,'totalDataPorMes')
 				var Sigma 	= {dimension:"Total"};
@@ -125,46 +150,8 @@
 					})
 				})
 				this.$.tableTotal.data = [Sigma];
-				/**
-				var R 	= this.querySelectorAll('* /deep/ .rebocTable')
-				var Rx 	= _.invoke(R,'getStructuredData')
 				
-				var Y = {
-					"Hora empregada":
-						{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,
-							"dimension":"Hora empregada","total":0},
-					"Litros por hora":
-						{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,
-							"dimension":"Litros por hora","total":0},
-					"Preço do litro":
-						{"1":0,"2":1,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,
-							"dimension":"Preço do litro","total":0}
-				}
-				_.each(Rx,function(Rk)
-				{
-					_.each(Rk,function(r,k)
-					{
-						console.log(k,r);
 
-						Y[k]['1'] 		+= r['1'] 
-						Y[k]['2'] 		+= r['2'] 
-						Y[k]['3'] 		+= r['3'] 
-						Y[k]['4'] 		+= r['4'] 
-						Y[k]['5'] 		+= r['5'] 
-						Y[k]['6'] 		+= r['6'] 
-						Y[k]['7'] 		+= r['7'] 
-						Y[k]['8'] 		+= r['8'] 
-						Y[k]['9'] 		+= r['9'] 
-						Y[k]['10']		+= r['10']
-						Y[k]['11']		+= r['11']
-						Y[k]['12']		+= r['12']
-						Y[k]['total']	+= r['total']
-
-					})
-				})
-				this.$.tableTotal.putStrucureData(Y);
-
-				*/
 
 
 			}

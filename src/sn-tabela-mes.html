@@ -453,8 +453,9 @@
 
                         this.totalDataPorMes[k] = tdSpanMesValue
                     },this);
-
-                    trTotal.querySelector('[grand-total]').innerHTML = '<span>'+this._formatValue(GrandTotalSigma)+'</span>';
+                    if(trTotal.querySelector('[grand-total]') === null)
+                        trTotal.innerHTML += "<td grand-total></td>"
+                    trTotal.querySelector('[grand-total]').innerHTML = '<span style="    font-size: 13px;">'+this._formatValue(GrandTotalSigma)+'</span>';
                     trTotal.querySelector('[grand-total]').setAttribute('data-value',GrandTotalSigma);
                 }
                 this._buildDB()
