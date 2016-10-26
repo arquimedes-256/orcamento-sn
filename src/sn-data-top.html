@@ -64,9 +64,13 @@
 				this._terminalFaixasTarifa	= null;
 			},
 			ready:function(){
-				this._getInfoContratoMultiple(_(CLIENT_LIST).pluck('num_contrato'));
+				this.async(function(){
+					this._getInfoContratoMultiple(_(CLIENT_LIST).pluck('num_contrato'));
+				})
+
 				this._getInfoContratoMultiple(_.values(CONTRATOS_INTERFATURAMENTO));
 				this._getInfoRebocadoresMultiple();
+
 			},
 			_log:function(text){
 				this.$.toast.text = text;
