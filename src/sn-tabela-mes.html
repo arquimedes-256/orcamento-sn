@@ -489,6 +489,18 @@
                 else
                     this._buildDB()
 
+                if(!this.dimensions)
+                    return;
+
+                const X = this.dimensions.join(";"); 
+                if( (/(Preço)|(Qntd)/).test(X) ) 
+                {
+                    this._workTotalPrecoQntd()
+                }
+            },
+            _workTotalPrecoQntd:function(){
+                const TR = this.$.dataTable.querySelectorAll('* /deep/ tr[data-key]')
+                console.log('_workTotalPrecoQntd',TR);
             },
             _formatValues:function()
             {
@@ -896,14 +908,26 @@
                             11: 0,
                             12: 0
                         })
-                    this._dataChanged();
                 }
+                _.each(this.data,function(d){
+                    if(d.dimension == 'Total')
+                       d.dimension = '? ? ? ?'
+                })
+                this._dataChanged();
             },
             _addDim1:function(){
+                if(!this._dimensionLabel){
+                    alert("Insira algum valor!")
+                    return;
+                }
                 this._addDimension(this._dimensionLabel)
                 this._dimensionLabel = "";
             },
             _addDim2:function(){
+                if(!this._dimensionLabel){
+                    alert("Insira algum valor!")
+                    return;
+                }
                 this._addDimension('Preço: '+this._dimensionLabel);
                 this._addDimension('Qntd: '+this._dimensionLabel);
                 this._dimensionLabel = "";
