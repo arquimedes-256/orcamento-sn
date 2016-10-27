@@ -491,16 +491,32 @@
 
                 if(!this.dimensions)
                     return;
-
-                const X = this.dimensions.join(";"); 
-                if( (/(Preço)|(Qntd)/).test(X) ) 
-                {
-                    this._workTotalPrecoQntd()
-                }
+                this.async(function(){
+                    const X = this.dimensions.join(";"); 
+                    if( (/(Preço)|(Qntd)/).test(X) ) 
+                    {
+                        this._workTotalPrecoQntd()
+                    }
+                },1)
             },
             _workTotalPrecoQntd:function(){
                 const TR = this.$.dataTable.querySelectorAll('* /deep/ tr[data-key]')
-                console.log('_workTotalPrecoQntd',TR);
+                _.each(TR,function(tr,i){
+                    if((/Qntd/).test(tr.innerText)){
+                        const hasTotalTr = jQuery(tr).next().attr('pq-total') === "";
+
+                        if(!hasTotalTr){
+                            jQuery(tr).next().attr('pq-total').remove()
+                        }
+
+                        jQuery(tr).after('<tr pq-total ignore><td ignore>Total:</td></tr>')
+                        const totalTr = jQuery(tr).next()
+                        _.each([1,2,3,4,5,6,7,8,9,10,11,12],function(k){
+                            console.log(this.data[i][k])
+                            totalTr.append("<td ignore style=\"text-align:right\"><span>"+k+"</span></td>")
+                        },this)
+                    }
+                },this)
             },
             _formatValues:function()
             {
@@ -508,7 +524,8 @@
                 this._formatValuesJob = 
                     this.async(function()
                     {
-                        const TDs = this.$.dataTable.querySelectorAll('* /deep/ td');
+                        const TDs = jQuery(
+                            this.$.dataTable.querySelectorAll('* /deep/ td')).not('[ignore]');
 
                         this.async(function(){
                             _.each(TDs, function(td) {

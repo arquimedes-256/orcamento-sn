@@ -581,7 +581,8 @@ A [material design implementation of a data table](https://www.google.com/design
 
 					this.debounce('restructure data', function(){
 
-						var rows = Polymer.dom(this.root).querySelectorAll('tbody tr');
+						var rows = jQuery(Polymer.dom(this.root)
+								.querySelectorAll('tbody tr')).not('[ignore]');
 						// loop through the rows
 						for(var rowI=0; rowI<rows.length; rowI++){
 							var row = rows[rowI];
