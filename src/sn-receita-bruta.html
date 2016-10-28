@@ -145,31 +145,34 @@
             .css('opacity','1')
         },
         _tabelaMesBuildHandler:function(){
-            this.cancelAsync(this._totalAsync)
-            this._totalAsync  = this.async(function(){
+           this._calcTotal();
+        },
+        _calcTotal:function(){
+          this.cancelAsync(this._totalAsync)
+          this._totalAsync  = this.async(function(){
 
-              var tipoTarifa  = this.$.filters.$.inputTipoTarifa.value
-              var moeda       = this.$.filters.$.inputMoeda.value
-              var vlrCambio   = parseFloat(this.$.filters.$.inputCambio.value);
+            var tipoTarifa  = this.$.filters.$.inputTipoTarifa.value
+            var moeda       = this.$.filters.$.inputMoeda.value
+            var vlrCambio   = parseFloat(this.$.filters.$.inputCambio.value);
 
 
-              var A = this.$.tableQTDNavios
-                          .getStructuredData();
-              var B = null;
-              var C = this.$.tableTarifas.getStructuredData();
-              var D = this.$.tableReajuste.getStructuredDataAsPercent();
+            var A = this.$.tableQTDNavios
+                        .getStructuredData();
+            var B = null;
+            var C = this.$.tableTarifas.getStructuredData();
+            var D = this.$.tableReajuste.getStructuredDataAsPercent();
 
-              if(tipoTarifa == "REBOCADOR") {
-				          B = this.$.tableQTDRebocadores.getStructuredData();
-              }
-              else {
-                  B = this.$.tableQTDRebocadores.getSampleData(1,{isStructured:true});
-              }
-              
-              this.$.tabelaTotal.productABC(A,B,C,D,
-                {tax:moeda == "DOLAR" ? vlrCambio : 1});
-              this.$.tabelaTotal.applyClone();
-            },10)
+            if(tipoTarifa == "REBOCADOR") {
+                B = this.$.tableQTDRebocadores.getStructuredData();
+            }
+            else {
+                B = this.$.tableQTDRebocadores.getSampleData(1,{isStructured:true});
+            }
+            
+            this.$.tabelaTotal.productABC(A,B,C,D,
+              {tax:moeda == "DOLAR" ? vlrCambio : 1});
+            this.$.tabelaTotal.applyClone();
+          },10)
         },
         _infoMultipleContratosFaturamento:function(e){
 					const C = e.detail;
@@ -181,10 +184,39 @@
 
 					this._contratoToInfo = Y;
 				},
+        _workDifferenceFaixas:function(){
+          this.async(function(){
+
+            const T = _.pluck(this.$.tableTarifas.data    ,'dimension')
+
+            work_diff(this.$.tableQTDNavios);
+            work_diff(this.$.tableQTDRebocadores);
+            work_diff(this.$.tableReajuste);
+
+
+            function work_diff(table){
+              const X = _.pluck(table.data  ,'dimension')
+              const F = _.difference(T,X)
+              _.each(F,function(f){
+                table.addDimension(f)
+              })
+            }
+
+          },2000)
+        },
         _buildFaixasHandler:function(e,d){
 
+          this._workDifferenceFaixas();
           const moeda       = this.$.filters.$.inputMoeda.value == "DOLAR" ? "Dólar" : "Real";
           const contrato    = this.$.filters.$.inputContrato.value
+          
+          if(!this._contratoToInfo[contrato])
+          {
+            this.tarifaHeader = "Tarifa"
+            this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
+            return;
+          }
+
           const FatInv      = this._contratoToInfo[contrato].DESC_TP_FATURAMENTO == "INVOICE" ? "Invoice" : "Fatura";
           var LinerTramp 		= "Liner";
 
