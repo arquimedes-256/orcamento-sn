@@ -173,7 +173,8 @@
                     type: Boolean
                 },
                 metaHeader: {
-                    type: String
+                    type: String,
+                    observer:'_metaHeaderChanged'
                 },
                 metaEditable: {
                     type: Boolean
@@ -230,6 +231,12 @@
                 if(!this.total)
                     this.$.totalColumn.inactive = true;
                 this._configFormat();
+            },
+            _metaHeaderChanged:function(){
+                this.async(function(){
+                    const metaCol = this.querySelector('* /deep/ paper-datatable-column[property="meta"]')
+                    metaCol.formatValue = this._formatValue.bind(this);
+                },1)
             },
             _openDialog:function(){
                 this.$.dialog.open();

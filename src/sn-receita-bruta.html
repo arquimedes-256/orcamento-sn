@@ -49,6 +49,7 @@
           on-build-faixas="_buildFaixasHandler"
           on-path-changed="_pathChangedHandler"
           on-contrato-faixas-init="_onInitContratoFaixas"
+					on-response-infomultiplecontratos="_infoMultipleContratosFaturamento"
           on-contrato-faixas-ready="_onReadyContratoFaixas">
         </sn-receita-bruta-filters>
 
@@ -89,7 +90,7 @@
             path="{{_path}}"
             dimensions="[[ _selectedFaixas ]]"  
             filter="#faixaDWT"
-            header="Tarifa"></sn-tabela-mes>
+            header="{{tarifaHeader}}"></sn-tabela-mes>
 
           <sn-tabela-mes 
           	editable
@@ -128,7 +129,7 @@
             this.$.tableQTDRebocadores,
             this.$.tableTarifas,
             this.$.tableReajuste,
-            this.$.tabelaTotal])
+            this.$.tabelaTotal,this.$.filters.$.view])
             .css('pointer-events','none')
             .css('opacity','.4')
         },
@@ -139,7 +140,7 @@
             this.$.tableQTDRebocadores,
             this.$.tableTarifas,
             this.$.tableReajuste,
-            this.$.tabelaTotal])
+            this.$.tabelaTotal,this.$.filters.$.view])
             .css('pointer-events','all')
             .css('opacity','1')
         },
@@ -170,14 +171,33 @@
               this.$.tabelaTotal.applyClone();
             },10)
         },
+        _infoMultipleContratosFaturamento:function(e){
+					const C = e.detail;
+					const Y = {}
+
+					_.each(C,function(c){
+						Y[c.NUM_CONTRATO] = c
+					})
+
+					this._contratoToInfo = Y;
+				},
         _buildFaixasHandler:function(e,d){
 
-          var S = this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
-          console.log(S);
+          const moeda       = this.$.filters.$.inputMoeda.value == "DOLAR" ? "Dólar" : "Real";
+          const contrato    = this.$.filters.$.inputContrato.value
+          const FatInv      = this._contratoToInfo[contrato].DESC_TP_FATURAMENTO == "INVOICE" ? "Invoice" : "Fatura";
+          var LinerTramp 		= "Liner";
 
-          if(_.isNaN(S) || S == 0) {
+          var S = this.$.tableTarifas.fill(d.faixasTarifa,'VLR_LINER');
+          
+
+          if(_.isNaN(S) || S == 0) 
+          {
             this.$.tableTarifas.fill(d.faixasTarifa,'VLR_TRAMP');
+            LinerTramp = "Tramp";
           }
+          this.tarifaHeader =  ["Tarifa"," (", contrato ,",", LinerTramp , ",", moeda ,",",FatInv,")"]
+                                  .join("")
           
           this._selectedFaixas = _.keys(d.faixasTarifa);
         },

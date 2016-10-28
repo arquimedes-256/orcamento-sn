@@ -43,6 +43,7 @@ window.CLIENT_LIST = [
 {num_contrato:"RGD000860",	nome:"WALLENIUS - STS"},
 {num_contrato:"RGD001269",	nome:"WORTHINGTON"},
 {num_contrato:"RGD001194",	nome:"KOCH SHIPPING INC C-O PORTS DIRECT"},
+
 {num_contrato:"VIT000670",	nome:"ADMIntermare"},
 {num_contrato:"VIT000552",	nome:"ALIANÇA NAVEGAÇÃO E LOGÍSTICA LTDA"},
 {num_contrato:"VIT000760",	nome:"BBC"},
@@ -73,6 +74,7 @@ window.CLIENT_LIST = [
 {num_contrato:"VIT000603",	nome:"WALLENIUS WILHELMSEN SERV DE LOGISTICA DO BRASIL LTDA"},
 {num_contrato:"VIT000646",	nome:"WILHELMSEN SHIPS SERVICE DO BRASIL LTDA"},
 {num_contrato:"VIT000613",	nome:"WORTHINGTON"},
+
 {num_contrato:"MAC000527",	nome:"EMPRESA DE NAVEGACAO ELCANO S-A"},
 {num_contrato:"MAC000420",	nome:"HAMBURG SUD DO BRASIL LTDA"},
 {num_contrato:"MAC000506",	nome:"JUMBO SHIPPING-KAHN S C-O PORTS DIRECT"},
@@ -84,6 +86,7 @@ window.CLIENT_LIST = [
 {num_contrato:"MAC000508",	nome:"SUISSE - ATLANTIQUE SA"},
 {num_contrato:"MAC000504",	nome:"T K B SHIPPINS AS C-O PORTS DIRECT"},
 {num_contrato:"MAC000353",	nome:"WESTERN BULK AS"},
+
 {num_contrato:"SDR001157",	nome:"AGÊNCIA MARÍTIMA BRANDÃO FILHOS LTDA"},
 {num_contrato:"SDR001085",	nome:"AGÊNCIA MARÍTIMA GRANEL LTDA"},
 {num_contrato:"SDR001079",	nome:"BAHIA TANKERS AGENCIA MARITIMA LTDA"},
@@ -132,6 +135,7 @@ window.CLIENT_LIST = [
 {num_contrato:"SDR001147",	nome:"UNITED BULK CARRIERS INTERNATIONAL"},
 {num_contrato:"SDR000776",	nome:"WESTERN BULK AS"},
 {num_contrato:"SDR001127",	nome:"WILHELMSEN SHIPS SERVICE DO BRASIL LTDA"},
+
 {num_contrato:"STR000593",	nome:"ADMIntermare"},
 {num_contrato:"STR000653",	nome:"AGENCIA DE VAPORES GRIEG S-A - STS"},
 {num_contrato:"STR000602",	nome:"AGRI PORT SERVICES BRASIL LTDA"},
@@ -215,6 +219,7 @@ window.CLIENT_LIST = [
 {nome:"SAAM SMIT",					num_contrato:"SEP000308"},
 {nome:"SAVEIROS",					num_contrato:"SEP000388"},
 {nome:"M2M PANAMAX",				num_contrato:"SEP000413"},
+
 {num_contrato:"PNG000883"	,nome:"AET INC LIMITED"},
 {num_contrato:"PNG000514"	,nome:"BALTNAV A-S"},
 {num_contrato:"PNG000852"	,nome:"BBC INV"},

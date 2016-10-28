@@ -145,11 +145,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </svg>
       	</app-toolbar>
         <iron-selector selected="{{page}}" attr-for-selected="name" class="drawer-list" role="navigation">
-          
+          <!--
           <a name="visao-geral" href="/#/Visao-Geral">Geral</a>
+        -->
           <a name="relatorios" href="/#/Relatorios">Relatórios</a>
           <a name="receita-bruta" href="/#/Receita-Bruta">Receita Bruta</a>
           <a name="receita-liquida" href="/#/Receita-Liquida">Receita Líquida</a>
+          <!--
           <a name="afretamento" href="/#/Afretamento">Afretamento</a>
           <a name="combustivel" href="/#/Combustível">Combustível</a>
           <a name="desp-tec-manunt" href="/#/Desp.Téc/Manunt">Desp.Téc/Manunt</a>
@@ -158,10 +160,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a name="desp-operacionais" href="/#/Desp.Operacional">Desp.Operacional</a>
           <a name="desp-administrativa" href="/#/Desp.Administrativas">    Desp.Administrativas.</a>
           <a name="comerciais" href="/#/Comerciais">             Comerciais</a>
-
-          <!---
-          
-          <a name="view3" href="/view3">View Three</a>
           -->
         </iron-selector>
       </app-drawer>
@@ -183,9 +181,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
-        
+        <!--
           <sn-visao-geral 
             name="visao-geral"></sn-visao-geral>
+        -->
           <sn-relatorios 
             name="relatorios"></sn-relatorios>
           <sn-receita-bruta 

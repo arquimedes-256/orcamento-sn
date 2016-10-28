@@ -112,7 +112,7 @@
 									aggregator:'receita-total',
 									filterMap:{Filial:this._currentFilial}
 								});
-				this.$.dataMXM.getReceitaLiquidaAcumuladoAnoAnterior(this._currentFilial,9);
+				this.$.dataMXM.getReceitaLiquidaAcumuladoAnoAnterior(this._currentFilial,10);
 			},
 			//sn-tabela-mes
 			_tabelaMesBuildHandler:function(e){
@@ -201,7 +201,7 @@
 					+ '<span>'+R['Receita Bruta'].formatMoney(0)+'</span>'
 					+ '<span style="margin: 0 5px;font-size: 22px;">=</span>'
 					+ '<span>'+
-					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(2)+'%'
+					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).formatMoney(2)+'%'
 					+'</span>'
 			},
 			_workOrcadoAnoCorrente:function(){
@@ -216,6 +216,14 @@
 					'Deduções s/ Receita Bruta':deducao,
 					'Receita Bruta':receita
 				};
+					if( 
+						R['Receita Bruta'] == 0 && R['Deduções s/ Receita Bruta'] == 0 || 
+						( R['Deduções s/ Receita Bruta'] / R['Receita Bruta'] == Infinity) 
+					)
+					{
+						this.$['deducoes-ano-corrente-orcado'].innerHTML = "Carregando..."
+						return;
+					}
 					this.$['deducoes-ano-corrente-orcado'].innerHTML 
 					= '<span style="margin: 0 5px;font-size: 11px;position: absolute;top: -15px;color: #EF9A9A;left: -5px;">Orçado ano seguinte ('+(CURRENT_ANO+1)+'):</span>'
 					+'<span>'+Math.abs(R['Deduções s/ Receita Bruta']).formatMoney(0)+'</span>'
@@ -223,7 +231,7 @@
 					+ '<span>'+R['Receita Bruta'].formatMoney(0)+'</span>'
 					+ '<span style="margin: 0 5px;font-size: 22px;">=</span>'
 					+ '<span>'+
-					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).toFixed(2)+'%'
+					((Math.abs(R['Deduções s/ Receita Bruta']) / R['Receita Bruta']) * 100).formatMoney(2)+'%'
 					+'</span>'
 			}
 		});
