@@ -242,7 +242,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         if(CURRENT_USER.isAdmin)
         	return;
-        
+
         _.each(X,function(x){
 	        const p = x.getAttribute('name')
 			if(ONLY_ADMIN[p]){
@@ -255,6 +255,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         const X = document.querySelectorAll('* /deep/ paper-dropdown-menu#filial paper-item');
         const F = _.keys(CURRENT_USER.filiais)
 
+		jQuery(X).show();
+
+        if(CURRENT_USER.isAdmin)
+        	return;
+        
         _.each(X,function(x){
           const f = x.getAttribute('name')
           jQuery(x).hide();
