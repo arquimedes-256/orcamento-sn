@@ -7,6 +7,9 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icons/image-icons.html">
 
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+
 <dom-module id="sn-relatorios">
 <template>
 	<style>
@@ -22,9 +25,31 @@
 		#output /deep/ table {
 			width: 100%!important;
 		}
+		#output {
+			overflow: hidden;
+		}
+		#output paper-progress{
+			width:100%;
+			
+		}
 		#wrapper {
 			margin: 0px;margin-bottom: 7px;
 		}
+		#toast {
+	    	--paper-toast-color: #FFD600;
+	  	}
+	  	#toastDone {
+			--paper-toast-color:#00E676;
+			text-align:center;
+	  	}
+
+	  paper-spinner.multi {
+	    --paper-spinner-layer-1-color: var(--paper-purple-500);
+	    --paper-spinner-layer-2-color: var(--paper-cyan-500);
+	    --paper-spinner-layer-3-color: var(--paper-blue-grey-500);
+	    --paper-spinner-layer-4-color: var(--paper-amber-500);
+	    top: 2px;
+	  }
 	</style>
 	<div id="filters" class="layout horizontal">
 		<h5 style="width: 134px;font-size: 14px;margin-right: 4px;color: #FFF;">
@@ -82,11 +107,8 @@
 		id="dataTOP" 
 		on-response-infomultiplecontratos="_contratosTopResponseHandler">
 	</sn-data-top>
-	<paper-material id="main">
-		
-		
-		<paper-material id="output">Pressione para compilar</paper-material>
-	</paper-material>
+	<div id="output">Pressione para compilar</div>
+
 </template>
 <script>
 
@@ -124,6 +146,8 @@ properties:{
 	relatorioName:{type:String,value:"receita"},
 	filial:{type:String}
 },
+
+
 ready:function () {
 	this.$['1'].checked = true;
 	this._compileList = ["Filial"];
@@ -220,8 +244,8 @@ _checkboxChanged:function(e,d){
 },
 _getDataFromBase:function() {
 
-	jQuery(this.$.output).html("Compilando...");
-	
+	jQuery(this.$.output).html("<paper-progress indeterminate></paper-progress>");
+
 	new Firebase(FB_URL+"/"+this.relatorioName).once('value',function(dataSnap){
 		
 		var G = {};

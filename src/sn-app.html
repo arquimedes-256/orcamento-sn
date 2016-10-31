@@ -25,6 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="my-icons.html">
 
 <link rel="import" href="sn-filters.html">
+<link rel="import" href="sn-login.html">
 
 <link rel="import" href="sn-data-top.html">
 
@@ -120,7 +121,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: #FFF!important;
       }
     </style>
-
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -147,10 +147,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <iron-selector selected="{{page}}" attr-for-selected="name" class="drawer-list" role="navigation">
           <!--
           <a name="visao-geral" href="/#/Visao-Geral">Geral</a>
-        -->
-          <a name="relatorios" href="/#/Relatorios">Relatórios</a>
+        -->          
           <a name="receita-bruta" href="/#/Receita-Bruta">Receita Bruta</a>
           <a name="receita-liquida" href="/#/Receita-Liquida">Receita Líquida</a>
+          <a name="relatorios" href="/#/BI-Receita">BI</a>
+
           <!--
           <a name="afretamento" href="/#/Afretamento">Afretamento</a>
           <a name="combustivel" href="/#/Combustível">Combustível</a>
@@ -211,7 +212,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-
+    const ONLY_ADMIN = {
+      'receita-liquida':true
+    }
     Polymer({
 
       is: 'sn-app',
@@ -229,11 +232,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       observers: [
         '_routePageChanged(routeData.page)'
       ],
-
       _routePageChanged: function(page) {
         this.page = page || 'visao-geral';
       },
+      _workAcess:function(){
+        const X = document.querySelectorAll('* /deep/ iron-selector a');
 
+		jQuery(X).show();
+
+        if(CURRENT_USER.isAdmin)
+        	return;
+        
+        _.each(X,function(x){
+	        const p = x.getAttribute('name')
+			if(ONLY_ADMIN[p]){
+				jQuery(x).hide();
+			}
+        });
+
+      },
+      workFiliais:function(){
+        const X = document.querySelectorAll('* /deep/ paper-dropdown-menu#filial paper-item');
+        const F = _.keys(CURRENT_USER.filiais)
+
+        _.each(X,function(x){
+          const f = x.getAttribute('name')
+          jQuery(x).hide();
+
+          if(_.contains(F,f)){
+            console.log(f)
+            jQuery(x).show();
+          }
+        })
+        this._workAcess();
+      },
       _pageChanged: function(page) {
         // load page import on demand.
         this.importHref(
@@ -242,10 +274,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           function()
           {
             var currentElement 	= document.querySelector('* /deep/ sn-' + page)
+            if(!currentElement)
+              return;
             var filtersElement 	= currentElement.$.filters;
             
+            filtersElement.removeAttribute('hidden');
+
             if(currentElement.initComponent)
               currentElement.initComponent();
+
+            this.workFiliais();
 
             if(!filtersElement) 
             {
@@ -272,8 +310,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(!window.Firebase) {
 
           alert("Erro de conexão!")
-
+          window.location.reload()
         }
+        this.async(function(){
+          this.page = 'receita-bruta'
+        },1000)
       }
     });
 

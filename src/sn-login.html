@@ -1,0 +1,150 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+
+<dom-module id="sn-login">
+	<template>
+		<style>
+			:host {
+				display: block;
+			    width: 100%;
+			    height: 100%;
+			    position: absolute;
+			    z-index: 9;
+			    background:#eee;
+			}
+			#box {
+				width: 300px;
+				margin:0 auto;
+				position: relative;
+				top: 10px;
+				background:#FFF;
+				padding:8px;
+			}
+			paper-button {
+				background-color: #006064;
+			    color: #FFF;
+			    width: 100%;
+			    margin:0;
+			}
+			paper-input /deep/ input[is="iron-input"] {
+				background:transparent!important;
+			}
+		</style>
+
+		<paper-material elevation="1" id="box">
+<svg 
+	style="margin: 0 auto;transform: scale(1.1);margin-top: -13px;display:block" 
+	width="77pt" 
+	height="67pt" 
+	viewBox="0 0 77 67" 
+	version="1.1" 
+	xmlns="http://www.w3.org/2000/svg">
+            
+              <path fill="transparent" d=" M 0.00 0.00 L 77.00 0.00 L 77.00 67.00 L 0.00 67.00 L 0.00 0.00 Z" />
+              <path fill="#BDBDBD" d=" M 25.03 18.87 C 30.35 16.49 36.31 17.44 41.96 17.24 C 46.29 17.27 51.35 17.07 54.71 20.30 C 56.76 22.05 56.46 24.97 56.75 27.39 C 55.78 27.39 53.85 27.39 52.88 27.40 C 52.57 25.38 52.38 22.72 50.06 21.99 C 45.47 20.48 40.58 21.29 35.85 21.07 C 32.34 20.93 28.74 21.24 25.50 22.70 C 24.47 25.14 23.41 28.31 25.60 30.47 C 29.05 33.34 33.86 32.04 37.96 32.32 C 43.64 32.70 49.90 31.15 55.09 34.12 C 58.77 38.09 58.51 44.92 55.03 48.96 C 50.24 52.96 43.76 51.52 38.06 51.74 C 32.93 51.51 27.10 52.92 22.81 49.26 C 19.75 47.29 20.12 43.38 20.16 40.23 C 21.53 40.22 22.90 40.21 24.26 40.21 C 24.28 42.52 23.93 45.47 26.40 46.73 C 31.05 48.62 36.20 47.69 41.09 47.96 C 44.82 48.15 48.61 47.69 52.08 46.25 C 53.62 43.30 53.57 39.88 52.20 36.88 C 43.23 34.97 33.83 37.51 24.92 35.06 C 18.14 32.82 18.30 21.05 25.03 18.87 Z" />
+              <path fill="#9E9E9E" d=" M 29.68 23.00 C 31.49 23.03 33.31 23.05 35.12 23.08 C 36.53 25.62 37.96 28.14 39.25 30.74 C 36.06 30.76 32.87 30.76 29.68 30.75 C 29.68 28.17 29.68 25.58 29.68 23.00 Z" />
+              <path fill="#9E9E9E" d=" M 42.46 22.91 C 44.23 22.95 46.00 23.00 47.77 23.06 C 47.77 25.62 47.78 28.18 47.81 30.75 C 46.01 30.75 44.21 30.75 42.42 30.75 C 42.43 28.14 42.44 25.52 42.46 22.91 Z" />
+              <path fill="#9E9E9E" d=" M 29.68 37.70 C 31.51 37.72 33.34 37.74 35.17 37.76 C 35.17 40.67 35.17 43.58 35.18 46.49 C 33.35 46.48 31.52 46.47 29.70 46.46 C 29.68 43.54 29.68 40.62 29.68 37.70 Z" />
+              <path fill="#9E9E9E" d=" M 37.24 37.77 C 40.76 37.71 44.27 37.71 47.79 37.74 C 47.77 40.64 47.77 43.53 47.79 46.43 C 45.94 46.46 44.08 46.50 42.23 46.54 C 40.55 43.62 38.97 40.65 37.24 37.77 Z" />
+              
+            </svg>
+			
+			<paper-input 
+				class="c"
+				label="Usuário da rede SN:" 
+				id="loginInput" 
+				value="lucas.silva"></paper-input>
+			<paper-input 
+				class="c"
+				label="Senha:" 
+				id="passInput" 
+				type="password" 
+				value="H2so4,333"></paper-input>
+
+			<paper-button 
+				raised 
+				on-click="autenticar" 
+				style="background-color: #B71C1C;">
+				Entrar!
+			</paper-button>
+			
+		</paper-material>
+<style is="custom-style">
+    paper-input.c {
+        --paper-input-container-focus-color: #B71C1C;
+    }
+</style>
+	</template>
+	<script>
+		Polymer({
+			is: 'sn-login',
+			ready:function() {
+				
+			},
+			autenticar:function() {
+
+				var login 	=	this.$.loginInput.value;
+				var pass	=	this.$.passInput.value;
+
+				this.autenticarLDAP(login,pass);
+			},
+			onError: {
+				LDAP:function() {
+					alert("Senha incorreta ou usuário não existe na rede.")
+				},
+				FB:function() {
+					alert("Seu login até existe na rede mas ele não foi configurado para trabalhar nesse sistema. Entre em contato com o Planejamento SN")
+				}
+			},
+			autenticarLDAP:function(login,senha){
+				var onError 		= this.onError;
+				var autenticarFB 	= this.autenticarFB.bind(this);
+
+				jQuery.ajax(
+					"http://sig.sulnorte.com.br/sn/bus?user="+login+"&pass="+senha,{
+						complete:function(data)
+						{
+							var userObj = JSON.parse(data.responseText);
+							if(userObj.status)
+								autenticarFB(login,senha);
+							else
+								onError.LDAP();
+						}
+				});
+			},
+			autenticarFB:function(login,senha) {
+				var ref = new Firebase(FB_URL+"/usuarios/"+login.replace('.','-'));
+				var onError = this.onError;
+				var initHaltApp = this.initHaltApp.bind(this);
+
+				ref.on('value',function(dataSnapshot){
+					var userVal = dataSnapshot.val();
+					if(userVal) {
+						initHaltApp(_.extend(userVal,{login:login}));
+					}
+					else
+						onError.FB();
+				});
+			},
+			initHaltApp:function(userVal) {
+				window.CURRENT_USER 	= userVal;
+
+				
+				if(!document.querySelector('sn-app'))
+				{	
+					jQuery('body').prepend('<sn-app></sn-app>')
+					jQuery(this).fadeOut()
+
+					window.CURRENT_FILIAL = _.first(_.keys(userVal.filiais));
+
+					console.log(window.CURRENT_FILIAL)
+				}
+				else {
+					document.querySelector('sn-app').workFiliais();
+				}
+			}
+		});
+	</script>
+</dom-module>

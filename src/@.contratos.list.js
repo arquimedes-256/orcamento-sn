@@ -46,7 +46,6 @@ window.CLIENT_LIST = [
 
 {num_contrato:"VIT000670",	nome:"ADMIntermare"},
 {num_contrato:"VIT000552",	nome:"ALIANÇA NAVEGAÇÃO E LOGÍSTICA LTDA"},
-{num_contrato:"VIT000760",	nome:"BBC"},
 {num_contrato:"VIT000761",	nome:"BBC"},
 {num_contrato:"VIT000744",	nome:"CAMORIM"},
 {num_contrato:"VIT000698",	nome:"CANPOTEX SHIPPING SERVICES LIMITED - C-O PORTS-DIRECT RZE"},
@@ -98,9 +97,11 @@ window.CLIENT_LIST = [
 {num_contrato:"SDR001146",	nome:"NORTH STAR SERVIÇOS MARÍTIMOS LTDA"},
 {num_contrato:"SDR001140",	nome:"OCEANUS AGENCIA MARITIMA SA - SDR"},
 {num_contrato:"SDR001148",	nome:"ORION RODOS MARITIMA E PORTUARIA LTDA - VIT"},
+/*
 {num_contrato:"SDR000962",	nome:"PETROBRAS"},
 {num_contrato:"SDR000963",	nome:"PETROBRAS"},
 {num_contrato:"SDR000979",	nome:"PETROBRAS"},
+*/
 {num_contrato:"SDR001133",	nome:"ROCHAMAR AGENCIA MARITIMA SA SDR"},
 {num_contrato:"SDR001151",	nome:"ST SHIPPING & TRANSPORT PTE LTD"},
 {num_contrato:"SDR001091",	nome:"STAR SHIP AGENCIA MARITIMA LTDA"},

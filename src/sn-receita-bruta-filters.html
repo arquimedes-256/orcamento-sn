@@ -168,6 +168,7 @@ Polymer({
     window.CURRENT_FILIAL = this.currentFilial;
 		this._filtraClientePorFilial();
     this._fetchCustomClients();
+    this._selectedClienteChanged();
 	},
   _editClientAction:function(){
     var clienteObject = JSON.parse(jQuery(this.$.cliente).find('[nome-cliente="'+this.selectedCliente+'"]').parent().find('[cliente-json]').text());

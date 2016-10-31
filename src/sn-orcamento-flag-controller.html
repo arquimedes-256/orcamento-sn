@@ -6,17 +6,21 @@
 			:host {
 				display: block;
 			}
-			.toogle-button-green {
-    --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
-    --paper-toggle-button-checked-button-color:  var(--paper-green-500);
-    --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+			.toogle-button {
+			    --paper-toggle-button-checked-bar-color:  		var(--paper-green-500);
+			    --paper-toggle-button-checked-button-color:  	var(--paper-green-500);
+			    --paper-toggle-button-checked-ink-color: 		var(--paper-green-500);
+
+			    --paper-toggle-button-unchecked-bar-color:  		var(--paper-amber-500);
+			    --paper-toggle-button-unchecked-button-color:  		var(--paper-amber-500);
+			    --paper-toggle-button-unchecked-ink-color: 			var(--paper-amber-500);
     			font-size: 13px;height: 64px;
 			}
 			* /deep/ * {
 				color:#FFF!important;
 			}
 		</style>
-		<paper-toggle-button id="button" on-change="_changeAction" class="toogle-button-green">
+		<paper-toggle-button id="button" on-change="_changeAction" class="toogle-button">
 		{{label}}
 		</paper-toggle-button>
 	</template>
