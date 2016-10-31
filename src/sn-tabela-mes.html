@@ -915,6 +915,13 @@
             addDimension:function(d){
                 this._addDimension(d);
             },
+            removeDimension:function(x){
+                this.dimensions = _.difference(this.dimensions,[x])
+                this.data = _.filter(this.data,function(d){
+                    return (d.dimension != x)
+                })
+                this._dataChanged();
+            },
             _addDimension:function(d)
             {
                 if(!_.contains(this.dimensions,d)) 

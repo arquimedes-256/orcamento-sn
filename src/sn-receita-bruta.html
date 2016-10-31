@@ -200,6 +200,12 @@
               _.each(F,function(f){
                 table.addDimension(f)
               })
+              _.each(X,function(x){
+                if(!_.contains(T,x)){
+                  console.log(x)
+                  table.removeDimension(x)
+                }
+              })
             }
 
           },2000)
