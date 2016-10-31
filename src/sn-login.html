@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 
 <dom-module id="sn-login">
 	<template>
@@ -31,6 +32,9 @@
 			paper-input /deep/ input[is="iron-input"] {
 				background:transparent!important;
 			}
+			paper-progress /deep/ #primaryProgress {
+			    background: #9E9E9E;
+			}
 		</style>
 
 		<paper-material elevation="1" id="box">
@@ -52,20 +56,25 @@
             </svg>
 			
 			<paper-input 
+				always-float-label
+				placeholder="nome.sobrenome"
 				class="c"
 				label="Usuário da rede SN:" 
-				id="loginInput" 
-				value="lucas.silva"></paper-input>
+				id="loginInput" ></paper-input>
 			<paper-input 
+				always-float-label
 				class="c"
+				placeholder="xxxx"
 				label="Senha:" 
+				on-keydown="_keyDown"
 				id="passInput" 
-				type="password" 
-				value="H2so4,333"></paper-input>
-
+				type="password" ></paper-input>
+			<paper-progress indeterminate style="width:100%;margin-bottom:3px" hidden id="progress"></paper-progress>
 			<paper-button 
 				raised 
+				id="button"
 				on-click="autenticar" 
+				on-keydown="_keyDown"
 				style="background-color: #B71C1C;">
 				Entrar!
 			</paper-button>
@@ -80,14 +89,23 @@
 	<script>
 		Polymer({
 			is: 'sn-login',
+			_keyDown:function(e){
+				if(e.keyCode == 13) {
+					this.$.button.getRipple().simulatedRipple()
+					this.$.button.click()
+				}
+			},
 			ready:function() {
 				
 			},
 			autenticar:function() {
 
-				var login 	=	this.$.loginInput.value;
+				var login 	=	this.$.loginInput.value.toLowerCase();
 				var pass	=	this.$.passInput.value;
-
+				if(_.isEmpty(login) || _.isEmpty(pass)){
+					alert("Preencha os campos!")
+					return;
+				}
 				this.autenticarLDAP(login,pass);
 			},
 			onError: {
@@ -134,10 +152,14 @@
 				
 				if(!document.querySelector('sn-app'))
 				{	
-					jQuery('body').prepend('<sn-app></sn-app>')
-					jQuery(this).fadeOut()
-
 					window.CURRENT_FILIAL = _.first(_.keys(userVal.filiais));
+
+					jQuery('body').prepend('<sn-app></sn-app>')
+					this.$.progress.removeAttribute('hidden')
+					this.async(function(){
+						jQuery(this).fadeOut()
+					},2000)
+
 
 					console.log(window.CURRENT_FILIAL)
 				}

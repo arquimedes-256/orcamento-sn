@@ -59,10 +59,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-decoration: none;
         color: #000;
         font-size: 15px;
+    	border-left: 1px #FFF solid;
       }
       .drawer-list a.iron-selected {
-        color: black;
-        font-weight: bold;
+    color: black;
+    border-left: 5px #B71C1C solid;
+    font-weight: bold;
+    background: #ECEFF1;
+    transition: border-left .1s,border-color .1s, background .1s;
       }
       .drawer-list a.subroute {
         padding-left: 32px;
@@ -240,16 +244,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 		jQuery(X).show();
 
-        if(CURRENT_USER.isAdmin)
+        if(CURRENT_USER.isAdmin){
         	return;
+        }
 
         _.each(X,function(x){
 	        const p = x.getAttribute('name')
-			if(ONLY_ADMIN[p]){
-				jQuery(x).hide();
-			}
+    			if(ONLY_ADMIN[p]){
+    				jQuery(x).hide();
+    			}
         });
-
       },
       workFiliais:function(){
         const X = document.querySelectorAll('* /deep/ paper-dropdown-menu#filial paper-item');
@@ -259,7 +263,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         if(CURRENT_USER.isAdmin)
         	return;
-        
+
         _.each(X,function(x){
           const f = x.getAttribute('name')
           jQuery(x).hide();
@@ -320,6 +324,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.async(function(){
           this.page = 'receita-bruta'
         },1000)
+        this._workAcess();
       }
     });
 
