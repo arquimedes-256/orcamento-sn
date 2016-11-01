@@ -21,9 +21,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="theme-color" content="#fff">
   <link rel="manifest" href="manifest.json">
   
+  <!-- Insert this line above script imports  -->
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  
   <script src="lib/underscore-min.js"></script>
   <script src="lib/jquery-3.1.0.min.js"></script>
-  <script src="lib/jquery-ui.min.js"></script>
   <script src="lib/pivot.min.js"></script>
   <link rel="stylesheet" href="lib/pivot.min.css">
 
